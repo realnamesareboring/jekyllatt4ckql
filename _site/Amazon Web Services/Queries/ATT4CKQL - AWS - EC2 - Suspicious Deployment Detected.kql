@@ -1,0 +1,127 @@
+//===================================================================
+// Define base variables and functions
+// Initialize core data sources for instance monitoring
+//===================================================================
+let summaries = AWS_generateSummary;
+let ExtendedUserIdentity = AWS_extendUserIdentity();
+//===================================================================
+// Get instance metadata
+// Collect OS and hostname details from instance metadata updates
+//===================================================================
+let instanceMetadata = ExtendedUserIdentity
+    | where EventName == 'UpdateInstanceInformation'
+    | extend 
+        InstanceId = tostring(parse_json(RequestParameters).instanceId),    // Extract instance ID
+        OSVersion = tostring(parse_json(RequestParameters).platformName),   // Get OS version
+        ComputerName = tostring(parse_json(RequestParameters).computerName) // Get hostname
+    | distinct 
+        InstanceId, 
+        OSVersion, 
+        ComputerName;
+//===================================================================
+// Calculate historical instance patterns
+// Look back 90 days to establish baseline for instance type usage
+//===================================================================
+let instance_counts = 
+    AWSCloudTrail
+        | where TimeGenerated >= ago(90d)
+        | where EventName == "RunInstances"
+        | extend InstanceType = tostring(parse_json(ResponseElements).instancesSet.items[0].instanceType)
+        | where isnotempty(InstanceType)
+        | summarize 
+            HistoricalCount = count() 
+            by 
+            InstanceType;  // Count instances by type
+//===================================================================
+// Monitor recent instance creations
+// Track new EC2 instances launched in the last 1 day
+//===================================================================
+let joinedEvents = 
+    AWSCloudTrail
+        | where TimeGenerated >= ago(1d)
+        | where EventSource == "ec2.amazonaws.com"
+        | where EventName == "RunInstances"
+        | extend 
+            InstanceType = tostring(parse_json(ResponseElements).instancesSet.items[0].instanceType),
+            InstanceId = tostring(parse_json(ResponseElements).instancesSet.items[0].instanceId)
+        | join kind=inner (summaries) 
+            on 
+            TimeGenerated, 
+            EventName;
+//===================================================================
+// Final analysis and anomaly detection
+// Identify unusual instance deployments and enrich with metadata
+//===================================================================
+joinedEvents
+    | lookup 
+        kind=leftouter (instance_counts) on InstanceType
+    | extend 
+        HistoricalCount = iif(isempty(HistoricalCount), 1, HistoricalCount)
+    | where HistoricalCount between (1 .. 3)                // Focus on rare instance types
+    | where isnotempty(InstanceType)
+    | where isnotempty(InstanceId)
+    | where isnotempty(SessionIssuerAccountId)
+    | join 
+        kind=leftouter (instanceMetadata) 
+        on 
+        InstanceId  // Add OS and hostname info
+//===================================================================
+// Aggregate and summarize instance deployments
+// Group related information and format for analysis
+//===================================================================
+    | summarize 
+        InstanceIds = make_set(InstanceId),           // All instances created
+        AccountIds = make_set(RecipientAccountId),    // Affected accounts
+        Regions = make_set(AWSRegion),                // Deployment regions
+        SourceIPs = make_set(SourceIpAddress),        // Source IPs used
+        Summaries = make_set(Summary),                // Event summaries
+        CurrentDeploymentCount = dcount(InstanceId),  // Current deployment count
+        OSVersions = make_set(OSVersion),             // OS versions deployed
+        ComputerNames = make_set(ComputerName)        // Instance hostnames
+        by 
+        TimeGenerated,
+        EventName,
+        Description,
+        InstanceType,
+        HistoricalCount,
+        UserIdentityType,
+        UserIdentityPrincipalid,
+        SessionIssuerAccountId,
+        RecipientAccountId,
+        UserIdentityArn
+//===================================================================
+// Format output arrays
+// Convert arrays to readable strings
+//===================================================================
+    | extend 
+        InstanceIds = array_strcat(InstanceIds, "\n"),
+        AccountIds = array_strcat(AccountIds, "\n"),
+        Regions = array_strcat(Regions, "\n"),
+        SourceIPs = array_strcat(SourceIPs, "\n"),
+        Summaries = array_strcat(Summaries, "\n"),
+        OSVersions = array_strcat(OSVersions, "\n"),
+        ComputerNames = array_strcat(ComputerNames, "\n")
+//===================================================================
+// Final output with comprehensive instance details
+// Project all relevant fields for analysis
+//===================================================================
+    | project 
+        TimeGenerated,              // When instances were created
+        Summaries,                  // Event descriptions
+        EventName,                  // Action performed
+        Description,                // Detailed event context
+        InstanceType,               // Type of instances launched
+        CurrentDeploymentCount,     // Number of instances created
+        HistoricalCount,            // Historical usage of instance type
+        InstanceIds,                // List of created instances
+        ComputerNames,              // Instance hostnames
+        OSVersions,                 // Operating systems
+        SourceIPs,                  // Origin of requests
+        UserIdentityType,           // Type of identity used
+        UserIdentityPrincipalid,    // Principal ID
+        UserIdentityArn,            // Identity ARN
+        SessionIssuerAccountId,     // Session issuer
+        RecipientAccountId,         // Target account
+        AccountIds,                 // All accounts involved
+        Regions                     // Deployment locations
+    | sort by TimeGenerated desc    // Most recent first

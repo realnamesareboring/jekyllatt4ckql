@@ -1,0 +1,30 @@
+title: "ATT4CKQL"
+description: "Enhanced KQL Queries for Microsoft Sentinel based on MITRE ATT&CK Techniques"
+baseurl: "" 
+url: "https://realnamesareboring.github.io/ATT4CKQL/"
+
+markdown: kramdown
+highlighter: rouge
+
+collections:
+  queries:
+    output: true
+  logs:
+    output: true
+  platforms:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "platforms"
+    values:
+      layout: "platform"
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+exclude:
+  - Gemfile
+  - Gemfile.lock

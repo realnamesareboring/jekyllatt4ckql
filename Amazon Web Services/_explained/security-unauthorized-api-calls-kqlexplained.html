@@ -1,0 +1,222 @@
+<div id="security-unauthorized-api-calls-query-explanation" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query detects unauthorized or suspicious AWS API calls by monitoring access denied errors, authentication failures, and blocked requests that originate from untrusted or known malicious IP addresses. It helps identify potential credential compromise, reconnaissance activities, and unauthorized access attempts to AWS resources.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>The query employs a multi-layered approach to identify suspicious API activity:</p>
+    <ol>
+        <li>
+            <strong>Source IP Filtering:</strong>
+            <ul>
+                <li>Filters CloudTrail events to only untrusted IP addresses using <code>AWS_filterCloudTrailCIDR()</code></li>
+                <li>Correlates with known malicious IPs from the <code>badguyIPs</code> watchlist</li>
+                <li>Focuses on external or suspicious sources rather than internal infrastructure</li>
+                <li>Reduces false positives from legitimate internal automation and services</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Error Code Analysis:</strong>
+            <ul>
+                <li>Targets specific error types: <code>AccessDenied</code>, <code>AuthFailure</code>, and <code>Blocked</code></li>
+                <li>Filters for events with non-empty error codes to focus on failed operations</li>
+                <li>Captures both permission-based denials and authentication failures</li>
+                <li>Identifies patterns that might indicate unauthorized access attempts</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context Enrichment:</strong>
+            <ul>
+                <li>Extracts MFA usage information from additional event data</li>
+                <li>Captures detailed user identity information and session context</li>
+                <li>Preserves request parameters and resource information for investigation</li>
+                <li>Maintains regional and service source information for correlation</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Summary Integration:</strong>
+            <ul>
+                <li>Joins with AWS summary data to provide enriched event descriptions</li>
+                <li>Adds severity assessments based on the type of failed operation</li>
+                <li>Provides standardized summaries for consistent analyst interpretation</li>
+                <li>Enables prioritization based on business impact and risk level</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>ErrorCode:</strong> Type of failure (AccessDenied, AuthFailure, Blocked)</li>
+        <li><strong>ErrorMessage:</strong> Detailed explanation of why the request failed</li>
+        <li><strong>EventName:</strong> Specific AWS API call that was attempted</li>
+        <li><strong>UserIdentityArn:</strong> AWS resource name of the identity making the request</li>
+        <li><strong>UserIdentityPrincipalid:</strong> Unique identifier for the principal (user/role)</li>
+        <li><strong>SourceIpAddress:</strong> IP address from which the request originated</li>
+        <li><strong>UserAgent:</strong> Tool or client used to make the API call</li>
+        <li><strong>EventSource:</strong> AWS service that processed the request</li>
+        <li><strong>AWSRegion:</strong> AWS region where the request was processed</li>
+        <li><strong>Summary:</strong> Human-readable description of the attempted action</li>
+        <li><strong>Severity:</strong> Risk level assessment of the failed attempt</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Threat Actor Reconnaissance:</strong> Failed API calls often indicate attackers probing for accessible resources</li>
+        <li><strong>Credential Validation:</strong> Authentication failures may represent credential stuffing or brute force attacks</li>
+        <li><strong>Permission Enumeration:</strong> Access denied errors reveal attempts to discover privilege boundaries</li>
+        <li><strong>Attack Progression Tracking:</strong> Patterns of failures often precede successful compromises</li>
+        <li><strong>Insider Threat Detection:</strong> Unauthorized attempts by internal users to exceed their permissions</li>
+        <li><strong>Compromise Indicators:</strong> Unusual API patterns may indicate account takeover or abuse</li>
+        <li><strong>Security Control Validation:</strong> Tests the effectiveness of IAM policies and access controls</li>
+    </ul>
+    
+    <h4>Error Code Categories</h4>
+    <p>The query focuses on three critical error types:</p>
+    <ul>
+        <li><strong>AccessDenied:</strong>
+            <ul>
+                <li>Valid credentials but insufficient permissions for the requested action</li>
+                <li>May indicate privilege escalation attempts or policy misconfigurations</li>
+                <li>Often seen during lateral movement or reconnaissance phases</li>
+                <li>Can reveal the scope of compromised accounts' permissions</li>
+            </ul>
+        </li>
+        <li><strong>AuthFailure:</strong>
+            <ul>
+                <li>Invalid credentials or authentication mechanism failures</li>
+                <li>May indicate brute force attacks or stolen credential testing</li>
+                <li>Could represent session token expiration during automated attacks</li>
+                <li>Often precedes successful credential compromise</li>
+            </ul>
+        </li>
+        <li><strong>Blocked:</strong>
+            <ul>
+                <li>Requests blocked by security controls (WAF, SCPs, bucket policies)</li>
+                <li>May indicate attempts to bypass security measures</li>
+                <li>Could represent automated scanning or vulnerability testing</li>
+                <li>Often associated with mass reconnaissance activities</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Attack Patterns Detected</h4>
+    <p>This query helps identify various attack methodologies:</p>
+    <ul>
+        <li><strong>Credential Stuffing:</strong> Automated login attempts using stolen credential lists</li>
+        <li><strong>Permission Enumeration:</strong> Systematic testing of API permissions to map access rights</li>
+        <li><strong>Service Discovery:</strong> Attempts to identify available AWS services and resources</li>
+        <li><strong>Privilege Escalation:</strong> Testing for elevated permissions beyond intended access</li>
+        <li><strong>Data Reconnaissance:</strong> Probing for accessible data stores and sensitive information</li>
+        <li><strong>Infrastructure Mapping:</strong> Attempts to understand AWS environment architecture</li>
+        <li><strong>Denial of Service Preparation:</strong> Resource enumeration for potential DoS targets</li>
+    </ul>
+    
+    <h4>Response Actions</h4>
+    <p>When unauthorized API calls are detected, follow these response procedures:</p>
+    <ol>
+        <li><strong>Immediate Assessment:</strong>
+            <ul>
+                <li>Analyze the pattern and frequency of failed attempts</li>
+                <li>Identify which services and resources are being targeted</li>
+                <li>Check if the source IP is associated with known threat actors</li>
+                <li>Determine if the user identity is legitimately owned by your organization</li>
+            </ul>
+        </li>
+        <li><strong>Threat Classification:</strong>
+            <ul>
+                <li>High Risk: Access denied attempts on sensitive services (IAM, KMS, secrets)</li>
+                <li>Medium Risk: Authentication failures from external IPs</li>
+                <li>Low Risk: Service enumeration from known scanner sources</li>
+                <li>Critical: Multiple error types from same source indicating active attack</li>
+            </ul>
+        </li>
+        <li><strong>Containment Actions:</strong>
+            <ul>
+                <li>Block suspicious IP addresses at network perimeter or WAF level</li>
+                <li>Temporarily disable potentially compromised user accounts</li>
+                <li>Enable additional monitoring on targeted resources</li>
+                <li>Implement rate limiting on sensitive API endpoints</li>
+            </ul>
+        </li>
+        <li><strong>Investigation Steps:</strong>
+            <ul>
+                <li>Review CloudTrail logs for successful API calls from same sources</li>
+                <li>Check for any successful authentication prior to failed attempts</li>
+                <li>Analyze user agent patterns for automated tool signatures</li>
+                <li>Correlate with other security events (VPC Flow Logs, GuardDuty findings)</li>
+            </ul>
+        </li>
+        <li><strong>Remediation Actions:</strong>
+            <ul>
+                <li>Reset credentials for potentially compromised accounts</li>
+                <li>Review and tighten IAM policies if permission enumeration is detected</li>
+                <li>Implement additional access controls (IP restrictions, MFA requirements)</li>
+                <li>Update detection rules based on identified attack patterns</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Prevention Strategies</h4>
+    <ul>
+        <li><strong>IAM Best Practices:</strong> Implement least privilege access and regular permission reviews</li>
+        <li><strong>Multi-Factor Authentication:</strong> Require MFA for all interactive and API access</li>
+        <li><strong>IP-Based Restrictions:</strong> Limit API access to known IP ranges where possible</li>
+        <li><strong>Service Control Policies:</strong> Use SCPs to prevent unauthorized actions at the organization level</li>
+        <li><strong>API Rate Limiting:</strong> Implement throttling to prevent rapid-fire reconnaissance</li>
+        <li><strong>Session Management:</strong> Configure appropriate session timeouts and idle limits</li>
+        <li><strong>Monitoring Enhancement:</strong> Deploy additional detection mechanisms for API abuse</li>
+    </ul>
+    
+    <h4>Integration with MITRE ATT&CK</h4>
+    <p>This detection maps to several MITRE ATT&CK techniques:</p>
+    <ul>
+        <li><strong>T1078.004 - Valid Accounts: Cloud Accounts:</strong> Use of legitimate AWS accounts for malicious purposes</li>
+        <li><strong>T1068 - Exploitation for Privilege Escalation:</strong> Attempts to gain higher privileges through API calls</li>
+        <li><strong>T1580 - Cloud Infrastructure Discovery:</strong> Reconnaissance of AWS services and resources</li>
+        <li><strong>T1110 - Brute Force:</strong> Credential guessing through repeated authentication attempts</li>
+        <li><strong>T1083 - File and Directory Discovery:</strong> Enumeration of accessible resources</li>
+        <li><strong>T1136.003 - Create Account: Cloud Account:</strong> Attempts to create unauthorized accounts</li>
+    </ul>
+    
+    <h4>Query Customization</h4>
+    <p>Organizations can adapt this query to their specific environment:</p>
+    <ul>
+        <li><strong>IP Range Customization:</strong> Modify the <code>AWS_filterCloudTrailCIDR()</code> function to match organizational IP ranges</li>
+        <li><strong>Error Code Expansion:</strong> Add additional error codes relevant to specific AWS services</li>
+        <li><strong>Service Prioritization:</strong> Weight errors from critical services (IAM, KMS) more heavily</li>
+        <li><strong>Geographical Filtering:</strong> Focus on or exclude specific geographic regions</li>
+        <li><strong>Temporal Analysis:</strong> Add time-based patterns to identify business hours vs. off-hours activity</li>
+        <li><strong>Volume Thresholds:</strong> Implement minimum failure counts to reduce noise</li>
+        <li><strong>User Context:</strong> Enhance with HR data to identify terminated employees</li>
+    </ul>
+    
+    <h4>Operational Considerations</h4>
+    <ul>
+        <li><strong>Alert Fatigue:</strong> Balance detection sensitivity with analyst workload</li>
+        <li><strong>False Positive Management:</strong> Regular tuning to exclude legitimate edge cases</li>
+        <li><strong>Response Automation:</strong> Consider automated blocking for high-confidence threats</li>
+        <li><strong>Data Retention:</strong> Ensure sufficient CloudTrail retention for investigation needs</li>
+        <li><strong>Cross-Account Analysis:</strong> Extend detection across multiple AWS accounts</li>
+        <li><strong>Compliance Reporting:</strong> Use findings for security posture assessments</li>
+    </ul>
+    
+    <h4>Threat Intelligence Integration</h4>
+    <ul>
+        <li><strong>IP Reputation Feeds:</strong> Enhance with commercial threat intelligence for IP classification</li>
+        <li><strong>Attack Signatures:</strong> Correlate user agent strings with known attack tools</li>
+        <li><strong>Campaign Attribution:</strong> Link failed attempts to known threat actor campaigns</li>
+        <li><strong>TTPs Mapping:</strong> Connect observed behaviors to documented attack methodologies</li>
+        <li><strong>Contextual Enrichment:</strong> Add geolocation and hosting provider information</li>
+        <li><strong>Historical Analysis:</strong> Track long-term trends in unauthorized access attempts</li>
+    </ul>
+    
+    <h4>Metrics and Success Criteria</h4>
+    <p>Measure the effectiveness of unauthorized API call detection:</p>
+    <ul>
+        <li><strong>Detection Coverage:</strong> Percentage of actual unauthorized attempts identified</li>
+        <li><strong>False Positive Rate:</strong> Ratio of legitimate activities flagged as suspicious</li>
+        <li><strong>Response Time:</strong> Time from detection to containment action</li>
+        <li><strong>Attack Vector Coverage:</strong> Breadth of attack methods detected</li>
+        <li><strong>Trend Analysis:</strong> Patterns in unauthorized access attempts over time</li>
+        <li><strong>Preventive Impact:</strong> Reduction in successful breaches following failed attempts</li>
+    </ul>
+</div>

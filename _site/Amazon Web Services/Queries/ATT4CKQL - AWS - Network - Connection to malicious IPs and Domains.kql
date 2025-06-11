@@ -1,0 +1,78 @@
+//===================================================================
+// Define base variables and functions
+// Initialize data sources and watchlists
+//===================================================================
+let summaries = AWS_generateSummary();            // Event summaries
+let untrustedIPs = AWS_filterCloudTrailCIDR();    // Untrusted IPs
+let VPCflow = AWS_filterVPCFlowCIDR();            // VPC Flow logs
+let APTIPs = _GetWatchlist('badguyIPs')           // Get known malicious IPs
+    | project IOC;
+//===================================================================
+// Monitor CloudTrail Events
+// Filter and enrich CloudTrail data with IP context
+//===================================================================
+let cloudTrailData = AWSCloudTrail
+// Filter for untrusted and non-malicious IPs
+    | where SourceIpAddress in (APTIPs)
+    | where SourceIpAddress in (untrustedIPs)
+    // Monitor security-relevant events
+    | where EventName in (
+        // Authentication events
+        "ConsoleLogin", "AssumeRole",
+        // Access key operations
+        "CreateAccessKey", "DeleteAccessKey",
+        // User profile operations
+        "CreateLoginProfile", "DeleteLoginProfile",
+        // IAM operations
+        "CreateRole", "DeleteRole", "CreateUser", "DeleteUser",
+        // EC2 operations
+        "StartInstance", "StopInstance",
+        // S3 operations
+        "CreateBucket", "DeleteBucket", "PutBucketPolicy",
+        "GetObject", "PutObject", "DeleteObject", "ListObjects",
+        // Network events
+        "NetworkConnection"
+)
+// Extract instance and region details
+    | extend 
+        SourceInstance = parse_json(RequestParameters).instancesSet.items[0].instanceId,
+        Region = AWSRegion
+    | project 
+        TimeGenerated,
+        EventSource,
+        EventName,
+        SourceInstance,
+        Region,
+        UserIdentityArn,
+        UserIdentityAccountId,
+        SourceIpAddress,
+        DestinationPort;
+//===================================================================
+// Correlate with VPC Flow Logs
+// Join CloudTrail events with network traffic
+//===================================================================
+cloudTrailData
+    | join kind=inner (VPCflow) 
+        on $left.SourceIpAddress == $right.SrcAddr
+//===================================================================
+// Enrich with Event Context
+// Add event summaries and format output
+//===================================================================
+    | join kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.TimeGenerated == $right.TimeGenerated 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+    | where SrcAddr != ""
+    | project
+        TimeGenerated,          // When event occurred
+        Summary,                // Event context
+        UserIdentityAccountId,  // AWS account ID
+        UserIdentityArn,        // User identity
+        Region,                 // AWS region
+        SourceInstance,         // EC2 instance
+        SourceIpAddress,        // Source IP
+        DstAddr,                // Destination IP
+        SrcPort,                // Source port
+        DstPort,                // Destination port
+        EventName,              // Action performed
+        InterfaceId             // Network interface

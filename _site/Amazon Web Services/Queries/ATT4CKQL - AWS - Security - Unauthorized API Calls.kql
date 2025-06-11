@@ -1,0 +1,77 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+let summaries = AWS_generateSummary();            // Event summaries
+let filteredIPs = AWS_filterCloudTrailCIDR();     // Non-trusted IPs
+let APTIPs = _GetWatchlist('badguyIPs')           // Get known malicious IPs
+    | project IOC;
+//===================================================================
+// Define monitored error patterns
+//===================================================================
+let UnauthorizedErrorCodes = dynamic([
+   "AccessDenied",     // Access denied errors
+   "AuthFailure",      // Authentication failures
+   "Blocked"           // Blocked requests
+]);
+let watchlist = _GetWatchlist('AWS_Eventname') 
+    | project 
+        Description, 
+        Eventname, 
+        Source;
+//===================================================================
+// Filter and process CloudTrail events
+//===================================================================
+let CloudTrailIAM = AWSCloudTrail
+    // Filter out trusted IPs and only look into suspicious IPs from CTCT list
+    | where SourceIpAddress in (filteredIPs)
+    | where SourceIpAddress in (APTIPs)
+    // Filter out ErrorCodes
+    | where isnotempty(ErrorCode)
+    | where ErrorCode in~ (UnauthorizedErrorCodes)
+    | extend 
+        MFAUsed = tostring(parse_json(AdditionalEventData).MFAUsed)
+    | project
+        TimeGenerated,
+        ErrorCode,
+        ErrorMessage,
+        EventName,
+        UserIdentityArn,
+        SessionIssuerUserName,
+        UserIdentityAccountId,
+        UserIdentityPrincipalid,
+        UserAgent,
+        UserIdentityUserName,
+        SourceIpAddress,
+        AWSRegion,
+        RequestParameters,
+        AdditionalEventData,
+        Resources,
+        RecipientAccountId,
+        EventSource;
+//===================================================================
+// Add context and format output
+//===================================================================
+CloudTrailIAM
+    // Join the Summary column into the final output
+    | join kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.TimeGenerated == $right.TimeGenerated 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+    | distinct 
+        TimeGenerated,             // When
+        Summary,                   // What happened
+        Severity,                  // How serious
+        ErrorCode,                 // Error type
+        ErrorMessage,              // Error details
+        EventName,                 // Action attempted
+        UserIdentityArn,           // Who
+        SessionIssuerUserName,     // Session issuer
+        UserIdentityAccountId,     // Account context
+        UserIdentityPrincipalid,   // Principal ID
+        UserAgent,                 // Tool used
+        SourceIpAddress,           // From where
+        AWSRegion,                 // AWS region
+        EventSource                // AWS service
+    | order by 
+        Severity asc, 
+        TimeGenerated desc

@@ -1,0 +1,72 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+// Get summary data from AWS summary function
+let summaries = AWS_generateSummary();
+// Define list of critical CloudTrail change events to monitor
+let EventNameList = dynamic([
+    "UpdateTrail", 
+    "DeleteTrail", 
+    "DisableLogging", 
+    "DeleteEVentDataSource", 
+    "StopLogging", 
+    "DeleteFlowLogs", 
+    "DeleteEventBus"
+]);
+//===================================================================
+// Main query to get CloudTrail change events
+//===================================================================
+let userEvents = AWS_extendUserIdentity
+    // Filter to last hour of events
+    | where TimeGenerated > ago(1h)
+    // Filter for targeted CloudTrail change events
+    | where EventName in (EventNameList)
+    // Filter out known automation/service accounts
+    | where UserName <> "CloudTrailOrganizationReplication" 
+        and SourceIpAddress <> "cloudformation.amazonaws.com"
+    // Extract CloudTrail name from request parameters
+    | extend CloudTrail = parse_json(RequestParameters).name
+    // Select initial fields for processing
+    | project
+        SessionCreationDate,
+        TimeGenerated,
+        CloudTrail,
+        EventName,
+        SourceIpAddress,
+        UserIdentityPrincipalid,
+        UserIdentityAccountId,
+        UserIdentityAccessKeyId,
+        SessionIssuerUserName,
+        AWSRegion,
+        UserAgent,
+        AccountName,
+        UserIdentityArn,
+        Type;
+//===================================================================
+// Join with summaries and format final output
+//===================================================================
+userEvents 
+    // Join with summaries to get additional event context
+    | join 
+        kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.TimeGenerated == $right.TimeGenerated 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+    // Format final output with selected fields
+    | project
+        StartTimeUtc = SessionCreationDate,
+        Summary,
+        EventName,
+        Description,
+        CloudTrail,
+        UserIdentityPrincipalid,
+        UserIdentityAccessKeyId,
+        SessionIssuerUserName,
+        UserIdentityAccountId,
+        UserName = AccountName,
+        SourceIpAddress,
+        Type,
+        AWSRegion,
+        UserAgent
+    // Sort by time, most recent first    
+    | order by StartTimeUtc desc

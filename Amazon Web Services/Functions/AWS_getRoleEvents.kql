@@ -1,0 +1,10 @@
+let getRoleEvents = () {
+    AWSCloudTrail
+        | where isnotempty(parse_json(RequestParameters).roleName)
+        | extend RoleName = tostring(parse_json(RequestParameters).roleName)
+        | extend UserIdentityArn = iif(isempty(UserIdentityArn), tostring(parse_json(Resources)[0].ARN), UserIdentityArn)
+        | project UserIdentityArn, RoleName
+        | distinct UserIdentityArn, RoleName
+        | summarize RoleNames = make_list(RoleName) by UserIdentityArn
+};
+getRoleEvents()

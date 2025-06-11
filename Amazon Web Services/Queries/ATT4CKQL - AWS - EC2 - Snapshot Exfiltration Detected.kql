@@ -1,0 +1,91 @@
+//===================================================================
+// Define base variables and functions
+// Initialize data sources and identity context
+//===================================================================
+let summaries = AWS_generateSummary();  // Add parentheses for function call
+let ExtendedUserIdentity = AWS_extendUserIdentity();
+//===================================================================
+// Calculate known good accounts
+// Establish baseline of legitimate account interactions over 90 days
+//===================================================================
+let KnownAccounts = 
+   AWSCloudTrail
+   | where TimeGenerated >= ago(90d)
+   | distinct RecipientAccountId;  // Create allowlist of known accounts
+//===================================================================
+// Define monitored snapshot sharing events
+// Track critical snapshot operations that could indicate exfiltration
+//===================================================================
+let SensitiveEvents = dynamic([
+   'SharedSnapshotVolumeCreated',   // When volumes are created from shared snapshots
+   'SharedSnapshotCopyInitiated',   // When snapshots are copied across accounts
+   'ModifySnapshotAttribute',       // When snapshot permissions are changed
+   'ModifyDBSnapshotAttribute'      // When database snapshot permissions are changed
+]);
+//===================================================================
+// Process and identify suspicious snapshot sharing
+// Detect potential data exfiltration via snapshot sharing
+//===================================================================
+ExtendedUserIdentity
+   | where TimeGenerated > ago(1d)  // Focus on recent activity
+   | where EventName in (SensitiveEvents)
+   | extend 
+       // Extract key identifiers and actors
+       SourceAccountId = tostring(UserIdentityAccountId),          // Source AWS account
+       UserIdentityType = tostring(UserIdentityType),              // Type of identity making change
+       ModifiedDBSnapshotIdentifier = tostring(parse_json(RequestParameters).dBSnapshotIdentifier),  // DB snapshot name
+       ModifiedSnapshotAttributeType = tostring(parse_json(RequestParameters).attributeType),        // Type of attribute modified
+       // Extract key security-relevant information
+       ModifiedSnapShot_to_SuspiciousAccount = tostring(           // Account added to permissions
+           parse_json(tostring(parse_json(tostring(parse_json(tostring(
+           parse_json(RequestParameters).createVolumePermission)).add)).items))[0].userId),
+       ModifiedSnapShot_remove_SuspiciousAccount = tostring(       // Account removed from permissions
+           parse_json(tostring(parse_json(tostring(parse_json(tostring(
+           parse_json(RequestParameters).createVolumePermission)).remove)).items))[0].userId),
+       CreatedVolumeSnapshotId = tostring(parse_json(RequestParameters).snapshotId)  // Affected snapshot ID
+   //===================================================================
+   // Identify unknown accounts in snapshot operations
+   // Cross-reference with known good accounts baseline
+   //===================================================================
+   | join kind=leftouter (KnownAccounts) 
+       on $left.ModifiedSnapShot_to_SuspiciousAccount == $right.RecipientAccountId
+   // Filter for suspicious operations with unknown accounts
+   | where (ModifiedSnapShot_to_SuspiciousAccount !in (KnownAccounts) 
+       and isnotempty(ModifiedSnapShot_to_SuspiciousAccount))  // New account given access
+       or (ModifiedSnapShot_remove_SuspiciousAccount !in (KnownAccounts) 
+       and isnotempty(ModifiedSnapShot_remove_SuspiciousAccount))  // Unknown account access removed
+   // Categorize the operation type for better analysis
+   | extend 
+       ActionType = case(
+           isnotempty(ModifiedSnapShot_to_SuspiciousAccount) 
+           and 
+           isnotempty(ModifiedSnapShot_remove_SuspiciousAccount), "Add and Remove",  // Temporary access - highly suspicious
+           isnotempty(ModifiedSnapShot_to_SuspiciousAccount), "Add",                 // New access granted
+           isnotempty(ModifiedSnapShot_remove_SuspiciousAccount), "Remove",          // Access removed
+           "Unknown"                                                                  // Fallback
+       )
+   //===================================================================
+   // Add event context from summaries
+   // Enrich alerts with additional context and severity
+   //===================================================================
+   | join kind=leftouter (summaries) 
+       on $left.EventName == $right.EventName 
+       and $left.TimeGenerated == $right.TimeGenerated 
+       and $left.UserIdentityArn == $right.UserIdentityArn 
+   //===================================================================
+   // Format final output with comprehensive details
+   //===================================================================
+   | project
+       TimeGenerated,                    // When the event occurred
+       Summary,                          // Context about the event
+       EventName,                        // Type of operation performed
+       ActionType,                       // How permissions were modified
+       CreatedVolumeSnapshotId,          // The affected snapshot
+       ModifiedDBSnapshotIdentifier,     // Database snapshot name if applicable
+       ModifiedSnapshotAttributeType,    // What type of permission was changed
+       UserIdentityType,                 // Type of identity making the change
+       UserIdentityArn,                  // Identity ARN
+       SourceAccountId,                  // Source account
+       ModifiedSnapShot_to_SuspiciousAccount,    // Account granted access
+       ModifiedSnapShot_remove_SuspiciousAccount // Account removed from access
+   | sort by TimeGenerated               // Most recent events first

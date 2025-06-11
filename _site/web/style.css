@@ -1,0 +1,518 @@
+/* Azure Log Analytics Theme Variables */
+:root {
+    /* Azure Primary Colors */
+    --azure-primary: #0078d4;
+    --azure-primary-dark: #106ebe;
+    --azure-secondary: #005a9e;
+    --azure-bg: #faf9f8;
+    --azure-surface: #ffffff;
+    --azure-border: #edebe9;
+    --azure-border-light: #f3f2f1;
+    --azure-text: #323130;
+    --azure-text-secondary: #605e5c;
+    --azure-text-light: #8a8886;
+    --azure-hover: #f3f2f1;
+    --azure-selected: #deecf9;
+    --azure-error: #d13438;
+    --azure-warning: #ff8c00;
+    --azure-success: #107c10;
+    --azure-info: #0078d4;
+    
+    /* Legacy variables for compatibility */
+    --primary-color: #0078d4;
+    --primary-gradient-start: #0078d4;
+    --primary-gradient-end: #004e8c;
+    --highlight-color: #e6f7e6;
+    --highlight-color-mid: #b3e6b3;
+    --tag-yes-bg: #e6f7e6;
+    --tag-yes-color: #107c10;
+    --tag-no-bg: #fde7e9;
+    --tag-no-color: #d13438;
+    --table-header-bg: #f8f9fa;
+    --table-hover-bg: #f3f2f1;
+    --github-bg: #24292e;
+    --github-hover-bg: #1a1e22;
+}
+
+/* Attacker theme variables */
+.theme-attacker {
+    --primary-color: #d40000;
+    --primary-gradient-start: #d40000;
+    --primary-gradient-end: #8c0000;
+    --highlight-color: #ffe6e6;
+    --highlight-color-mid: #ffb3b3;
+    --tag-yes-bg: #ffe6e6;
+    --tag-yes-color: #7c1010;
+    --tag-no-bg: #e7fdfd;
+    --tag-no-color: #13d4d4;
+    --table-header-bg: #fff0f0;
+    --table-hover-bg: #fff5f5;
+    --github-bg: #2e2424;
+    --github-hover-bg: #221a1a;
+    --azure-primary: #d40000;
+    --azure-primary-dark: #8c0000;
+    --azure-bg: #1a1a1a;
+    --azure-surface: #2d2d2d;
+    --azure-border: #444444;
+    --azure-text: #f0f0f0;
+    --azure-text-secondary: #cccccc;
+    --azure-hover: #404040;
+}
+
+/* Theme chooser overlay */
+.theme-chooser-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+}
+
+.theme-chooser-content {
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+}
+
+.theme-chooser-content h2 {
+    font-size: 2.2em;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.theme-chooser-content p {
+    font-size: 1.1em;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+.theme-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+}
+
+.theme-button {
+    padding: 15px 40px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 180px;
+}
+
+.defender-button {
+    background-color: #0078d4;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+}
+
+.defender-button:hover {
+    background-color: #005a9e;
+    transform: translateY(-2px);
+}
+
+.attacker-button {
+    background-color: #d40000;
+    color: white;
+    box-shadow: 0 4px 12px rgba(212, 0, 0, 0.3);
+}
+
+.attacker-button:hover {
+    background-color: #a30000;
+    transform: translateY(-2px);
+}
+
+/* Main page styles */
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--azure-text);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--azure-bg);
+    transition: all 0.5s ease;
+    font-size: 14px;
+}
+
+body.theme-attacker {
+    background-color: var(--azure-bg);
+    color: var(--azure-text);
+}
+
+.loading {
+    font-style: italic;
+    color: #666;
+}
+
+.query-count {
+    transition: background-color 0.5s ease;
+    font-weight: bold;
+}
+
+.updated {
+    background-color: var(--highlight-color);
+    animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+    0% { background-color: var(--highlight-color); }
+    50% { background-color: var(--highlight-color-mid); }
+    100% { background-color: transparent; }
+}
+
+header {
+    background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+h2 {
+    color: var(--azure-primary);
+    border-bottom: 2px solid var(--azure-primary);
+    padding-bottom: 8px;
+    margin-top: 40px;
+}
+
+.theme-attacker h2 {
+    color: var(--azure-primary);
+    border-bottom: 2px solid var(--azure-primary);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+.section {
+    background-color: var(--azure-surface);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--azure-border);
+}
+
+.theme-attacker .section {
+    background-color: var(--azure-surface);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Table Container - Azure Style */
+.table-container {
+    background: var(--azure-surface);
+    border: 1px solid var(--azure-border);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin: 20px 0;
+}
+
+.table-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--azure-border);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--azure-text);
+}
+
+.results-count {
+    font-size: 13px;
+    color: var(--azure-text-secondary);
+    background: var(--azure-selected);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 0.9em;
+    background: var(--azure-surface);
+}
+
+th {
+    background-color: var(--table-header-bg);
+    color: var(--azure-text);
+    text-align: left;
+    padding: 12px 15px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--azure-border);
+    border-right: 1px solid var(--azure-border-light);
+}
+
+th:last-child {
+    border-right: none;
+}
+
+th:hover {
+    background: #f3f2f1;
+    cursor: pointer;
+}
+
+td {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--azure-border-light);
+    border-right: 1px solid var(--azure-border-light);
+}
+
+td:last-child {
+    border-right: none;
+}
+
+.theme-attacker td {
+    border-bottom: 1px solid var(--azure-border);
+}
+
+tr:hover {
+    background-color: var(--table-hover-bg);
+    transition: all 0.2s ease;
+}
+
+.source-link {
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.source-link:hover {
+    text-decoration: underline;
+    color: var(--azure-primary-dark);
+}
+
+.tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+.tag-yes {
+    background-color: var(--tag-yes-bg);
+    color: var(--tag-yes-color);
+}
+
+.tag-no {
+    background-color: var(--tag-no-bg);
+    color: var(--tag-no-color);
+}
+
+.icon {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--azure-text-secondary);
+    font-size: 0.9em;
+}
+
+.theme-attacker footer {
+    color: var(--azure-text-secondary);
+}
+
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--github-bg);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.github-link:hover {
+    background-color: var(--github-hover-bg);
+}
+
+/* Initially hide main content until theme is chosen */
+.main-content {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.main-content.visible {
+    opacity: 1;
+}
+
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.theme-toggle:hover {
+    transform: rotate(180deg);
+}
+
+/* Enhanced interactive effects */
+tr:hover .source-link {
+    color: var(--azure-primary-dark);
+    font-weight: 600;
+}
+
+.query-count.updated {
+    background-color: var(--azure-selected);
+    color: var(--azure-primary);
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+/* Best practices section enhancements */
+.section h3 {
+    color: var(--azure-primary);
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+}
+
+.section ul {
+    padding-left: 20px;
+}
+
+.section li {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.section strong {
+    color: var(--azure-text);
+    font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+    
+    header {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    .theme-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .theme-button {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .section {
+        padding: 20px;
+    }
+    
+    table {
+        font-size: 0.8em;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+}
+
+/* Additional animations and transitions */
+.section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Table row hover enhancement */
+tr {
+    transition: all 0.2s ease;
+}
+
+tr:hover {
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 120, 212, 0.1);
+}
+
+/* Loading states */
+.loading {
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}

@@ -1,0 +1,187 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('iam-console-login-no-mfa-logs')">&times;</span>
+    <h2>AWS Management Console Successful Login with No MFA</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | Filter: Successful logins without MFA</div>
+        </div>
+        <div class="results-info">7 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>FirstSeenLocal</th>
+                    <th>LastSeenLocal</th>
+                    <th>SessionDurationMinutes</th>
+                    <th>EventName</th>
+                    <th>EventDescription</th>
+                    <th>EventSummary</th>
+                    <th>UserName</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>SessionMfaAuthenticated</th>
+                    <th>SourceIpAddress</th>
+                    <th>AWSRegion</th>
+                    <th>UserAgent</th>
+                    <th>PrincipalSessionID</th>
+                    <th>RoleNames</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:32:17.652Z</td>
+                    <td class="log-timestamp">2025-05-15T15:45:22.128Z</td>
+                    <td class="highlight-cell">73</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td class="highlight-cell">🚨 admin-user</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">No</td>
+                    <td>203.0.113.42</td>
+                    <td>us-east-1</td>
+                    <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                    <td>ASIAXAMPLE123456789</td>
+                    <td>CloudAdminRole</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:18:45.321Z</td>
+                    <td class="log-timestamp">2025-05-15T14:55:01.476Z</td>
+                    <td>37</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td>developer-john</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">No</td>
+                    <td>198.51.100.23</td>
+                    <td>us-west-2</td>
+                    <td>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)</td>
+                    <td>ASIAXAMPLE987654321</td>
+                    <td>DeveloperRole</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:41:09.887Z</td>
+                    <td class="log-timestamp">2025-05-15T21:22:13.444Z</td>
+                    <td class="highlight-cell">461</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td class="highlight-cell">🚨 finance-admin</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">No</td>
+                    <td>192.0.2.155</td>
+                    <td>eu-west-1</td>
+                    <td>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36</td>
+                    <td>ASIAXAMPLE567891234</td>
+                    <td>FinanceRole
+BillingAccessRole</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T12:55:32.765Z</td>
+                    <td class="log-timestamp">2025-05-15T13:12:47.219Z</td>
+                    <td>17</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td>readonly-user</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">No</td>
+                    <td>10.0.12.45</td>
+                    <td>us-east-1</td>
+                    <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                    <td>ASIAXAMPLE123987456</td>
+                    <td>ReadOnlyRole</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T11:24:18.543Z</td>
+                    <td class="log-timestamp">2025-05-15T11:48:32.178Z</td>
+                    <td>24</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA from untrusted IP</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td>support-engineer</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">No</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>us-west-2</td>
+                    <td>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)</td>
+                    <td>ASIAXAMPLE456789123</td>
+                    <td>SupportEngineerRole</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T09:12:53.986Z</td>
+                    <td class="log-timestamp">2025-05-15T17:35:28.741Z</td>
+                    <td class="highlight-cell">503</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td class="highlight-cell">🚨 security-analyst</td>
+                    <td>234567890123</td>
+                    <td class="highlight-cell">No</td>
+                    <td>198.51.100.87</td>
+                    <td>ap-southeast-1</td>
+                    <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                    <td>ASIAXAMPLE789123456</td>
+                    <td>SecurityAnalystRole</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-14T22:48:12.345Z</td>
+                    <td class="log-timestamp">2025-05-15T02:17:59.876Z</td>
+                    <td class="highlight-cell">210</td>
+                    <td>ConsoleLogin</td>
+                    <td>User successfully logged into AWS Console without MFA during off-hours</td>
+                    <td>Successful console login without MFA authentication</td>
+                    <td>database-admin</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">No</td>
+                    <td>192.168.10.23</td>
+                    <td>eu-central-1</td>
+                    <td>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36</td>
+                    <td>ASIAXAMPLE321654987</td>
+                    <td>RDSAdminRole
+DatabaseAccessRole</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies AWS Console login sessions where Multi-Factor Authentication (MFA) was not used. It tracks both login and logout events to calculate session duration and highlights users who have successfully authenticated to the AWS Console without using MFA protection, creating a significant security risk.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>SessionMfaAuthenticated</code> field shows "No" for all entries, indicating MFA was not used</li>
+        <li>The <code>SessionDurationMinutes</code> shows how long each session lasted, with long sessions (over 60 minutes) highlighted as potentially concerning</li>
+        <li>Administrative or privileged users (marked with 🚨) are of particular concern when accessing without MFA</li>
+        <li>Long-running sessions (over 8 hours) may indicate unattended consoles or unusual access patterns</li>
+        <li>The <code>SourceIpAddress</code> helps identify if access is coming from expected locations</li>
+        <li>The <code>RoleNames</code> field shows what privileged roles the user might be able to assume</li>
+        <li>Off-hours access (after normal business hours) without MFA represents a higher risk</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Initial Access (TA0001)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1556.006 - Modify Authentication Process: Multi-Factor Authentication</li>
+        <li><strong>Credential Access (TA0006)</strong><br>T1555 - Credentials from Password Stores</li>
+        <li><strong>Persistence (TA0003)</strong><br>T1098 - Account Manipulation</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Implement a mandatory MFA policy for all users, especially those with administrative privileges</li>
+        <li>Review and validate the activity performed during these non-MFA sessions</li>
+        <li>Pay special attention to privileged users (admin, security, finance roles) accessing without MFA</li>
+        <li>Investigate any access from unusual source IP addresses or during off-hours</li>
+        <li>Check for unusual session durations (either very short or unusually long)</li>
+        <li>Consider implementing Service Control Policies (SCPs) to enforce MFA use for sensitive actions</li>
+        <li>Use AWS IAM Access Analyzer to review permissions and identify overly permissive policies</li>
+        <li>Implement automated alerts for non-MFA logins to administrative accounts</li>
+        <li>Educate users about the importance of MFA and proper AWS console security practices</li>
+        <li>Consider implementing Just-In-Time (JIT) access for administrative roles</li>
+    </ul>
+</div>

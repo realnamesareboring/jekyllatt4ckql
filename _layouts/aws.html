@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} - {{ site.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/css/aws-style.css' | relative_url }}">
+</head>
+<body>
+    <a href="{{ '/' | relative_url }}" class="nav-link">← Back to Home</a>
+    
+    <main>
+        {{ content }}
+    </main>
+
+    <!-- Updated script paths -->
+    <script src="{{ '/assets/js/aws-script.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/table.js' | relative_url }}"></script>
+    
+    <button class="theme-toggle" id="theme-toggle" title="Switch theme">🌙</button>
+</body>
+</html>

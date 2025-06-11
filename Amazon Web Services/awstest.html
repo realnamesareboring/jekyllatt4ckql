@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Detection Rules with MITRE ATT&CK Mapping</title>
+    
+    <!-- ADD THESE LINES TO YOUR EXISTING aws.html -->
+    <link rel="stylesheet" href="../cyberpunk-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Your existing CSS link -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- Your existing content stays exactly the same -->
+    <a href="../index.html" class="nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Back to Home
+    </a>
+    
+    <h1>AWS Detection Rules with MITRE ATT&CK Mapping</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Detection Name</th>
+                <th>Description</th>
+                <th>MITRE Tactics & Techniques</th>
+                <th>Data Source</th>
+                <th>Query Link</th>
+                <th>Attack Path Reference</th>
+                <th>Sample Logs</th>
+            </tr>
+        </thead>
+        <tbody id="detection-rules-table-body">
+            <tr>
+                <td colspan="7" class="loading-indicator">Loading detection rules...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Your existing modal containers -->
+    <div id="modal-containers">
+        <!-- All your existing modal divs stay the same -->
+    </div>
+
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" id="theme-toggle" title="Switch theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <!-- ADD THESE SCRIPT TAGS TO YOUR EXISTING aws.html -->
+    <script src="../cyberpunk-theme.js"></script>
+    <script src="./script.js"></script>
+    <script src="./table.js"></script>
+    
+    <!-- ADD THIS SMALL SCRIPT FOR AWS-SPECIFIC EFFECTS -->
+    <script>
+        // AWS Page Enhancement - Add this to your existing aws.html
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AWS page loaded with theme continuity');
+            
+            // Add AWS-specific floating KQL for cyberpunk theme
+            function addAWSFloatingEffects() {
+                // Check if we have access to the theme system
+                if (window.ATT4CKQL && window.ATT4CKQL.currentTheme() === 'cyberpunk') {
+                    const awsKQLSnippets = [
+                        'AWSCloudTrail | where EventName == "RunInstances"',
+                        'AWSCloudTrail | where EventName == "CreateUser"',
+                        'AWSCloudTrail | where EventName == "AttachUserPolicy"',
+                        'AWSCloudTrail | where EventName == "GetPasswordData"',
+                        'AWSCloudTrail | where EventName == "ModifySnapshotAttribute"',
+                        'AWSCloudTrail | where EventName == "DeleteBucket"',
+                        'AWSCloudTrail | where EventName == "StopLogging"',
+                        'AWSCloudTrail | where SourceIPAddress !startswith "10."',
+                        'AWSCloudTrail | where UserIdentityType == "AssumedRole"',
+                        'AWSCloudTrail | where ErrorCode == "AccessDenied"'
+                    ];
+                    
+                    // Create AWS-themed floating KQL every 7 seconds
+                    setInterval(() => {
+                        if (window.ATT4CKQL && window.ATT4CKQL.currentTheme() === 'cyberpunk') {
+                            const snippet = awsKQLSnippets[Math.floor(Math.random() * awsKQLSnippets.length)];
+                            const floatingKQL = document.createElement('div');
+                            
+                            // Random positioning from edges
+                            const edge = Math.floor(Math.random() * 4);
+                            let startX, startY, endX, endY;
+                            
+                            switch(edge) {
+                                case 0: // From left
+                                    startX = -350;
+                                    startY = Math.random() * window.innerHeight;
+                                    endX = window.innerWidth + 350;
+                                    endY = startY + (Math.random() - 0.5) * 150;
+                                    break;
+                                case 1: // From right
+                                    startX = window.innerWidth + 350;
+                                    startY = Math.random() * window.innerHeight;
+                                    endX = -350;
+                                    endY = startY + (Math.random() - 0.5) * 150;
+                                    break;
+                                case 2: // From top
+                                    startX = Math.random() * window.innerWidth;
+                                    startY = -100;
+                                    endX = startX + (Math.random() - 0.5) * 300;
+                                    endY = window.innerHeight + 100;
+                                    break;
+                                case 3: // From bottom
+                                    startX = Math.random() * window.innerWidth;
+                                    startY = window.innerHeight + 100;
+                                    endX = startX + (Math.random() - 0.5) * 300;
+                                    endY = -100;
+                                    break;
+                            }
+                            
+                            floatingKQL.textContent = snippet;
+                            floatingKQL.style.cssText = `
+                                position: fixed;
+                                left: ${startX}px;
+                                top: ${startY}px;
+                                color: #ff8c00;
+                                font-family: 'Share Tech Mono', monospace;
+                                font-size: ${10 + Math.random() * 5}px;
+                                opacity: ${0.08 + Math.random() * 0.10};
+                                z-index: 1;
+                                pointer-events: none;
+                                white-space: nowrap;
+                                transition: all ${16 + Math.random() * 14}s linear;
+                                transform: rotate(${-3 + Math.random() * 6}deg);
+                            `;
+                            
+                            document.body.appendChild(floatingKQL);
+                            
+                            requestAnimationFrame(() => {
+                                floatingKQL.style.left = endX + 'px';
+                                floatingKQL.style.top = endY + 'px';
+                                floatingKQL.style.opacity = '0';
+                            });
+                            
+                            setTimeout(() => {
+                                if (floatingKQL.parentNode) {
+                                    floatingKQL.remove();
+                                }
+                            }, 30000);
+                        }
+                    }, 7000); // Every 7 seconds
+                }
+            }
+            
+            // Start AWS-specific effects after theme is applied
+            setTimeout(addAWSFloatingEffects, 1500);
+        });
+    </script>
+</body>
+</html>

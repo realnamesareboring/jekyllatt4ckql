@@ -1,0 +1,103 @@
+let SecurityHub = () { 
+//===================================================================
+// Define base variables and functions
+// Initialize core data sources for SecurityHub findings
+//===================================================================
+    let timeRange = 12h;                              // Look back period
+    let severities = dynamic(["CRITICAL", "HIGH"]);   // Focus on critical and high severity findings
+    let status = dynamic(["FAILED"]);
+//===================================================================
+// Apply heavy filters early to reduce data volume
+//===================================================================
+    let baseFilters = AWSCloudWatch
+        | where TimeGenerated > ago(timeRange)
+        | where isnotempty(Message) 
+        | where Message has "SecurityHub" 
+             or Message has "securityhub" 
+             or Message has "aws.securityhub";
+//===================================================================
+// Extract and clean SecurityHub findings from filtered dataset
+//===================================================================
+    let securityHubFindings = baseFilters
+        | extend CleanMessage = replace_regex(Message, @"^\S+\s", "") 
+        | extend ParsedMessage = parse_json(iif(Message startswith '{', Message, CleanMessage))
+        | where isnotempty(ParsedMessage) 
+        | extend Detail = ParsedMessage.detail
+        | extend FindingsArray = Detail.findings
+        | where isnotempty(FindingsArray)
+        | mv-expand FindingsArray
+        | extend Findings = parse_json(FindingsArray);
+//===================================================================
+// Apply critical filters early on to further reduce dataset
+//===================================================================
+    let criticalFindings = securityHubFindings
+        | extend 
+            ComplianceStatus = tostring(Findings.Compliance.Status),
+            Severity = tostring(Findings.Severity.Label)
+        | where ComplianceStatus in (status)
+        | where Severity in (severities);
+//===================================================================
+// Extract all required fields for filtered findings
+//===================================================================
+    let filteredFindings = criticalFindings
+        | extend 
+            // Basic identification
+            Title = tostring(Findings.Title),
+            Description = tostring(Findings.Description),
+            Region = tostring(coalesce(ParsedMessage.region, extract('"awsRegion":"([^"]+)"', 1, Message))),
+            Account = tostring(coalesce(ParsedMessage.account, extract('"accountId":"([^"]+)"', 1, Message))),
+            // Security classification
+            Product = tostring(Findings.ProductName),
+            FindingId = tostring(Findings.Id),
+            // Resource information
+            ResourceType = tostring(Findings.Resources[0].Type),
+            ResourceId = tostring(Findings.Resources[0].Id),
+            ResourceRegion = tostring(Findings.Resources[0].Region),
+            // Resource tags
+            ResourceTags = Findings.Resources[0].Tags,
+            // Finding metadata
+            FindingType = tostring(Findings.Types[0]),
+            // Remediation guidance
+            RemediationUrl = tostring(Findings.Remediation.Recommendation.Url);
+//===================================================================
+// Extract tags in a single operation to reduce processing
+//===================================================================
+    let tagsExtracted = filteredFindings
+        | extend 
+            EnvironmentTag = tostring(ResourceTags.Environment),
+            ApplicationTag = tostring(ResourceTags.Application),
+            OwnerTag = tostring(ResourceTags.Owner),
+            NameTag = tostring(ResourceTags.Name),
+            CostCenterTag = tostring(ResourceTags.CostCenter),
+            BusinessUnitTag = tostring(ResourceTags["Business-Unit"]),
+            AllTagsJson = tostring(ResourceTags);
+//===================================================================
+// Get most recent occurrence of each unique finding
+//===================================================================
+    tagsExtracted
+        | summarize hint.strategy=shuffle arg_max(TimeGenerated, *) by Account, ResourceId
+        | project  
+            TimeGenerated,
+            FindingType,
+            Title,
+            Description,
+            Severity,
+            ComplianceStatus,
+            FindingId,
+            Account,
+            ResourceType,
+            ResourceId,
+            EnvironmentTag,
+            ApplicationTag,
+            OwnerTag,
+            NameTag,
+            AllTagsJson,
+            CostCenterTag,
+            BusinessUnitTag,
+            ResourceRegion,
+            SecurityHubRegion = Region,
+            SecurityProduct = Product,
+            RemediationUrl
+        | sort by TimeGenerated desc
+};
+SecurityHub()

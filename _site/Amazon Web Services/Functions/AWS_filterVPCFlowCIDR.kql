@@ -1,0 +1,9 @@
+let VPCFlow = () {
+    let trustedIps = dynamic(["IPAddres1", "IPAddress2"]);
+let threatIps = _GetWatchlist('BadguyIPs');
+let trustedCheck = AWSVPCFlow
+        | where not(ipv4_is_in_any_range(SrcAddr, trustedIps)) and not(ipv4_is_in_any_range(DstAddr, trustedIps))
+        | distinct SrcAddr, DstAddr;
+    trustedCheck
+};
+VPCFlow()

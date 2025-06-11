@@ -1,0 +1,9 @@
+let filterCIDR = () {
+    let EventsFiltered = AWSCloudTrail;
+    let trustedIps = dynamic(["IPAddress1", "IPAddress2"]);
+    let EventsFilteredByIP = EventsFiltered
+        | where not(ipv4_is_in_any_range(SourceIpAddress, trustedIps))
+        | distinct SourceIpAddress;
+    EventsFilteredByIP
+};
+filterCIDR()

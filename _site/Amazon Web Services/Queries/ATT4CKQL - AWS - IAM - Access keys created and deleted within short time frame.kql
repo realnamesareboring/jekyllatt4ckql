@@ -1,0 +1,134 @@
+//===================================================================
+// Base Configuration
+// Define core variables and functions needed for access key analysis
+//===================================================================
+let summaries = AWS_generateSummary();      // Get event summaries
+let filteredIPs = AWS_filterCloudTrailCIDR();         // Get filtered IP list
+//===================================================================
+// Primary Event Analysis
+// Capture and analyze access key creation/deletion patterns
+// Materializing for performance and deduplication
+//===================================================================
+let AccessKeyEvents = materialize(
+    AWSCloudTrail
+    // TimeGenerated will look for any access keys created within a specific time window
+    | where TimeGenerated > ago(1h)
+    | where EventName in (
+        'CreateAccessKey', 
+        'DeleteAccessKey'
+    )
+    | where SourceIpAddress in (filteredIPs)
+    | extend 
+        EventTime = TimeGenerated
+    // Group events by key identifiers and calculate timing metrics
+    | summarize
+        FirstEventTime = min(EventTime),
+        LastEventTime = max(EventTime),
+        EventCount = count(),
+        AccessKeyCreated = minif(EventTime, EventName == 'CreateAccessKey'),
+        AccessKeyDeleted = minif(EventTime, EventName == 'DeleteAccessKey')
+        by 
+        UserIdentityAccessKeyId, 
+        UserIdentityArn, 
+        UserAgent, 
+        AWSRegion, 
+        UserIdentityAccountId, 
+        SourceIpAddress
+    // Filter for suspicious rapid creation/deletion patterns within 10 minutes
+    | where FirstEventTime != LastEventTime
+        and EventCount > 1
+        and LastEventTime - FirstEventTime <= 10m
+    | extend 
+        FirstEventName = 'CreateAccessKey', 
+        LastEventName = 'DeleteAccessKey'
+    | distinct *
+);
+//===================================================================
+// Access Key Pattern Analysis
+// Track access key counts and identify primary keys per user
+//===================================================================
+let UserAccessKeys = materialize(
+    AWSCloudTrail
+    | where EventName == 'CreateAccessKey'
+    | summarize
+        AccessKeyCount = dcount(UserIdentityAccessKeyId),
+        PrimaryAccessKey = min(UserIdentityAccessKeyId)
+        by 
+        UserIdentityArn
+    | distinct *
+);
+//===================================================================
+// Combine events with patterns and add context for analysis
+//===================================================================
+AccessKeyEvents
+    // Join with access key patterns
+    | join 
+        kind=inner (UserAccessKeys) on UserIdentityArn
+    // Add risk indicators
+    | extend 
+        IsSecondaryKey = iff(AccessKeyCount > 1, "Yes", "No"),
+        SuspiciousAccessKeyId = strcat("🚨 ", UserIdentityAccessKeyId)
+//===================================================================
+// Descriptive information from summaries for both events
+//===================================================================
+    // Add creation event
+    | join 
+        kind=leftouter (summaries 
+    | distinct 
+        TimeGenerated, 
+        EventName, 
+        UserIdentityArn, 
+        Description, 
+        Summary
+) 
+        on $left.FirstEventName == $right.EventName 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+    | extend 
+        FirstEventDescription = iff(isnull(Description), "", Description)
+    | project-away 
+        Description
+    // Add deletion event
+    | join 
+        kind=leftouter (summaries 
+    | distinct 
+        TimeGenerated, 
+        EventName, 
+        UserIdentityArn, 
+        Description, 
+        Summary
+) 
+        on 
+        $left.LastEventName == $right.EventName 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+    | extend 
+        LastEventDescription = iff(isnull(Description), "", Description)
+    | project-away 
+        Description
+//===================================================================
+// Final Output Formatting
+// Deduplicate and format results for analysis
+//===================================================================
+    | summarize 
+        arg_max(LastEventTime, *) 
+        by 
+        UserIdentityArn, 
+        UserIdentityAccessKeyId
+    | project
+        FirstEventTime,          // Initial key creation
+        FirstEventName,          // Creation event type
+        FirstEventDescription,   // Creation context
+        LastEventTime,           // Key deletion time
+        LastEventName,           // Deletion event type
+        LastEventDescription,    // Deletion context
+        Summary,                 // Event summary
+        Duration = LastEventTime - FirstEventTime,  // Lifetime of key
+        SourceIpAddress,         // Origin of requests
+        UserIdentityAccountId,   // AWS account ID
+        AWSRegion,               // AWS region of activity
+        SuspiciousAccessKeyId,   // Flagged access key
+        UserIdentityArn,         // User ARN
+        UserAgent,               // Client tool used
+        IsSecondaryKey,          // Additional key indicator
+        PrimaryAccessKey         // User's primary key
+    | order by 
+        Duration desc     // Sort by key lifetime

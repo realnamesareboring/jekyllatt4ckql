@@ -1,0 +1,165 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('iam-access-keys-created-deleted-logs')">&times;</span>
+    <h2>AWS IAM Access Keys Created and Deleted within Short Time Frame</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 1 hour | Duration threshold: 10 minutes or less</div>
+        </div>
+        <div class="results-info">5 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>FirstEventTime</th>
+                    <th>FirstEventName</th>
+                    <th>FirstEventDescription</th>
+                    <th>LastEventTime</th>
+                    <th>LastEventName</th>
+                    <th>LastEventDescription</th>
+                    <th>Summary</th>
+                    <th>Duration</th>
+                    <th>SourceIpAddress</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>AWSRegion</th>
+                    <th>SuspiciousAccessKeyId</th>
+                    <th>UserIdentityArn</th>
+                    <th>UserAgent</th>
+                    <th>IsSecondaryKey</th>
+                    <th>PrimaryAccessKey</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:45:22.123Z</td>
+                    <td>CreateAccessKey</td>
+                    <td>User created a new access key</td>
+                    <td class="log-timestamp">2025-05-15T14:48:45.321Z</td>
+                    <td>DeleteAccessKey</td>
+                    <td>User deleted an access key</td>
+                    <td>Access key was created and deleted within a short time frame</td>
+                    <td class="highlight-cell">00:03:23</td>
+                    <td>203.0.113.42</td>
+                    <td>123456789012</td>
+                    <td>us-east-1</td>
+                    <td class="highlight-cell">🚨 AKIA1EXAMPLE2EXAMPLE</td>
+                    <td>arn:aws:iam::123456789012:user/developer</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                    <td>Yes</td>
+                    <td>AKIA1EXAMPLE1EXAMPLE</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:32:11.456Z</td>
+                    <td>CreateAccessKey</td>
+                    <td>User created a new access key</td>
+                    <td class="log-timestamp">2025-05-15T14:37:33.789Z</td>
+                    <td>DeleteAccessKey</td>
+                    <td>User deleted an access key</td>
+                    <td>Access key was created and deleted within a short time frame</td>
+                    <td class="highlight-cell">00:05:22</td>
+                    <td>198.51.100.23</td>
+                    <td>123456789012</td>
+                    <td>us-west-2</td>
+                    <td class="highlight-cell">🚨 AKIA2EXAMPLE3EXAMPLE</td>
+                    <td>arn:aws:iam::123456789012:user/admin</td>
+                    <td>console.amazonaws.com</td>
+                    <td>Yes</td>
+                    <td>AKIA2EXAMPLE4EXAMPLE</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:15:45.678Z</td>
+                    <td>CreateAccessKey</td>
+                    <td>User created a new access key</td>
+                    <td class="log-timestamp">2025-05-15T14:17:32.901Z</td>
+                    <td>DeleteAccessKey</td>
+                    <td>User deleted an access key</td>
+                    <td>Access key was created and deleted within a short time frame from known malicious IP</td>
+                    <td class="highlight-cell">00:01:47</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>123456789012</td>
+                    <td>eu-west-1</td>
+                    <td class="highlight-cell">🚨 AKIA3EXAMPLE5EXAMPLE</td>
+                    <td>arn:aws:iam::123456789012:user/database-admin</td>
+                    <td>aws-cli/2.12.0 Python/3.9.16</td>
+                    <td>Yes</td>
+                    <td>AKIA3EXAMPLE6EXAMPLE</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:08:36.234Z</td>
+                    <td>CreateAccessKey</td>
+                    <td>User created a new access key</td>
+                    <td class="log-timestamp">2025-05-15T14:16:12.567Z</td>
+                    <td>DeleteAccessKey</td>
+                    <td>User deleted an access key</td>
+                    <td>Access key was created and deleted within a short time frame</td>
+                    <td class="highlight-cell">00:07:36</td>
+                    <td>10.0.12.45</td>
+                    <td>123456789012</td>
+                    <td>us-east-2</td>
+                    <td class="highlight-cell">🚨 AKIA4EXAMPLE7EXAMPLE</td>
+                    <td>arn:aws:iam::123456789012:user/security-admin</td>
+                    <td>boto3/1.28.15 Python/3.10.12</td>
+                    <td>Yes</td>
+                    <td>AKIA4EXAMPLE8EXAMPLE</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:57:21.123Z</td>
+                    <td>CreateAccessKey</td>
+                    <td>User created a new access key</td>
+                    <td class="log-timestamp">2025-05-15T14:01:48.456Z</td>
+                    <td>DeleteAccessKey</td>
+                    <td>User deleted an access key</td>
+                    <td>Access key was created and deleted within a short time frame</td>
+                    <td class="highlight-cell">00:04:27</td>
+                    <td>192.168.10.23</td>
+                    <td>234567890123</td>
+                    <td>eu-central-1</td>
+                    <td class="highlight-cell">🚨 AKIA5EXAMPLE9EXAMPLE</td>
+                    <td>arn:aws:iam::234567890123:role/DevOpsRole</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                    <td>Yes</td>
+                    <td>AKIA5EXAMPLE0EXAMPLE</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies IAM access keys that are created and then quickly deleted within a short time frame (10 minutes or less). This pattern is often associated with attackers who create temporary access keys to perform malicious actions, then delete them to cover their tracks.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>Duration</code> between creation and deletion is very short (only a few minutes)</li>
+        <li>The <code>IsSecondaryKey</code> field indicates these are additional keys beyond the user's primary key, which is against security best practices</li>
+        <li>The <code>SuspiciousAccessKeyId</code> is flagged with a warning symbol (🚨) to highlight the suspicious key</li>
+        <li>The creation and deletion events originate from the same source IP address</li>
+        <li>Some source IPs may match known malicious addresses from threat intelligence feeds</li>
+        <li>Different user agents (CLI, console, SDK) show various access methods</li>
+        <li>Users with elevated privileges (admin, security-admin, database-admin) are particularly concerning</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Credential Access (TA0006)</strong><br>T1528 - Steal Application Access Token</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1070 - Indicator Removal on Host</li>
+        <li><strong>Persistence (TA0003)</strong><br>T1098.001 - Account Manipulation: Additional Cloud Credentials</li>
+        <li><strong>Initial Access (TA0001)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Immediately investigate all AWS activities performed with the suspicious access key during its short lifespan</li>
+        <li>Check CloudTrail logs for other suspicious actions from the same source IP address or user identity</li>
+        <li>Examine the IAM user account for signs of compromise or unauthorized access</li>
+        <li>Pay special attention to privileged users (admin roles) as they represent higher risk</li>
+        <li>Consider temporarily restricting the user's privileges until the investigation is complete</li>
+        <li>If compromise is confirmed, rotate all credentials for the affected user</li>
+        <li>Review IAM policies to implement stricter controls on access key creation</li>
+        <li>Consider implementing automated controls to limit the number of active access keys per user</li>
+        <li>Enable CloudTrail logging for all CreateAccessKey and DeleteAccessKey events</li>
+        <li>Implement real-time alerting for rapid access key creation and deletion patterns</li>
+    </ul>
+</div>

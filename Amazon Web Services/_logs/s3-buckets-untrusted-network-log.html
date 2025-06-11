@@ -1,0 +1,213 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('s3-buckets-untrusted-network-logs')">&times;</span>
+    <h2>AWS S3 Buckets Accessed from Untrusted Network</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | IP Source: Untrusted Networks & Known Malicious IPs</div>
+        </div>
+        <div class="results-info">7 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>ErrorCode</th>
+                    <th>EventName</th>
+                    <th>Description</th>
+                    <th>Summary</th>
+                    <th>BucketResource</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>AWSRegion</th>
+                    <th>SourceIpAddress</th>
+                    <th>UserIdentityAccessKeyId</th>
+                    <th>UserIdentityPrincipalid</th>
+                    <th>UserIdentityUserName</th>
+                    <th>UserIdentityArn</th>
+                    <th>UserIdentityType</th>
+                    <th>ARN</th>
+                    <th>UserAgent</th>
+                    <th>EventSource</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:57:32.123Z</td>
+                    <td></td>
+                    <td class="highlight-cell">GetObject</td>
+                    <td>S3 object retrieved from known malicious IP address</td>
+                    <td>User accessed S3 object from suspicious location</td>
+                    <td>financial-reports-prod</td>
+                    <td>123456789012</td>
+                    <td>us-east-1</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>AKIA1EXAMPLE123456789</td>
+                    <td>AIDA1EXAMPLE123456789</td>
+                    <td>finance-analyst</td>
+                    <td>arn:aws:iam::123456789012:user/finance-analyst</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::financial-reports-prod/quarterly/Q1-2025-report.pdf</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:42:19.456Z</td>
+                    <td class="highlight-cell">🚨 AccessDenied</td>
+                    <td class="highlight-cell">ListBucket</td>
+                    <td>Access denied while listing S3 bucket from untrusted network</td>
+                    <td>Failed attempt to list bucket contents from suspicious location</td>
+                    <td>customer-data-prod</td>
+                    <td>123456789012</td>
+                    <td>us-east-1</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td>AKIA2EXAMPLE987654321</td>
+                    <td>AIDA2EXAMPLE987654321</td>
+                    <td>marketing-user</td>
+                    <td>arn:aws:iam::123456789012:user/marketing-user</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::customer-data-prod</td>
+                    <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:35:48.789Z</td>
+                    <td></td>
+                    <td class="highlight-cell">ListBucket</td>
+                    <td>S3 bucket enumeration from known malicious IP address</td>
+                    <td>User enumerated S3 buckets from suspicious location</td>
+                    <td>web-assets-prod</td>
+                    <td>123456789012</td>
+                    <td>us-west-2</td>
+                    <td class="highlight-cell">45.227.253.98</td>
+                    <td>AKIA3EXAMPLE135792468</td>
+                    <td>AIDA3EXAMPLE135792468</td>
+                    <td>web-developer</td>
+                    <td>arn:aws:iam::123456789012:user/web-developer</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::web-assets-prod</td>
+                    <td>boto3/1.28.15 Python/3.10.12</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:24:37.321Z</td>
+                    <td></td>
+                    <td class="highlight-cell">CopyObject</td>
+                    <td>S3 object copied within bucket from untrusted network</td>
+                    <td>User copied object within S3 bucket from suspicious location</td>
+                    <td>data-backup-prod</td>
+                    <td>123456789012</td>
+                    <td>eu-west-1</td>
+                    <td class="highlight-cell">203.0.113.42</td>
+                    <td>AKIA4EXAMPLE246813579</td>
+                    <td>AIDA4EXAMPLE246813579</td>
+                    <td>backup-admin</td>
+                    <td>arn:aws:iam::123456789012:user/backup-admin</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::data-backup-prod/database/mysql-dump-2025-05-15.sql</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:17:52.654Z</td>
+                    <td class="highlight-cell">🚨 AccessDenied</td>
+                    <td class="highlight-cell">PutBucketPolicy</td>
+                    <td>Failed attempt to modify S3 bucket policy from known malicious IP</td>
+                    <td>User attempted to modify bucket policy from suspicious location</td>
+                    <td>cloudtrail-logs-central</td>
+                    <td>123456789012</td>
+                    <td>us-east-2</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>AKIA5EXAMPLE357924681</td>
+                    <td>AIDA5EXAMPLE357924681</td>
+                    <td>security-analyst</td>
+                    <td>arn:aws:iam::123456789012:user/security-analyst</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::cloudtrail-logs-central</td>
+                    <td>console.amazonaws.com</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:58:23.987Z</td>
+                    <td></td>
+                    <td class="highlight-cell">RestoreObject</td>
+                    <td>S3 object restoration initiated from untrusted network</td>
+                    <td>User initiated restore of archived S3 object from suspicious location</td>
+                    <td>legal-documents-archive</td>
+                    <td>123456789012</td>
+                    <td>us-east-1</td>
+                    <td class="highlight-cell">198.51.100.23</td>
+                    <td>AKIA6EXAMPLE468135792</td>
+                    <td>AIDA6EXAMPLE468135792</td>
+                    <td>legal-admin</td>
+                    <td>arn:aws:iam::123456789012:user/legal-admin</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::legal-documents-archive/contracts/2024/vendor-agreement.pdf</td>
+                    <td>aws-cli/2.13.10 Python/3.11.5</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:42:09.456Z</td>
+                    <td></td>
+                    <td class="highlight-cell">GetBucketAcl</td>
+                    <td>S3 bucket ACL retrieved from untrusted network</td>
+                    <td>User retrieved bucket permissions from suspicious location</td>
+                    <td>hr-documents-confidential</td>
+                    <td>123456789012</td>
+                    <td>eu-central-1</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td>AKIA7EXAMPLE579246813</td>
+                    <td>AIDA7EXAMPLE579246813</td>
+                    <td>hr-manager</td>
+                    <td>arn:aws:iam::123456789012:user/hr-manager</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:s3:::hr-documents-confidential</td>
+                    <td>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies S3 bucket operations performed from untrusted IP addresses and known malicious IP addresses (from threat intelligence feeds). It monitors for potentially unauthorized access to sensitive data, reconnaissance activities, or attempts to modify bucket configurations.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>SourceIpAddress</code> field shows IPs that match entries in the untrusted networks list or the <code>badguyIPs</code> watchlist</li>
+        <li>Both successful operations and failed attempts (<code>AccessDenied</code> errors) are captured, as failed attempts may indicate reconnaissance</li>
+        <li>A variety of S3 operations are monitored, including:</li>
+        <ul>
+            <li>Data access: <code>GetObject</code>, <code>ListBucket</code></li>
+            <li>Data manipulation: <code>CopyObject</code>, <code>RestoreObject</code></li>
+            <li>Permission probing: <code>GetBucketAcl</code></li>
+            <li>Configuration changes: <code>PutBucketPolicy</code></li>
+        </ul>
+        <li>The <code>BucketResource</code> and <code>ARN</code> fields show which buckets and objects were targeted</li>
+        <li>Access to sensitive buckets (financial reports, customer data, HR documents) is highlighted</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Discovery (TA0007)</strong><br>T1619 - Cloud Storage Object Discovery</li>
+        <li><strong>Collection (TA0009)</strong><br>T1530 - Data from Cloud Storage</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1562.008 - Impair Defenses: Disable Cloud Logs</li>
+        <li><strong>Exfiltration (TA0010)</strong><br>T1537 - Transfer Data to Cloud Account</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Verify if the access from these IP addresses is authorized (e.g., remote employees, contractors)</li>
+        <li>For known malicious IPs, immediately investigate as these likely represent unauthorized access</li>
+        <li>Review what specific data was accessed and assess its sensitivity</li>
+        <li>Look for patterns of bucket enumeration that might indicate reconnaissance</li>
+        <li>Pay special attention to failed attempts to modify bucket policies or ACLs</li>
+        <li>Consider implementing temporary IP restrictions for affected buckets</li>
+        <li>Review IAM access policies and consider implementing stricter controls</li>
+        <li>Enable S3 object-level logging for more detailed visibility</li>
+        <li>Check for additional suspicious activity from the same IAM identities</li>
+        <li>For compromised credentials, rotate keys and review all recent activity</li>
+    </ul>
+</div>

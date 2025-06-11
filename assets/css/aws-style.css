@@ -1,0 +1,949 @@
+/* Azure Log Analytics Theme Variables */
+:root {
+    /* Azure Primary Colors */
+    --azure-primary: #0078d4;
+    --azure-primary-dark: #106ebe;
+    --azure-secondary: #005a9e;
+    --azure-bg: #faf9f8;
+    --azure-surface: #ffffff;
+    --azure-border: #edebe9;
+    --azure-border-light: #f3f2f1;
+    --azure-text: #323130;
+    --azure-text-secondary: #605e5c;
+    --azure-text-light: #8a8886;
+    --azure-hover: #f3f2f1;
+    --azure-selected: #deecf9;
+    --azure-error: #d13438;
+    --azure-warning: #ff8c00;
+    --azure-success: #107c10;
+    --azure-info: #0078d4;
+    
+    /* Legacy variables for compatibility */
+    --primary-color: #0078d4;
+    --primary-gradient-start: #0078d4;
+    --primary-gradient-end: #004e8c;
+    --highlight-color: #e6f7e6;
+    --highlight-color-mid: #b3e6b3;
+    --tag-yes-bg: #e6f7e6;
+    --tag-yes-color: #107c10;
+    --tag-no-bg: #fde7e9;
+    --tag-no-color: #d13438;
+    --table-header-bg: #f8f9fa;
+    --table-hover-bg: #f3f2f1;
+    --github-bg: #24292e;
+    --github-hover-bg: #1a1e22;
+}
+
+/* Attacker theme variables */
+.theme-attacker {
+    --primary-color: #d40000;
+    --primary-gradient-start: #d40000;
+    --primary-gradient-end: #8c0000;
+    --highlight-color: #ffe6e6;
+    --highlight-color-mid: #ffb3b3;
+    --tag-yes-bg: #ffe6e6;
+    --tag-yes-color: #7c1010;
+    --tag-no-bg: #e7fdfd;
+    --tag-no-color: #13d4d4;
+    --table-header-bg: #fff0f0;
+    --table-hover-bg: #fff5f5;
+    --github-bg: #2e2424;
+    --github-hover-bg: #221a1a;
+    --azure-primary: #d40000;
+    --azure-primary-dark: #8c0000;
+    --azure-bg: #1a1a1a;
+    --azure-surface: #2d2d2d;
+    --azure-border: #444444;
+    --azure-text: #f0f0f0;
+    --azure-text-secondary: #cccccc;
+    --azure-hover: #404040;
+}
+
+/* Global Styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+    line-height: 1.4;
+    color: var(--azure-text);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--azure-bg);
+    transition: all 0.5s ease;
+    font-size: 14px;
+}
+
+body.theme-attacker {
+    background-color: var(--azure-bg);
+    color: var(--azure-text);
+}
+
+h1 {
+    color: var(--azure-primary);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Container Styles */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Table Container */
+.table-container {
+    background: var(--azure-surface);
+    border: 1px solid var(--azure-border);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin: 20px 0;
+}
+
+.table-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--azure-border);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--azure-text);
+}
+
+.results-count {
+    font-size: 13px;
+    color: var(--azure-text-secondary);
+    background: var(--azure-selected);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--azure-surface);
+    margin: 0;
+}
+
+body.theme-attacker table {
+    background-color: var(--azure-surface);
+}
+
+th {
+    background: #f8f9fa;
+    color: var(--azure-text);
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--azure-border);
+    border-right: 1px solid var(--azure-border-light);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+th:last-child {
+    border-right: none;
+}
+
+th:hover {
+    background: #f3f2f1;
+    cursor: pointer;
+}
+
+td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--azure-border-light);
+    border-right: 1px solid var(--azure-border-light);
+    vertical-align: top;
+    font-size: 13px;
+}
+
+td:last-child {
+    border-right: none;
+}
+
+body.theme-attacker td {
+    border-bottom: 1px solid var(--azure-border);
+}
+
+tr:hover {
+    background-color: var(--azure-hover);
+}
+
+tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+body.theme-attacker tr:nth-child(even) {
+    background-color: #363636;
+}
+
+tr:nth-child(even):hover {
+    background-color: var(--azure-hover);
+}
+
+/* Detection row styling */
+.detection-row {
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.detection-row:hover {
+    background-color: var(--azure-hover);
+    border-left-color: var(--azure-primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Detection name cell styling */
+.detection-name-cell {
+    min-width: 280px;
+    padding: 16px !important;
+}
+
+.detection-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.detection-title strong {
+    color: var(--azure-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.detection-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detection-timestamp {
+    font-size: 11px;
+    color: var(--azure-text-light);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.detection-count {
+    font-size: 11px;
+    color: var(--azure-primary);
+    font-weight: 500;
+}
+
+/* Severity indicators */
+.severity-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.severity-indicator.severity-high {
+    background-color: var(--azure-error);
+    box-shadow: 0 0 0 2px rgba(209, 52, 56, 0.2);
+}
+
+.severity-indicator.severity-medium {
+    background-color: var(--azure-warning);
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+}
+
+.severity-indicator.severity-low {
+    background-color: var(--azure-info);
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.severity-high {
+    color: var(--azure-error);
+    font-weight: 600;
+    background: #fef2f2;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.severity-medium {
+    color: var(--azure-warning);
+    font-weight: 600;
+    background: #fff3cd;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.severity-low {
+    color: var(--azure-info);
+    font-weight: 600;
+    background: #f0f6ff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+/* MITRE ATT&CK styling */
+.mitre-tactic {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--azure-error);
+    font-size: 14px;
+}
+
+.mitre-technique {
+    margin-left: 16px;
+    display: block;
+    color: var(--azure-text-secondary);
+    font-size: 12px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Button styling */
+.view-logs-btn, .azure-btn {
+    background: linear-gradient(135deg, var(--azure-primary) 0%, var(--azure-primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin: 2px;
+    box-shadow: 0 2px 4px rgba(0, 120, 212, 0.2);
+}
+
+.view-logs-btn:hover, .azure-btn:hover {
+    background: linear-gradient(135deg, var(--azure-primary-dark) 0%, var(--azure-secondary) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 120, 212, 0.3);
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: var(--azure-surface);
+    margin: 1% auto;
+    width: 95%;
+    max-width: 1200px;
+    border-radius: 8px;
+    position: relative;
+    max-height: 95vh;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    border: 1px solid var(--azure-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: var(--azure-text-secondary);
+    background-color: var(--azure-surface);
+    border-radius: 8px;
+    margin: 50px auto;
+    max-width: 800px;
+}
+
+body.theme-attacker .modal-content {
+    background-color: var(--azure-surface);
+    color: var(--azure-text);
+}
+
+.modal-header {
+    background: var(--azure-surface);
+    border-bottom: 1px solid var(--azure-border);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--azure-text);
+}
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 30;
+    color: var(--azure-text-light);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--azure-border);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.close-btn:hover {
+    background: var(--azure-error);
+    color: white;
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+body.theme-attacker .close-btn {
+    background: rgba(45, 45, 45, 0.9);
+    border-color: var(--azure-border);
+    color: var(--azure-text-light);
+}
+
+body.theme-attacker .close-btn:hover {
+    background: var(--azure-error);
+    color: white;
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
+    max-height: calc(95vh - 100px);
+}
+
+/* Azure Log Analytics Style */
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 800px;
+}
+
+.log-table th {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-bottom: 1px solid var(--azure-border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.log-table .highlight-cell {
+    background-color: #fef2f2;
+    color: var(--azure-error);
+    font-weight: 600;
+}
+
+.log-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--azure-border-light);
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+body.theme-attacker .log-table td {
+    border: 1px solid var(--azure-border);
+}
+
+.log-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+body.theme-attacker .log-table tr:nth-child(even) {
+    background-color: #363636;
+}
+
+.log-table tr:hover {
+    background-color: var(--azure-hover);
+}
+
+.highlight-cell {
+    background-color: #fef2f2;
+    color: var(--azure-error);
+    font-weight: 600;
+}
+
+/* Timestamp styling */
+.log-timestamp {
+    color: var(--azure-text-secondary);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+body.theme-attacker .log-timestamp {
+    color: var(--azure-text-secondary);
+}
+
+.action-type {
+    font-weight: 600;
+}
+
+/* Log container and table wrapper improvements */
+.log-container {
+    margin: 20px 0;
+    overflow: hidden;
+    width: 100%;
+    background-color: var(--azure-surface);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--azure-border);
+}
+
+body.theme-attacker .log-container {
+    border: 1px solid var(--azure-border);
+}
+
+/* Table wrapper for horizontal scrolling */
+.table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid var(--azure-border);
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Ensure modal body scrolls properly */
+.modal-body::-webkit-scrollbar {
+    width: 12px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Force content to respect modal boundaries */
+.modal-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.modal-content .explanation,
+.modal-content .query-container,
+.modal-content .log-container {
+    margin-bottom: 20px;
+}
+
+/* Log header styling */
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    background: var(--azure-surface);
+    border-bottom: 1px solid var(--azure-border);
+    padding: 16px 24px;
+}
+
+body.theme-attacker .log-header {
+    background-color: var(--azure-surface);
+    border-bottom: 1px solid var(--azure-border);
+}
+
+.log-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--azure-text);
+}
+
+body.theme-attacker .log-title {
+    color: var(--azure-text);
+}
+
+.query-info {
+    font-size: 13px;
+    color: var(--azure-text-secondary);
+    margin-top: 4px;
+}
+
+body.theme-attacker .query-info {
+    color: var(--azure-text-secondary);
+}
+
+.results-info {
+    padding: 6px 12px;
+    background-color: var(--azure-selected);
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--azure-primary);
+    border: 1px solid rgba(0, 120, 212, 0.2);
+}
+
+/* Query container styling */
+.query-container {
+    background-color: #1e1e1e;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-attacker .query-container {
+    background-color: #2d2d2d;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.query-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #2d2d30 0%, #1e1e1e 100%);
+    padding: 12px 16px;
+    border-bottom: 1px solid #444;
+}
+
+.query-title {
+    color: #e1e1e1;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.query-title::before {
+    content: ">";
+    margin-right: 8px;
+    color: var(--azure-primary);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.query-code {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+body.theme-attacker .query-code {
+    background-color: #333;
+}
+
+.kql-comment {
+    color: #008000;
+}
+
+body.theme-attacker .kql-comment {
+    color: #6A9955;
+}
+
+.kql-operator {
+    color: #0000ff;
+}
+
+body.theme-attacker .kql-operator {
+    color: #569cd6;
+}
+
+.kql-function {
+    color: #795e26;
+}
+
+body.theme-attacker .kql-function {
+    color: #dcdcaa;
+}
+
+.kql-string {
+    color: #a31515;
+}
+
+body.theme-attacker .kql-string {
+    color: #ce9178;
+}
+
+.azure-tab {
+    background-color: var(--table-header-bg);
+    border-bottom: 3px solid var(--primary-color);
+    padding: 8px 16px;
+    display: inline-block;
+    margin-right: 2px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Copy button styling */
+.copy-btn {
+    padding: 6px 12px;
+    background-color: var(--azure-primary);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background-color: var(--azure-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.theme-attacker .copy-btn {
+    background-color: var(--primary-color);
+}
+
+.theme-attacker .copy-btn:hover {
+    background-color: var(--primary-gradient-end);
+}
+
+/* Code block styling */
+.code-block {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    margin: 0;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Theme toggle button styles */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 101;
+}
+
+.theme-toggle:hover {
+    transform: rotate(180deg);
+}
+
+/* Navigation link back to home */
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-gradient-end);
+}
+
+.nav-link svg {
+    margin-right: 5px;
+}
+
+/* Content styling */
+.modal-content h3 {
+    color: var(--azure-primary);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 24px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--azure-primary);
+}
+
+.modal-content h4 {
+    color: var(--azure-text);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 16px 0 8px 0;
+}
+
+.modal-content p {
+    color: var(--azure-text-secondary);
+    line-height: 1.5;
+    margin: 8px 0;
+}
+
+.modal-content ul {
+    color: var(--azure-text-secondary);
+    padding-left: 20px;
+}
+
+.modal-content li {
+    margin: 4px 0;
+    line-height: 1.4;
+}
+
+.modal-content code {
+    background: #f8f9fa;
+    color: var(--azure-error);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.explanation {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--azure-border);
+}
+
+.explanation h3 {
+    color: var(--azure-primary);
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.explanation ul {
+    padding-left: 20px;
+}
+
+.explanation li {
+    margin: 4px 0;
+    color: var(--azure-text-secondary);
+}
+
+.explanation code {
+    background: #f8f9fa;
+    color: var(--azure-error);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+}
+
+/* Loading states */
+.modal-loading::before {
+    content: "⏳";
+    display: block;
+    font-size: 32px;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+    
+    .modal-content {
+        width: 98%;
+        margin: 1% auto;
+    }
+    
+    .log-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .log-table {
+        font-size: 11px;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 6px 8px;
+    }
+    
+    .query-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+}

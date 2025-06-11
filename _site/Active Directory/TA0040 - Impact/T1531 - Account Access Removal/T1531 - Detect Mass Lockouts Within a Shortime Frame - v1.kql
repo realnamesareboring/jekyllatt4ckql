@@ -1,0 +1,13 @@
+let LockoutDetails = SecurityEvent
+| where TimeGenerated >= ago(20m)
+| where EventID == "4740" and Activity == "4740 - A user account was locked out."
+| extend SourceHost = TargetDomainName
+| extend DestinationHost = Computer
+| summarize LockoutCount = count() by TimeGenerated, EventID, TargetUserName, SourceHost, DestinationHost
+| where LockoutCount < 10
+| project TimeGenerated, EventID, TargetUserName, SourceHost, DestinationHost;
+let TotalLockouts = SecurityEvent
+| where TimeGenerated >= ago(20m)
+| where EventID == "4740" and Activity == "4740 - A user account was locked out."
+| summarize TotalLockoutCount = count();
+union LockoutDetails, TotalLockouts

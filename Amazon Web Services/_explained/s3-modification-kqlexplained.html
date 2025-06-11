@@ -1,0 +1,219 @@
+<div id="s3-modification-kqlexplained" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query identifies S3 bucket operations (creation, access, and deletion) performed from untrusted network locations. It monitors for successful bucket and object manipulations that could indicate unauthorized access, data exfiltration, or malicious actions against S3 resources from external or suspicious sources.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This detection query operates through several focused stages:</p>
+    <ol>
+        <li>
+            <strong>Network Trust Assessment:</strong>
+            <ul>
+                <li>Leverages the <code>AWS_filterCloudTrailCIDR()</code> function to identify untrusted IP addresses</li>
+                <li>Filters events originating from IP addresses outside organizational network ranges</li>
+                <li>Focuses on external sources that may indicate unauthorized access</li>
+                <li>Enables detection of access from compromised or malicious networks</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Success-Based Event Filtering:</strong>
+            <ul>
+                <li>Specifically targets completed operations by filtering out events with error codes</li>
+                <li>Focuses on successful actions rather than failed attempts</li>
+                <li>Ensures detection of actual data access, not just reconnaissance</li>
+                <li>Captures events where attackers had sufficient permissions</li>
+            </ul>
+        </li>
+        <li>
+            <strong>S3 Operation Monitoring (1-hour window):</strong>
+            <ul>
+                <li>Monitors critical S3 operations: <code>DeleteBucket</code>, <code>CreateBucket</code></li>
+                <li>Tracks object-level operations: <code>PutObject</code>, <code>DeleteObject</code>, <code>GetObject</code></li>
+                <li>Focuses on recent activity for rapid incident response</li>
+                <li>Enables real-time detection of ongoing attacks</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Content and Context Extraction:</strong>
+            <ul>
+                <li>Extracts specific bucket names and object keys from requests</li>
+                <li>Captures user identity information for attribution</li>
+                <li>Records authentication details including MFA status</li>
+                <li>Preserves user agent information for tool identification</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Summary Integration:</strong>
+            <ul>
+                <li>Joins with AWS summary data for enriched context</li>
+                <li>Provides additional event descriptions and business context</li>
+                <li>Enhances analyst understanding of the detected activity</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>EventName:</strong> The specific S3 operation performed (CreateBucket, DeleteBucket, PutObject, GetObject, DeleteObject)</li>
+        <li><strong>BucketName:</strong> The target S3 bucket identifier</li>
+        <li><strong>ObjectKey:</strong> Specific object within the bucket (for object-level operations)</li>
+        <li><strong>SourceIpAddress:</strong> The external/untrusted IP address originating the request</li>
+        <li><strong>UserIdentityArn:</strong> The IAM user or role that performed the action</li>
+        <li><strong>UserIdentityUserName:</strong> The specific username (for IAM users)</li>
+        <li><strong>SessionMfaAuthenticated:</strong> Whether multi-factor authentication was used</li>
+        <li><strong>UserAgent:</strong> The tool or application used to make the request</li>
+        <li><strong>AWSRegion:</strong> The AWS region where the operation occurred</li>
+        <li><strong>UserIdentityType:</strong> The type of principal (IAMUser, AssumedRole, etc.)</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Data Access Control:</strong> S3 buckets often contain sensitive organizational data</li>
+        <li><strong>External Access Risk:</strong> Operations from untrusted networks increase risk of unauthorized access</li>
+        <li><strong>Data Integrity Threats:</strong> Object creation/deletion could indicate tampering or destruction</li>
+        <li><strong>Exfiltration Detection:</strong> GetObject operations may indicate data theft attempts</li>
+        <li><strong>Infrastructure Manipulation:</strong> Bucket creation/deletion affects organizational resources</li>
+        <li><strong>Authentication Bypass:</strong> Operations without MFA from external sources are high-risk</li>
+    </ul>
+    
+    <h4>Operation-Specific Risks</h4>
+    <p>Each monitored operation presents distinct security concerns:</p>
+    <ul>
+        <li><strong>GetObject (Data Exfiltration):</strong>
+            <ul>
+                <li>Indicates potential unauthorized data access or theft</li>
+                <li>Particularly concerning for sensitive files (customer data, credentials, etc.)</li>
+                <li>May be precursor to broader data exfiltration campaign</li>
+                <li>ObjectKey field shows exactly what data was accessed</li>
+            </ul>
+        </li>
+        <li><strong>PutObject (Data Injection/Corruption):</strong>
+            <ul>
+                <li>Could indicate malicious file uploads or data corruption</li>
+                <li>May involve uploading malware, web shells, or malicious content</li>
+                <li>Can be used to overwrite legitimate files with malicious versions</li>
+                <li>Potential for supply chain attacks through modified objects</li>
+            </ul>
+        </li>
+        <li><strong>DeleteObject (Data Destruction):</strong>
+            <ul>
+                <li>May indicate attempted data destruction or covering tracks</li>
+                <li>Could be part of ransomware or destructive attack campaigns</li>
+                <li>Loss of business-critical data or backups</li>
+                <li>May violate compliance retention requirements</li>
+            </ul>
+        </li>
+        <li><strong>CreateBucket (Infrastructure Expansion):</strong>
+            <ul>
+                <li>May indicate establishing new exfiltration staging areas</li>
+                <li>Could be used to create misleading or honeypot resources</li>
+                <li>Potential for unauthorized cost generation</li>
+                <li>May violate organizational naming conventions</li>
+            </ul>
+        </li>
+        <li><strong>DeleteBucket (Infrastructure Destruction):</strong>
+            <ul>
+                <li>High-impact operation that removes entire data repositories</li>
+                <li>May indicate cleanup after successful exfiltration</li>
+                <li>Could cause significant business disruption</li>
+                <li>Permanent loss if versioning/backups not enabled</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Attack Scenarios</h4>
+    <p>This detection helps identify various attack patterns:</p>
+    <ul>
+        <li><strong>Compromised Credentials:</strong> Stolen AWS credentials used from attacker infrastructure</li>
+        <li><strong>Insider Threats:</strong> Employees accessing data from personal/unauthorized networks</li>
+        <li><strong>Supply Chain Attacks:</strong> Third-party compromise leading to data access</li>
+        <li><strong>Ransomware Operations:</strong> Data exfiltration followed by destruction</li>
+        <li><strong>Espionage Activities:</strong> Targeted data theft from specific buckets</li>
+        <li><strong>Resource Hijacking:</strong> Unauthorized use of S3 resources for malicious purposes</li>
+    </ul>
+    
+    <h4>Response Actions</h4>
+    <p>When this detection triggers, prioritize these response actions:</p>
+    <ol>
+        <li><strong>Immediate Containment:</strong>
+            <ul>
+                <li>Verify if the access was authorized from the external IP address</li>
+                <li>Check if user is traveling or working remotely from that location</li>
+                <li>For unauthorized access, implement temporary IP-based restrictions</li>
+                <li>Consider temporarily suspending affected IAM credentials</li>
+            </ul>
+        </li>
+        <li><strong>Impact Assessment:</strong>
+            <ul>
+                <li>Determine the sensitivity of accessed buckets and objects</li>
+                <li>For GetObject: Assess what data may have been exfiltrated</li>
+                <li>For PutObject: Scan uploaded content for malware or threats</li>
+                <li>For deletions: Assess data loss and restoration requirements</li>
+                <li>Review bucket policies and access permissions</li>
+            </ul>
+        </li>
+        <li><strong>Forensic Investigation:</strong>
+            <ul>
+                <li>Analyze the complete timeline of activities from the source IP</li>
+                <li>Check for other suspicious activities by the same IAM identity</li>
+                <li>Review CloudTrail logs for related API calls and services</li>
+                <li>Correlate with VPC Flow Logs if applicable</li>
+                <li>Examine user agent strings for unusual tools or automation</li>
+            </ul>
+        </li>
+        <li><strong>Recovery and Hardening:</strong>
+            <ul>
+                <li>Restore deleted data from backups if necessary</li>
+                <li>Rotate compromised credentials and access keys</li>
+                <li>Implement stricter bucket policies and IAM permissions</li>
+                <li>Enable S3 object-level logging for detailed monitoring</li>
+                <li>Consider implementing S3 Block Public Access settings</li>
+                <li>Enable MFA requirements for sensitive S3 operations</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Detection Tuning</h4>
+    <p>Organizations should customize this query based on their environment:</p>
+    <ul>
+        <li><strong>Time Window Adjustment:</strong> Modify the 1-hour window based on response capabilities</li>
+        <li><strong>IP Address Filtering:</strong> Fine-tune the untrusted IP definition for your organization</li>
+        <li><strong>Bucket Prioritization:</strong> Focus on buckets containing sensitive or critical data</li>
+        <li><strong>User Exclusions:</strong> Filter out known service accounts or automation users</li>
+        <li><strong>MFA Requirements:</strong> Flag operations without MFA more severely</li>
+        <li><strong>Geographic Analysis:</strong> Add geolocation context to source IP addresses</li>
+        <li><strong>Operation Weighting:</strong> Prioritize certain operations based on business impact</li>
+    </ul>
+    
+    <h4>Integration with Other Detections</h4>
+    <p>This detection works effectively with:</p>
+    <ul>
+        <li><strong>VPC Flow Logs:</strong> Correlate network traffic patterns with S3 access</li>
+        <li><strong>GuardDuty Findings:</strong> Cross-reference with behavioral anomaly detections</li>
+        <li><strong>IAM Activity Monitoring:</strong> Track all activities by flagged identities</li>
+        <li><strong>Data Loss Prevention (DLP):</strong> Monitor for sensitive data patterns in uploaded objects</li>
+        <li><strong>Network Security Groups:</strong> Verify if access should be restricted at network level</li>
+        <li><strong>CloudFormation/CDK Monitoring:</strong> Track infrastructure changes that might affect S3 access</li>
+    </ul>
+    
+    <h4>False Positive Management</h4>
+    <p>Common legitimate scenarios that may trigger this detection:</p>
+    <ul>
+        <li>Employees working from home or traveling accessing company resources</li>
+        <li>Third-party integrations or partner applications accessing shared buckets</li>
+        <li>Disaster recovery operations performed from alternate locations</li>
+        <li>Mobile applications or remote services accessing S3 resources</li>
+        <li>Content distribution or public-facing applications served from S3</li>
+        <li>Development and testing activities from various networks</li>
+    </ul>
+    <p>Implement allowlisting for known remote work locations, partner networks, and legitimate third-party services. Consider implementing conditional access policies that require additional verification for access from new locations.</p>
+    
+    <h4>Compliance and Regulatory Considerations</h4>
+    <p>This detection supports various compliance requirements:</p>
+    <ul>
+        <li><strong>Data Protection:</strong> GDPR, CCPA compliance through access monitoring</li>
+        <li><strong>Financial Services:</strong> SOX, PCI-DSS requirements for data access control</li>
+        <li><strong>Healthcare:</strong> HIPAA requirements for PHI access monitoring</li>
+        <li><strong>Government:</strong> FedRAMP and other frameworks requiring access logging</li>
+        <li><strong>Industry Standards:</strong> ISO 27001 access control and monitoring requirements</li>
+    </ul>
+</div>

@@ -1,0 +1,102 @@
+//===================================================================
+// Define base variables and functions
+// Initialize core data sources for IAM user creation monitoring
+//===================================================================
+let summaries = AWS_generateSummary();    // Get event summaries
+let roles = AWS_getRoleEvents()           // Get role mappings
+    | project 
+        UserIdentityArn, 
+        RoleNames;
+let filteredIPs = AWS_filterCloudTrailCIDR();     // Get allowed IP addresses
+//===================================================================
+// Monitor User Creation Events
+// Track new IAM user creations from allowed IPs in last 1 hour
+//===================================================================
+let userEvents = AWS_ExtendUserIdentityV2()
+    | where EventName == 'CreateUser' 
+    | where TimeGenerated >= ago(1h)
+    | where SourceIpAddress in (filteredIPs) 
+    | project 
+        TimeGenerated,          // When event occurred
+        UserIdentityArn,        // Creator's ARN
+        UserName,               // Creator's username
+        CreatedUserName,        // New user being created
+        SourceIpAddress,        // Origin IP
+        AWSRegion,              // AWS region
+        EventName,              // Action type
+        UserIdentityAccountId,  // AWS account ID
+        AccountName,            // Account name
+        UserAgent,              // Tool/service used
+        RecipientAccountId,     // Target account
+        UserIdentityUserName;   // Identity username
+//===================================================================
+// Track Policy Attachments
+// Monitor immediate policy attachments to newly created users
+//===================================================================
+let policyEvents = AWSCloudTrail
+    | where EventName in (
+        'AttachUserPolicy',     // Direct user policies
+        'AttachGroupPolicy',    // Group policies
+        'AttachRolePolicy'      // Role policies
+)
+    | extend 
+        AttachedUserName = tostring(parse_json(RequestParameters).userName)
+    | project  
+        AttachedUserName,       // User receiving policy
+        PolicyName = tostring(parse_json(RequestParameters).policyArn),  // Policy ARN
+        TimeGenerated;          // When policy was attached
+//===================================================================
+// Summarize Creation Events
+// Group events by first occurrence of each new user
+//===================================================================
+let summarizedEvents = userEvents
+    | summarize 
+        StartTimeUtc = min(TimeGenerated)
+        by 
+        UserIdentityArn, 
+        UserName, 
+        CreatedUserName, 
+        SourceIpAddress, 
+        AWSRegion, 
+        EventName,
+        UserIdentityAccountId, 
+        AccountName, 
+        UserAgent,
+        RecipientAccountId, 
+        UserIdentityUserName;
+//===================================================================
+// Generate Final Analysis
+// Combine all data sources and format comprehensive output
+//===================================================================
+summarizedEvents
+// Connect users with their attached policies
+    | join 
+        kind=leftouter (policyEvents) 
+        on $left.CreatedUserName == $right.AttachedUserName 
+        and $left.StartTimeUtc == $right.TimeGenerated
+    // Add role information
+    | join 
+        kind=leftouter (roles) on UserIdentityArn
+    | extend 
+        RoleNames = array_strcat(RoleNames, "\n")
+    // Add event context and descriptions
+    | join 
+        kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.TimeGenerated == $right.TimeGenerated 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+// Format final output
+    | project 
+        StartTimeUtc,                            // Creation time
+        Summary,                                 // Event summary
+        EventName,                               // Event type
+        Description,                             // Event description
+        CreatorUserName = UserName,              // Who created the user
+        NewlyCreatedUserName = CreatedUserName,  // New user's name
+        UserIdentityAccountId,                   // AWS account ID
+        SourceIpAddress,                         // Source IP
+        AWSRegion,                               // Region
+        NewlyCreatedUserPolicy = PolicyName,     // Attached policies
+        RoleNames,                               // Associated roles
+        UserAgent
+    | order by StartTimeUtc desc                // Most recent first

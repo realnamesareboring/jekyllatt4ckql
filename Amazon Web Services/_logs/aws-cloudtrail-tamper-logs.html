@@ -1,0 +1,219 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('aws-cloudtrail-tamper-logs')">&times;</span>
+    <h2>AWS Security - CloudTrail Tamper Detection</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 1 hour | Event types: Trail modifications</div>
+        </div>
+        <div class="results-info">7 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>StartTimeUtc</th>
+                    <th>Summary</th>
+                    <th>EventName</th>
+                    <th>Description</th>
+                    <th>CloudTrail</th>
+                    <th>UserIdentityPrincipalid</th>
+                    <th>UserIdentityAccessKeyId</th>
+                    <th>SessionIssuerUserName</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>UserName</th>
+                    <th>SourceIpAddress</th>
+                    <th>Type</th>
+                    <th>AWSRegion</th>
+                    <th>UserAgent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:55:32.651Z</td>
+                    <td class="highlight-cell">CloudTrail logging disabled</td>
+                    <td class="highlight-cell">StopLogging</td>
+                    <td>CloudTrail audit logging has been disabled</td>
+                    <td class="highlight-cell">management-events-trail</td>
+                    <td>AIDA123456789ABCDEFGH</td>
+                    <td>AKIA1EXAMPLE1EXAMPLE</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>admin-user</td>
+                    <td>203.0.113.42</td>
+                    <td>AWSCloudTrail</td>
+                    <td>us-east-1</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:48:18.789Z</td>
+                    <td class="highlight-cell">CloudTrail permanently deleted</td>
+                    <td class="highlight-cell">DeleteTrail</td>
+                    <td>CloudTrail was permanently deleted</td>
+                    <td class="highlight-cell">security-audit-trail</td>
+                    <td>AIDA234567890ABCDEFGH</td>
+                    <td>AKIA2EXAMPLE2EXAMPLE</td>
+                    <td>AdminRole</td>
+                    <td>123456789012</td>
+                    <td>AssumedRole</td>
+                    <td>198.51.100.23</td>
+                    <td>AWSCloudTrail</td>
+                    <td>us-west-2</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:38:43.456Z</td>
+                    <td class="highlight-cell">VPC Flow Logs deleted</td>
+                    <td class="highlight-cell">DeleteFlowLogs</td>
+                    <td>VPC Flow Logs were deleted</td>
+                    <td></td>
+                    <td>AROA345678901ABCDEFGH</td>
+                    <td></td>
+                    <td>NetworkAdminRole</td>
+                    <td>123456789012</td>
+                    <td>AssumedRole</td>
+                    <td>192.0.2.155</td>
+                    <td>AWSVPC</td>
+                    <td>us-east-2</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:32:27.321Z</td>
+                    <td class="highlight-cell">CloudTrail event selectors modified</td>
+                    <td class="highlight-cell">PutEventSelectors</td>
+                    <td>CloudTrail event selectors were modified to exclude management events</td>
+                    <td class="highlight-cell">organization-trail</td>
+                    <td>AIDA456789012ABCDEFGH</td>
+                    <td>AKIA3EXAMPLE3EXAMPLE</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>security-admin</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>AWSCloudTrail</td>
+                    <td>us-east-1</td>
+                    <td>aws-cli/2.12.0 Python/3.9.16</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:25:58.987Z</td>
+                    <td class="highlight-cell">CloudTrail trail updated</td>
+                    <td class="highlight-cell">UpdateTrail</td>
+                    <td>CloudTrail configuration was modified</td>
+                    <td class="highlight-cell">data-events-trail</td>
+                    <td>AIDA567890123ABCDEFGH</td>
+                    <td>AKIA4EXAMPLE4EXAMPLE</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>audit-user</td>
+                    <td>10.0.12.45</td>
+                    <td>AWSCloudTrail</td>
+                    <td>eu-west-1</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:18:11.654Z</td>
+                    <td class="highlight-cell">CloudWatch Log Group for CloudTrail deleted</td>
+                    <td class="highlight-cell">DeleteLogGroup</td>
+                    <td>CloudWatch Log Group containing CloudTrail logs was deleted</td>
+                    <td></td>
+                    <td>AIDA678901234ABCDEFGH</td>
+                    <td>AKIA5EXAMPLE5EXAMPLE</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>logging-admin</td>
+                    <td>198.51.100.87</td>
+                    <td>AWSLogs</td>
+                    <td>us-west-2</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:08:36.123Z</td>
+                    <td class="highlight-cell">EventBus for CloudTrail events deleted</td>
+                    <td class="highlight-cell">DeleteEventBus</td>
+                    <td>EventBridge Event Bus that processes CloudTrail events was deleted</td>
+                    <td></td>
+                    <td>AIDA789012345ABCDEFGH</td>
+                    <td>AKIA6EXAMPLE6EXAMPLE</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>events-admin</td>
+                    <td>203.0.113.87</td>
+                    <td>AWSEvents</td>
+                    <td>us-east-1</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies modifications to AWS CloudTrail and other logging services within the last hour. These changes could indicate attempts to disable or reduce visibility into AWS account activity, which is a common technique used by attackers to hide malicious actions.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>EventName</code> field shows the specific logging modification action taken:
+            <ul>
+                <li><code>StopLogging</code> - Disables CloudTrail recording without deleting the trail</li>
+                <li><code>DeleteTrail</code> - Permanently removes a CloudTrail trail</li>
+                <li><code>PutEventSelectors</code> - Modifies what events are captured (can be used to exclude critical events)</li>
+                <li><code>UpdateTrail</code> - Changes CloudTrail configuration (can disable log validation or multi-region logging)</li>
+                <li><code>DeleteFlowLogs</code> - Removes network traffic monitoring</li>
+                <li><code>DeleteLogGroup</code> - Deletes stored logs in CloudWatch</li>
+                <li><code>DeleteEventBus</code> - Removes event processing for security monitoring</li>
+            </ul>
+        </li>
+        <li>The <code>CloudTrail</code> field identifies which specific trail was modified (when applicable)</li>
+        <li>The <code>Summary</code> and <code>Description</code> provide context about the potential security impact</li>
+        <li>The <code>SourceIpAddress</code> can help identify unusual access patterns</li>
+        <li>The <code>UserIdentityPrincipalid</code> and <code>SessionIssuerUserName</code> help track who performed the action</li>
+        <li>Multiple logging service changes in rapid succession are particularly suspicious</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1562.008 - Impair Defenses: Disable or Modify Cloud Logs</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1070 - Indicator Removal on Host</li>
+        <li><strong>Collection (TA0009)</strong><br>T1119 - Automated Collection</li>
+        <li><strong>Impact (TA0040)</strong><br>T1485 - Data Destruction</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Immediate investigation:
+            <ul>
+                <li>Determine if changes were authorized through change management processes</li>
+                <li>Review identity that made the changes (admin-user, security-admin, etc.)</li>
+                <li>Check if the source IP address is known or suspicious</li>
+                <li>Look for other suspicious activities from the same identity or IP</li>
+            </ul>
+        </li>
+        <li>Remediation actions:
+            <ul>
+                <li>For <code>StopLogging</code> - Re-enable CloudTrail logging immediately</li>
+                <li>For <code>DeleteTrail</code> - Create a new trail with identical settings</li>
+                <li>For <code>PutEventSelectors</code> - Restore proper event selectors to capture all management events</li>
+                <li>For <code>UpdateTrail</code> - Review and correct trail configurations</li>
+                <li>For deleted log groups or flow logs - Recreate them with proper retention settings</li>
+            </ul>
+        </li>
+        <li>Preventative measures:
+            <ul>
+                <li>Implement SCPs (Service Control Policies) to prevent CloudTrail modifications</li>
+                <li>Enable CloudTrail log file validation to detect log tampering</li>
+                <li>Configure cross-account or cross-region logging to a secure logging account</li>
+                <li>Implement automated alerts for CloudTrail configuration changes</li>
+                <li>Require MFA for all CloudTrail and logging service modifications</li>
+                <li>Use AWS CloudTrail Insights to detect unusual API activity</li>
+            </ul>
+        </li>
+        <li>Incident response:
+            <ul>
+                <li>Determine what activities occurred during any logging gaps</li>
+                <li>Check for other defense evasion techniques that might have been used</li>
+                <li>Review organization-wide CloudTrail settings if organization trail was targeted</li>
+                <li>Consider rotating credentials for affected accounts</li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,52 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+let summaries = AWS_generateSummary();
+let APTIPs = _GetWatchlist('badguyIPs')   // Get known malicious IPs
+    | project IOC;
+let untrustedIPs = AWS_filterCloudTrailCIDR();
+//===================================================================
+// Monitor Lambda Function Updates
+//===================================================================
+let badLambda = AWSCloudTrail
+    | where TimeGenerated > ago(1d)
+    | where EventSource == "lambda.amazonaws.com" 
+        and EventName startswith "UpdateFunctionCode"
+        or EventName startswith "UpdateFunctionConfiguration"
+    | where SourceIpAddress != 'cloudformation.amazonaws.com'
+        and SourceIpAddress in (untrustedIPs)
+        or SourceIpAddress in (APTIPs)
+        and UserIdentityArn !endswith "@privusr.vuln.org"
+    | extend 
+        FunctionName = tostring(parse_json(RequestParameters).functionName),
+        FunctionArn = tostring(parse_json(ResponseElements).functionArn),
+        FunctionRole = tostring(parse_json(ResponseElements).role),
+        FunctionStatus = tostring(parse_json(ResponseElements).state);
+//===================================================================
+// Enrich with summaries and format output
+//===================================================================
+badLambda
+    | join kind=leftouter (
+        summaries
+    ) on EventName, TimeGenerated, UserIdentityArn
+    | summarize 
+        arg_max(TimeGenerated, *) by 
+        EventName,
+        UserIdentityAccountId,
+        SourceIpAddress,
+        FunctionName
+    | project
+        TimeGenerated,
+        Summary,
+        EventName,
+        AlertDetails,
+        Severity,
+        FunctionStatus,
+        FunctionName,
+        FunctionArn,
+        FunctionRole,
+        SourceIpAddress,
+        UserIdentityArn,
+        UserIdentityAccountId,
+        UserAgent
+    | sort by TimeGenerated desc

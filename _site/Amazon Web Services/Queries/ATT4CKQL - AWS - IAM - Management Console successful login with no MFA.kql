@@ -1,0 +1,105 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+let summaries = AWS_generateSummary();
+let extendedData = AWS_extendUserIdentity();
+//===================================================================
+// Monitor Console Login Events
+//===================================================================
+let logonEvents = extendedData
+    | where EventName =~ "ConsoleLogin"
+        and TimeGenerated >= ago(1d)
+    | extend
+        MFAUsed = tostring(parse_json(AdditionalEventData).MFAUsed),
+        LoginResult = tostring(parse_json(ResponseElements).ConsoleLogin)
+    | where MFAUsed == "No"
+        and LoginResult == "Success"
+    | where SessionIssuerUserName !contains "AWSReservedSSO"
+    | summarize 
+        StartTimeUtc = min(TimeGenerated)
+        by 
+        UserIdentityArn, 
+        UserName, 
+        AccountName, 
+        AccountUPNSuffix,
+        UserIdentityAccountId, 
+        UserIdentityPrincipalid, 
+        UserAgent,
+        SessionMfaAuthenticated, 
+        SourceIpAddress, 
+        AWSRegion,
+        PrincipalSessionID, 
+        EventName;
+//===================================================================
+// Track Session Endings
+//===================================================================
+let logoffOrExpirationEvents = extendedData
+    | where EventName =~ "ConsoleLogout" or EventName == "Logout"
+    | where TimeGenerated >= ago(1d)
+    | summarize 
+        EndTimeUtc = max(TimeGenerated) 
+        by 
+        UserIdentityArn, 
+        UserIdentityAccountId, 
+        UserName, 
+        EventName;
+//===================================================================
+// Calculate Session Details
+//===================================================================
+let sessionEvents = logonEvents
+    | join 
+        kind=leftouter (logoffOrExpirationEvents) on UserIdentityArn
+    | extend 
+        EndTimeUtc = iff(isnull(EndTimeUtc), datetime_add('hour', 12, StartTimeUtc), EndTimeUtc)
+    | extend 
+        SessionDurationMinutes = datetime_diff('minute', EndTimeUtc, StartTimeUtc)
+    | where SessionDurationMinutes >= 0
+    | project
+        FirstSeenLocal = StartTimeUtc,
+        LastSeenLocal = EndTimeUtc,
+        SessionDurationMinutes,
+        UserName,
+        UserIdentityAccountId,
+        SessionMfaAuthenticated,
+        SourceIpAddress,
+        AWSRegion,
+        UserAgent,
+        UserIdentityArn,
+        PrincipalSessionID,
+        EventName;
+//===================================================================
+// Enrich and Format Final Output
+//===================================================================
+let consolidatedRoles = AWS_getRoleEvents()
+    | project 
+        UserIdentityArn, 
+        RoleNames
+    | extend 
+        RoleNames = array_strcat(RoleNames, "\n");
+sessionEvents
+    | join 
+        kind=leftouter (consolidatedRoles) on UserIdentityArn
+    | join 
+        kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.UserIdentityArn == $right.UserIdentityArn 
+        and $left.FirstSeenLocal == $right.TimeGenerated
+    | extend
+        EventDescription = iff(isnull(Description), "", Description),
+        EventSummary = iff(isnull(Summary), "", Summary)
+    | project
+        FirstSeenLocal,
+        LastSeenLocal,
+        SessionDurationMinutes,
+        EventName,
+        EventDescription,
+        EventSummary,
+        UserName,
+        UserIdentityAccountId,
+        SessionMfaAuthenticated,
+        SourceIpAddress,
+        AWSRegion,
+        UserAgent,
+        PrincipalSessionID,
+        RoleNames
+    | order by FirstSeenLocal desc

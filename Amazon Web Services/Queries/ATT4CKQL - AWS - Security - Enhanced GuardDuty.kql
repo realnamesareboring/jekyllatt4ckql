@@ -1,0 +1,58 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+let Filtered = AWS_filterGuardDuty;
+let filteredIPs = AWS_filterCloudTrailCIDR();
+let APTIPs = _GetWatchlist('badguyIPs')           // Get known malicious IPs
+    | project IOC;
+//===================================================================
+// Main GuardDuty analysis
+//===================================================================
+Filtered
+    | where TimeGenerated > ago(1d)
+    | extend 
+        LocalIpAddress = tostring(LocalIpAddress),
+        RemoteIpAddress = tostring(RemoteIpAddress)
+    // Join with threat IP watchlist
+    | join 
+        kind=leftouter (APTIPs) 
+        on $left.LocalIpAddress == $right.SearchKey
+    | extend 
+        ThreatIpMatch = iff(isnotempty(SearchKey), "True", "")
+    // Filter out specific traffic patterns
+    | where parse_json(tostring(parse_json(tostring(ServiceAction.remoteIpDetails)).organization)).isp <> "Palo Alto Networks"
+         or parse_json(tostring(parse_json(tostring(ServiceAction.remoteIpDetails)).organization)).org <> "Palo Alto Networks"
+         or AccountUpn != "CloudTrailOrganizationReplication"
+    // Extract access details
+    | extend 
+        AccessKey = AccessKeyDetails.accessKeyId,
+        UserName = AccessKeyDetails.userName
+//===================================================================
+// Format final output
+//===================================================================
+    | project
+        TimeGenerated,
+        Severity,
+        SeveritySort,
+        ThreatPurpose,
+        ActivityType,
+        Description,
+        ResourceTypeAffected,
+        AWSAccountId,
+        InstanceId,
+        LocalIpAddress,
+        RemoteIpAddress,
+        UserName,
+        AccessKey,
+        RemoteAWSAccountId,
+        AccountUpn,
+        ServiceDetails,
+        DetectionMechanism,
+        Artifact,
+        ThreatIpMatch
+    | order by 
+        SeveritySort asc, 
+        TimeGenerated desc
+    | project-away 
+        SeveritySort, 
+        ThreatPurpose

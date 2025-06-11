@@ -1,0 +1,436 @@
+<div id="iam-login-no-mfa-kqlexplained" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query identifies AWS Management Console login sessions where Multi-Factor Authentication (MFA) was not used. It correlates login and logout events to calculate session durations and tracks users who successfully authenticated to the AWS Console without MFA protection, representing a significant security risk especially for privileged accounts.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This detection operates through a sophisticated session tracking methodology:</p>
+    <ol>
+        <li>
+            <strong>Console Login Event Collection (24-hour window):</strong>
+            <ul>
+                <li>Monitors <code>ConsoleLogin</code> events from the last 24 hours</li>
+                <li>Filters for successful login attempts using <code>ResponseElements.ConsoleLogin</code> status</li>
+                <li>Identifies sessions where <code>AdditionalEventData.MFAUsed</code> is "No"</li>
+                <li>Excludes AWS managed SSO accounts and service principals</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Session Lifecycle Tracking:</strong>
+            <ul>
+                <li>Correlates login events with corresponding logout events</li>
+                <li>Tracks both <code>ConsoleLogout</code> and generic <code>Logout</code> events</li>
+                <li>Calculates precise session durations using datetime arithmetic</li>
+                <li>Handles sessions without explicit logout by applying 12-hour timeout</li>
+            </ul>
+        </li>
+        <li>
+            <strong>User Identity and Context Preservation:</strong>
+            <ul>
+                <li>Captures comprehensive user identity information</li>
+                <li>Preserves network context (source IP, region, user agent)</li>
+                <li>Tracks session identifiers for correlation purposes</li>
+                <li>Maintains account and organizational context</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Role and Permission Integration:</strong>
+            <ul>
+                <li>Leverages <code>AWS_getRoleEvents()</code> for assumed role context</li>
+                <li>Maps users to their potential privilege escalation paths</li>
+                <li>Formats role information for enhanced analyst context</li>
+                <li>Identifies users with administrative or elevated permissions</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Event Enrichment and Summarization:</strong>
+            <ul>
+                <li>Integrates with summary data for enhanced context</li>
+                <li>Provides descriptive information about login events</li>
+                <li>Validates session timing and removes negative durations</li>
+                <li>Sorts results by recency for prioritized investigation</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>FirstSeenLocal:</strong> Timestamp when the console login occurred</li>
+        <li><strong>LastSeenLocal:</strong> Timestamp when logout occurred (or calculated timeout)</li>
+        <li><strong>SessionDurationMinutes:</strong> Total session length in minutes</li>
+        <li><strong>UserName:</strong> The IAM user who logged in without MFA</li>
+        <li><strong>SessionMfaAuthenticated:</strong> Confirmation that MFA was NOT used (always "No")</li>
+        <li><strong>SourceIpAddress:</strong> IP address from which the login originated</li>
+        <li><strong>AWSRegion:</strong> AWS region where the login was processed</li>
+        <li><strong>UserAgent:</strong> Browser or client application used for login</li>
+        <li><strong>PrincipalSessionID:</strong> Unique session identifier for tracking</li>
+        <li><strong>RoleNames:</strong> Associated roles the user can potentially assume</li>
+        <li><strong>UserIdentityAccountId:</strong> AWS account where the user exists</li>
+        <li><strong>EventDescription:</strong> Detailed context about the login event</li>
+        <li><strong>EventSummary:</strong> High-level summary of the security event</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Authentication Weakness:</strong> Single-factor authentication is vulnerable to credential compromise</li>
+        <li><strong>Privileged Access Risk:</strong> Admin users without MFA represent critical security exposure</li>
+        <li><strong>Compliance Violations:</strong> Many frameworks require MFA for privileged access</li>
+        <li><strong>Attack Surface Expansion:</strong> Non-MFA sessions facilitate lateral movement</li>
+        <li><strong>Session Hijacking Vulnerability:</strong> Extended sessions without MFA increase exposure window</li>
+        <li><strong>Credential Stuffing Risk:</strong> Passwords alone are vulnerable to automated attacks</li>
+    </ul>
+    
+    <h4>Session Duration Risk Analysis</h4>
+    <p>Different session lengths indicate varying levels of risk and activity patterns:</p>
+    <ul>
+        <li><strong>Very Short Sessions (0-15 minutes):</strong>
+            <ul>
+                <li>May indicate quick administrative tasks</li>
+                <li>Could suggest reconnaissance or permission testing</li>
+                <li>Potential automated or scripted access attempts</li>
+                <li>Quick data exfiltration or configuration changes</li>
+            </ul>
+        </li>
+        <li><strong>Medium Sessions (15-60 minutes):</strong>
+            <ul>
+                <li>Typical for routine administrative work</li>
+                <li>Normal operational activities and monitoring</li>
+                <li>Standard development or testing activities</li>
+                <li>Regular business operations within console</li>
+            </ul>
+        </li>
+        <li><strong>Long Sessions (1-8 hours):</strong>
+            <ul>
+                <li>Extended work sessions or complex operations</li>
+                <li>Potential indicator of in-depth system access</li>
+                <li>May represent thorough data exploration</li>
+                <li>Could indicate comprehensive system enumeration</li>
+            </ul>
+        </li>
+        <li><strong>Very Long Sessions (8+ hours):</strong>
+            <ul>
+                <li>Highly suspicious unattended console sessions</li>
+                <li>Potential session hijacking or unauthorized access</li>
+                <li>Forgotten active sessions representing security risk</li>
+                <li>Possible persistent access by malicious actors</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>User Risk Categorization</h4>
+    <p>Different types of users present varying levels of concern:</p>
+    <ul>
+        <li><strong>Critical Risk Users (🚨 Flagged):</strong>
+            <ul>
+                <li>Administrative users (admin-user, security-admin, etc.)</li>
+                <li>Users with IAM management permissions</li>
+                <li>Finance and billing administrators</li>
+                <li>Users with cross-service administrative access</li>
+                <li>Emergency access or break-glass accounts</li>
+            </ul>
+        </li>
+        <li><strong>High Risk Users:</strong>
+            <ul>
+                <li>Database administrators with sensitive data access</li>
+                <li>Network administrators with infrastructure control</li>
+                <li>DevOps engineers with deployment capabilities</li>
+                <li>Security analysts with broad read permissions</li>
+            </ul>
+        </li>
+        <li><strong>Medium Risk Users:</strong>
+            <ul>
+                <li>Application developers with service-specific access</li>
+                <li>Support engineers with limited operational access</li>
+                <li>Business users with reporting or monitoring access</li>
+                <li>Readonly users with audit or compliance responsibilities</li>
+            </ul>
+        </li>
+        <li><strong>Standard Users:</strong>
+            <ul>
+                <li>End users with minimal console access</li>
+                <li>Service-specific users with restricted permissions</li>
+                <li>Training or sandbox environment users</li>
+                <li>Temporary or contractor accounts with limited scope</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Geographic and Network Analysis</h4>
+    <p>Source IP and location context provides additional security insights:</p>
+    <ul>
+        <li><strong>Trusted Corporate Networks:</strong>
+            <ul>
+                <li>Lower immediate risk but still requires MFA enforcement</li>
+                <li>May indicate policy violation rather than compromise</li>
+                <li>Opportunity for user education and training</li>
+                <li>Should be addressed through organizational policy</li>
+            </ul>
+        </li>
+        <li><strong>Remote/Home Networks:</strong>
+            <ul>
+                <li>Elevated risk due to potentially insecure networks</li>
+                <li>Higher likelihood of credential interception</li>
+                <li>May indicate remote work policy violations</li>
+                <li>Requires verification of legitimate user access</li>
+            </ul>
+        </li>
+        <li><strong>Unusual Geographic Locations:</strong>
+            <ul>
+                <li>Potential account compromise indicators</li>
+                <li>May violate geographic access restrictions</li>
+                <li>Requires immediate verification with legitimate user</li>
+                <li>Could indicate credential theft or sharing</li>
+            </ul>
+        </li>
+        <li><strong>Suspicious IP Ranges:</strong>
+            <ul>
+                <li>Cloud hosting providers, VPNs, or anonymization services</li>
+                <li>Previous indicators of malicious activity</li>
+                <li>IP addresses associated with known threats</li>
+                <li>Residential IPs in unexpected geographic regions</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Attack Scenarios and Threat Vectors</h4>
+    <p>Non-MFA console access enables various attack pathways:</p>
+    <ul>
+        <li><strong>Credential Compromise:</strong>
+            <ul>
+                <li>Stolen or leaked passwords from data breaches</li>
+                <li>Credential stuffing attacks using password lists</li>
+                <li>Phishing attacks capturing login credentials</li>
+                <li>Social engineering obtaining user passwords</li>
+            </ul>
+        </li>
+        <li><strong>Insider Threats:</strong>
+            <ul>
+                <li>Malicious employees exploiting weak authentication</li>
+                <li>Compromised internal accounts with console access</li>
+                <li>Unauthorized access by departing employees</li>
+                <li>Shared accounts or credential sharing practices</li>
+            </ul>
+        </li>
+        <li><strong>Session Exploitation:</strong>
+            <ul>
+                <li>Session hijacking through network interception</li>
+                <li>Browser compromise accessing saved sessions</li>
+                <li>Unattended workstations with active sessions</li>
+                <li>Malware harvesting session tokens or credentials</li>
+            </ul>
+        </li>
+        <li><strong>Privilege Escalation:</strong>
+            <ul>
+                <li>Lateral movement from compromised console access</li>
+                <li>Role assumption to gain additional permissions</li>
+                <li>Exploration of services and resources available</li>
+                <li>Creation of additional access methods or backdoors</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Immediate Response Protocol</h4>
+    <p>When non-MFA console access is detected, follow this response sequence:</p>
+    <ol>
+        <li><strong>Risk Triage (0-5 minutes):</strong>
+            <ul>
+                <li>Identify user privilege level and associated roles</li>
+                <li>Assess session duration and activity scope</li>
+                <li>Check source IP for known threats or unusual locations</li>
+                <li>Determine if login aligns with expected user behavior</li>
+            </ul>
+        </li>
+        <li><strong>Initial Verification (5-15 minutes):</strong>
+            <ul>
+                <li>Contact user through out-of-band communication</li>
+                <li>Verify legitimate access and session ownership</li>
+                <li>Check for any unusual account activity or notifications</li>
+                <li>Assess business justification for console access</li>
+            </ul>
+        </li>
+        <li><strong>Containment Actions (15-30 minutes):</strong>
+            <ul>
+                <li>For unverified access: Force session termination</li>
+                <li>Implement temporary access restrictions if needed</li>
+                <li>For high-risk users: Immediate password reset requirement</li>
+                <li>Document all containment actions taken</li>
+            </ul>
+        </li>
+        <li><strong>Investigation and Analysis (30-120 minutes):</strong>
+            <ul>
+                <li>Review all activities performed during the session</li>
+                <li>Check for any configuration changes or data access</li>
+                <li>Analyze other recent activities by the same user</li>
+                <li>Correlate with other security events or alerts</li>
+            </ul>
+        </li>
+        <li><strong>Remediation and Hardening (2-24 hours):</strong>
+            <ul>
+                <li>Enforce MFA enrollment for the affected user</li>
+                <li>Review and update access policies if needed</li>
+                <li>Implement additional monitoring for the user</li>
+                <li>Conduct security awareness training if appropriate</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>MFA Enforcement Strategies</h4>
+    <p>Address non-MFA access through various enforcement mechanisms:</p>
+    <ul>
+        <li><strong>Policy-Based Enforcement:</strong>
+            <ul>
+                <li>IAM policies requiring MFA for console access</li>
+                <li>Conditional access policies based on source location</li>
+                <li>Service Control Policies (SCPs) for organization-wide enforcement</li>
+                <li>Time-based access restrictions requiring MFA</li>
+            </ul>
+        </li>
+        <li><strong>Technical Controls:</strong>
+            <ul>
+                <li>AWS SSO with mandatory MFA configuration</li>
+                <li>Federation providers with MFA requirements</li>
+                <li>VPN-based access with integrated MFA</li>
+                <li>Privileged Access Management (PAM) solutions</li>
+            </ul>
+        </li>
+        <li><strong>Organizational Measures:</strong>
+            <ul>
+                <li>Security awareness training on MFA importance</li>
+                <li>Regular access reviews and certification processes</li>
+                <li>Incident response playbooks for non-MFA access</li>
+                <li>Metrics and reporting on MFA adoption rates</li>
+            </ul>
+        </li>
+        <li><strong>Alternative Authentication:</strong>
+            <ul>
+                <li>Hardware security keys for high-privilege users</li>
+                <li>Certificate-based authentication</li>
+                <li>Risk-based adaptive authentication</li>
+                <li>Biometric authentication integration</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Detection Tuning and Optimization</h4>
+    <p>Customize this detection for your organizational context:</p>
+    <ul>
+        <li><strong>User Prioritization:</strong>
+            <ul>
+                <li>Weight alerts based on user privilege levels</li>
+                <li>Exclude service accounts and system users</li>
+                <li>Focus on users with administrative capabilities</li>
+                <li>Consider role-based risk scoring</li>
+            </ul>
+        </li>
+        <li><strong>Session Analysis Enhancement:</strong>
+            <ul>
+                <li>Add activity correlation during sessions</li>
+                <li>Track console operations and API calls</li>
+                <li>Implement unusual activity detection</li>
+                <li>Monitor for privilege escalation attempts</li>
+            </ul>
+        </li>
+        <li><strong>Geographic and Network Context:</strong>
+            <ul>
+                <li>Implement IP reputation and geolocation analysis</li>
+                <li>Define trusted network ranges</li>
+                <li>Add VPN and proxy detection</li>
+                <li>Consider time zone and business hours context</li>
+            </ul>
+        </li>
+        <li><strong>Integration Points:</strong>
+            <ul>
+                <li>SIEM integration for automated response</li>
+                <li>Identity management system correlation</li>
+                <li>Threat intelligence feed integration</li>
+                <li>User behavior analytics enhancement</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Compliance and Regulatory Alignment</h4>
+    <p>This detection supports various compliance requirements:</p>
+    <ul>
+        <li><strong>Framework Requirements:</strong>
+            <ul>
+                <li>NIST 800-53 multi-factor authentication controls</li>
+                <li>ISO 27001 access control and authentication</li>
+                <li>CIS Controls for secure configuration management</li>
+                <li>COBIT governance and risk management practices</li>
+            </ul>
+        </li>
+        <li><strong>Industry Standards:</strong>
+            <ul>
+                <li>PCI-DSS strong authentication requirements</li>
+                <li>SOX internal control over financial reporting</li>
+                <li>HIPAA administrative safeguards for PHI access</li>
+                <li>FedRAMP authentication and verification controls</li>
+            </ul>
+        </li>
+        <li><strong>Regulatory Compliance:</strong>
+            <ul>
+                <li>GDPR data processor access controls</li>
+                <li>CCPA personal information access management</li>
+                <li>Financial services MFA regulations</li>
+                <li>Healthcare data protection requirements</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Metrics and Key Performance Indicators</h4>
+    <p>Track these metrics to assess MFA enforcement effectiveness:</p>
+    <ul>
+        <li><strong>Security Metrics:</strong>
+            <ul>
+                <li>Percentage of console logins using MFA</li>
+                <li>Number of privileged users without MFA</li>
+                <li>Time to MFA enforcement after policy implementation</li>
+                <li>Reduction in authentication-related incidents</li>
+            </ul>
+        </li>
+        <li><strong>Operational Metrics:</strong>
+            <ul>
+                <li>User compliance with MFA requirements</li>
+                <li>Help desk tickets related to MFA issues</li>
+                <li>Time to resolve non-MFA access incidents</li>
+                <li>Cost savings from prevented security incidents</li>
+            </ul>
+        </li>
+        <li><strong>Risk Metrics:</strong>
+            <ul>
+                <li>Risk exposure from non-MFA administrative access</li>
+                <li>Geographic distribution of non-MFA logins</li>
+                <li>Session duration analysis for security assessment</li>
+                <li>Correlation between non-MFA access and security incidents</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Future Enhancement Opportunities</h4>
+    <p>Consider these advanced capabilities for enhanced detection:</p>
+    <ul>
+        <li><strong>Machine Learning Integration:</strong>
+            <ul>
+                <li>User behavior baseline establishment</li>
+                <li>Anomaly detection for unusual access patterns</li>
+                <li>Risk scoring based on multiple contextual factors</li>
+                <li>Predictive analytics for compromise indicators</li>
+            </ul>
+        </li>
+        <li><strong>Real-Time Response:</strong>
+            <ul>
+                <li>Automated session termination for high-risk scenarios</li>
+                <li>Dynamic MFA challenges based on risk assessment</li>
+                <li>Integration with security orchestration platforms</li>
+                <li>Adaptive authentication based on context</li>
+            </ul>
+        </li>
+        <li><strong>Enhanced Context:</strong>
+            <ul>
+                <li>Device fingerprinting and browser analysis</li>
+                <li>Integration with endpoint detection and response</li>
+                <li>Network traffic analysis during sessions</li>
+                <li>Application-level activity monitoring</li>
+            </ul>
+        </li>
+    </ul>
+</div>

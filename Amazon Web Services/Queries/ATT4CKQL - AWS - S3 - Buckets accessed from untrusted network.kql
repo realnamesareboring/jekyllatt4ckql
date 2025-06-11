@@ -1,0 +1,68 @@
+//===================================================================
+// Define base variables and functions
+// Initialize data sources and IP filtering
+//===================================================================
+let summaries = AWS_generateSummary();       // Event summaries
+let filteredIPs = AWS_filterCloudTrailCIDR();          // Non-trusted IPs
+let APTIPs = _GetWatchlist('badguyIPs')           // Get known malicious IPs
+    | project IOC;
+//===================================================================
+// Filter S3 Bucket Events
+// Monitor IAM user interactions with S3 buckets
+//===================================================================
+let EventsFiltered = AWSCloudTrail
+    | where EventSource == "s3.amazonaws.com"
+// Exclude known malicious IPs
+    | where SourceIpAddress in (APTIPs)
+// Monitor specific S3 operations
+    | where EventName in (
+        // Bucket operations
+        "CreateBucket", "DeleteBucket", "ListBucket",
+        // Object operations
+        "GetObject", "PutObject", "DeleteObject", "CopyObject",
+        // Metadata operations
+        "HeadObject", "GetBucketPolicy", "UploadPart",
+        "RestoreObject", "GetBucketAcl"
+)
+// Focus on IAM user actions
+    | where UserIdentityType == "IAMUser"
+    // Extract bucket details
+    | extend 
+        BucketResource = tostring(parse_json(RequestParameters).bucketName),
+        ARN = tostring(parse_json(Resources)[0].ARN)
+    // Flag access denied errors
+    | extend ErrorCode = iff(ErrorCode == "AccessDenied", "🚨 AccessDenied", ErrorCode); //Pretty lights get attention
+//===================================================================
+// Enrich Events with Context
+// Add summaries and format final output
+//===================================================================
+EventsFiltered
+    // Filter for non-trusted source IPs
+    | where SourceIpAddress in (filteredIPs)
+    // Add event summaries
+    | join kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.TimeGenerated == $right.TimeGenerated 
+        and $left.UserIdentityArn == $right.UserIdentityArn
+    // Format final output
+    | project
+        TimeGenerated,              // When event occurred
+        ErrorCode,                  // Error status
+        EventName,                  // S3 operation
+        Description,                // Event description
+        Summary,                    // Event summary
+        BucketResource,             // Target bucket
+        UserIdentityAccountId,      // AWS account ID
+        AWSRegion,                  // AWS region
+        SourceIpAddress,            // Source IP
+        UserIdentityAccessKeyId,    // Access key used
+        UserIdentityPrincipalid,    // Principal ID
+        UserIdentityUserName,       // Username
+        UserIdentityArn,            // User ARN
+        UserIdentityType,           // Identity type
+        ARN,                        // Resource ARN
+        UserAgent,                  // Client used
+        EventSource                 // Service source
+    // Sort by time
+    | order by 
+        TimeGenerated desc

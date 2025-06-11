@@ -1,0 +1,294 @@
+<div id="s3-untrusted-access-kqlexplained" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query identifies S3 bucket operations performed from both untrusted IP addresses and known malicious IP addresses based on threat intelligence feeds. It combines network-based filtering with threat intelligence to detect potentially unauthorized access to sensitive data, reconnaissance activities, or attempts to modify bucket configurations from suspicious sources.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This sophisticated detection query operates through multiple intelligence layers:</p>
+    <ol>
+        <li>
+            <strong>Multi-Source IP Intelligence:</strong>
+            <ul>
+                <li>Combines <code>AWS_filterCloudTrailCIDR()</code> function for untrusted network identification</li>
+                <li>Integrates <code>_GetWatchlist('badguyIPs')</code> for known malicious IP addresses</li>
+                <li>Creates comprehensive coverage of suspicious source addresses</li>
+                <li>Enables detection of both known threats and unexpected external access</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Comprehensive S3 Operation Monitoring:</strong>
+            <ul>
+                <li>Monitors bucket-level operations: <code>CreateBucket</code>, <code>DeleteBucket</code>, <code>ListBucket</code></li>
+                <li>Tracks object-level operations: <code>GetObject</code>, <code>PutObject</code>, <code>DeleteObject</code>, <code>CopyObject</code></li>
+                <li>Includes metadata operations: <code>HeadObject</code>, <code>GetBucketPolicy</code>, <code>GetBucketAcl</code></li>
+                <li>Covers advanced operations: <code>UploadPart</code>, <code>RestoreObject</code></li>
+            </ul>
+        </li>
+        <li>
+            <strong>Identity and Attribution Focus:</strong>
+            <ul>
+                <li>Specifically filters for <code>IAMUser</code> activities for clear attribution</li>
+                <li>Extracts detailed user identity information</li>
+                <li>Captures access key IDs for credential tracking</li>
+                <li>Preserves principal IDs for forensic correlation</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Enhanced Error Detection:</strong>
+            <ul>
+                <li>Flags <code>AccessDenied</code> errors with visual indicators (🚨)</li>
+                <li>Monitors both successful operations and permission failures</li>
+                <li>Provides insight into reconnaissance and permission testing</li>
+                <li>Helps identify potential privilege escalation attempts</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context and Resource Extraction:</strong>
+            <ul>
+                <li>Extracts specific bucket names and resource ARNs</li>
+                <li>Captures user agent information for tool identification</li>
+                <li>Preserves regional context for geographic analysis</li>
+                <li>Integrates summary data for enhanced context</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>EventName:</strong> The specific S3 operation attempted (ListBucket, GetObject, PutObject, etc.)</li>
+        <li><strong>ErrorCode:</strong> Error status, with AccessDenied specially highlighted as 🚨</li>
+        <li><strong>BucketResource:</strong> The target S3 bucket name</li>
+        <li><strong>ARN:</strong> Full Amazon Resource Name of the accessed resource</li>
+        <li><strong>SourceIpAddress:</strong> The suspicious IP address (untrusted or known malicious)</li>
+        <li><strong>UserIdentityAccessKeyId:</strong> The access key used for authentication</li>
+        <li><strong>UserIdentityPrincipalid:</strong> Unique principal identifier for tracking</li>
+        <li><strong>UserIdentityUserName:</strong> The specific IAM username</li>
+        <li><strong>UserIdentityArn:</strong> Full IAM user ARN for complete attribution</li>
+        <li><strong>UserAgent:</strong> Client application or tool used</li>
+        <li><strong>AWSRegion:</strong> AWS region where the operation occurred</li>
+    </ul>
+    
+    <h4>Intelligence Integration</h4>
+    <p>This query leverages multiple intelligence sources:</p>
+    <ul>
+        <li><strong>Network Intelligence (Untrusted IPs):</strong>
+            <ul>
+                <li>Identifies access from outside organizational network ranges</li>
+                <li>Flags operations from unexpected geographic locations</li>
+                <li>Detects access from public cloud providers or VPN services</li>
+                <li>Helps identify compromised credentials used remotely</li>
+            </ul>
+        </li>
+        <li><strong>Threat Intelligence (Known Malicious IPs):</strong>
+            <ul>
+                <li>Integrates with threat feeds for known bad actors</li>
+                <li>Identifies access from command and control infrastructure</li>
+                <li>Flags operations from previously compromised systems</li>
+                <li>Provides immediate high-confidence threat indicators</li>
+            </ul>
+        </li>
+        <li><strong>Behavioral Intelligence (Error Patterns):</strong>
+            <ul>
+                <li>Monitors permission testing through AccessDenied errors</li>
+                <li>Identifies reconnaissance patterns across multiple buckets</li>
+                <li>Tracks progression from failed to successful operations</li>
+                <li>Helps identify privilege escalation attempts</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>High-Confidence Threats:</strong> Known malicious IPs represent immediate security concerns</li>
+        <li><strong>Data Exfiltration Risk:</strong> Direct access to S3 data from suspicious sources</li>
+        <li><strong>Reconnaissance Detection:</strong> Failed operations may indicate attack preparation</li>
+        <li><strong>Infrastructure Mapping:</strong> Bucket enumeration reveals organizational structure</li>
+        <li><strong>Credential Compromise:</strong> Valid credentials used from suspicious locations</li>
+        <li><strong>Advanced Persistent Threats:</strong> Integration with threat intelligence catches APT activity</li>
+    </ul>
+    
+    <h4>Operation Analysis by Risk Level</h4>
+    <p>Different operations present varying risk levels from suspicious sources:</p>
+    <ul>
+        <li><strong>Critical Risk Operations:</strong>
+            <ul>
+                <li><code>GetObject</code> - Direct data exfiltration</li>
+                <li><code>DeleteObject/DeleteBucket</code> - Data destruction</li>
+                <li><code>PutBucketPolicy</code> - Permission manipulation (in error logs)</li>
+            </ul>
+        </li>
+        <li><strong>High Risk Operations:</strong>
+            <ul>
+                <li><code>ListBucket</code> - Data discovery and reconnaissance</li>
+                <li><code>GetBucketAcl/GetBucketPolicy</code> - Permission reconnaissance</li>
+                <li><code>PutObject</code> - Malicious content upload</li>
+            </ul>
+        </li>
+        <li><strong>Medium Risk Operations:</strong>
+            <ul>
+                <li><code>HeadObject</code> - Metadata gathering</li>
+                <li><code>CopyObject</code> - Data manipulation</li>
+                <li><code>RestoreObject</code> - Archived data access</li>
+            </ul>
+        </li>
+        <li><strong>Reconnaissance Operations:</strong>
+            <ul>
+                <li><code>UploadPart</code> - Testing upload capabilities</li>
+                <li><code>CreateBucket</code> - Infrastructure testing</li>
+                <li>Failed operations with <code>AccessDenied</code> errors</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Attack Patterns and Scenarios</h4>
+    <p>This detection identifies various attack methodologies:</p>
+    <ul>
+        <li><strong>Advanced Persistent Threats (APTs):</strong>
+            <ul>
+                <li>Long-term access from known malicious infrastructure</li>
+                <li>Systematic data exfiltration over extended periods</li>
+                <li>Use of compromised credentials for legitimate-appearing access</li>
+                <li>Integration with broader organizational compromise</li>
+            </ul>
+        </li>
+        <li><strong>Opportunistic Attacks:</strong>
+            <ul>
+                <li>Exploitation of exposed credentials or misconfigured access</li>
+                <li>Rapid data exfiltration before detection</li>
+                <li>Public bucket discovery and unauthorized access</li>
+                <li>Automated scanning and exploitation tools</li>
+            </ul>
+        </li>
+        <li><strong>Insider Threats with External Collaboration:</strong>
+            <ul>
+                <li>Internal users sharing data with external malicious actors</li>
+                <li>Compromised internal accounts accessed remotely</li>
+                <li>Data exfiltration to external parties</li>
+                <li>Unauthorized data sharing with competitors or hostile actors</li>
+            </ul>
+        </li>
+        <li><strong>Supply Chain Compromises:</strong>
+            <ul>
+                <li>Third-party vendor account compromises</li>
+                <li>Shared infrastructure being used maliciously</li>
+                <li>Partner account lateral movement</li>
+                <li>Cloud service provider compromise scenarios</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Immediate Response Actions</h4>
+    <p>When this detection triggers, follow this response protocol:</p>
+    <ol>
+        <li><strong>Threat Classification (0-5 minutes):</strong>
+            <ul>
+                <li>Determine if source IP is known malicious (highest priority) or untrusted</li>
+                <li>Check if operations were successful or failed (AccessDenied)</li>
+                <li>Identify the sensitivity level of accessed buckets</li>
+                <li>Assess the scope of operations (single vs. multiple buckets)</li>
+            </ul>
+        </li>
+        <li><strong>Immediate Containment (5-15 minutes):</strong>
+            <ul>
+                <li>For known malicious IPs: Immediate access key suspension</li>
+                <li>Implement temporary IP-based bucket policies to block access</li>
+                <li>Activate incident response team for high-severity events</li>
+                <li>Document all containment actions for legal/forensic purposes</li>
+            </ul>
+        </li>
+        <li><strong>Rapid Assessment (15-60 minutes):</strong>
+            <ul>
+                <li>Inventory all accessed buckets and objects</li>
+                <li>Determine if data was successfully exfiltrated</li>
+                <li>Check for uploaded malicious content</li>
+                <li>Assess potential compliance and legal implications</li>
+                <li>Verify identity ownership and potential compromise</li>
+            </ul>
+        </li>
+        <li><strong>Forensic Investigation (1-4 hours):</strong>
+            <ul>
+                <li>Analyze complete timeline of malicious IP activity</li>
+                <li>Review all services accessed by compromised credentials</li>
+                <li>Correlate with other security events and alerts</li>
+                <li>Determine attack vector and compromise method</li>
+                <li>Assess broader organizational exposure</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Advanced Detection Techniques</h4>
+    <p>This query employs several sophisticated detection methods:</p>
+    <ul>
+        <li><strong>Dual-Source Intelligence:</strong> Combines network-based and threat intelligence for comprehensive coverage</li>
+        <li><strong>Error Pattern Analysis:</strong> Uses failed operations to identify reconnaissance activities</li>
+        <li><strong>Visual Highlighting:</strong> Uses emoji markers to draw attention to critical events</li>
+        <li><strong>Multi-Operation Coverage:</strong> Monitors the complete spectrum of S3 operations</li>
+        <li><strong>Attribution Focus:</strong> Specifically targets human users (IAMUser) rather than service roles</li>
+    </ul>
+    
+    <h4>Detection Tuning and Optimization</h4>
+    <p>Customize this query for your environment:</p>
+    <ul>
+        <li><strong>IP Intelligence Sources:</strong>
+            <ul>
+                <li>Integrate additional threat intelligence feeds</li>
+                <li>Customize untrusted network definitions</li>
+                <li>Add geographic IP blocking for restricted regions</li>
+                <li>Implement dynamic IP reputation scoring</li>
+            </ul>
+        </li>
+        <li><strong>Bucket Prioritization:</strong>
+            <ul>
+                <li>Weight alerts based on bucket sensitivity levels</li>
+                <li>Focus on buckets containing regulated data</li>
+                <li>Exclude non-sensitive public content buckets</li>
+                <li>Implement bucket classification tagging</li>
+            </ul>
+        </li>
+        <li><strong>User Context:</strong>
+            <ul>
+                <li>Exclude known service accounts and automation</li>
+                <li>Implement user behavior baselines</li>
+                <li>Add time-based analysis for unusual access hours</li>
+                <li>Integrate with identity management systems</li>
+            </ul>
+        </li>
+        <li><strong>Operation Filtering:</strong>
+            <ul>
+                <li>Adjust operation lists based on business requirements</li>
+                <li>Implement severity scoring by operation type</li>
+                <li>Add volume-based thresholds for bulk operations</li>
+                <li>Create custom alerts for specific operation combinations</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Integration with Security Ecosystem</h4>
+    <p>This detection integrates effectively with:</p>
+    <ul>
+        <li><strong>SIEM/SOAR Platforms:</strong> Automated response workflows and case management</li>
+        <li><strong>Threat Intelligence Platforms:</strong> Enhanced IP reputation and context</li>
+        <li><strong>Data Loss Prevention (DLP):</strong> Content analysis for exfiltrated data</li>
+        <li><strong>Identity and Access Management:</strong> User behavior analytics and risk scoring</li>
+        <li><strong>Network Security:</strong> Firewall rules and traffic analysis correlation</li>
+        <li><strong>Cloud Security Posture Management:</strong> Bucket configuration and policy analysis</li>
+    </ul>
+    
+    <h4>Compliance and Regulatory Support</h4>
+    <p>This detection supports various compliance frameworks:</p>
+    <ul>
+        <li><strong>Data Protection Regulations:</strong> GDPR, CCPA breach detection and notification requirements</li>
+        <li><strong>Financial Services:</strong> PCI-DSS, SOX data access monitoring and incident response</li>
+        <li><strong>Healthcare:</strong> HIPAA PHI access tracking and unauthorized access detection</li>
+        <li><strong>Government/Defense:</strong> FedRAMP, NIST frameworks for threat detection and response</li>
+        <li><strong>Industry Standards:</strong> ISO 27001, SOC 2 security monitoring and incident management</li>
+    </ul>
+    
+    <h4>Metrics and KPIs</h4>
+    <p>Track these key performance indicators:</p>
+    <ul>
+        <li><strong>Detection Metrics:</strong> True positive rate, false positive rate, time to detection</li>
+        <li><strong>Response Metrics:</strong> Mean time to containment, incident escalation rate</li>
+        <li><strong>Business Impact:</strong> Data exposure incidents, compliance violations prevented</li>
+        <li><strong>Threat Intelligence:</strong> Known malicious IP encounters, new threat pattern discovery</li>
+    </ul>
+</div>

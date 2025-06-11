@@ -1,0 +1,290 @@
+// Function to get critical event descriptions from watchlist
+let GetEventDescriptions = () {
+    _GetWatchlist('AWS_Eventname')
+    | project Description, Eventname
+};
+// Main function to generate comprehensive AWS activity summary with 5Ws
+let AWS_generateSummary = () {
+    let EventDescriptions = GetEventDescriptions();
+    AWSCloudTrail
+    | join kind=leftouter (EventDescriptions) on $left.EventName == $right.Eventname
+    | extend
+        // Enhanced resource name extraction (unchanged)
+        ResourceName = case(
+            isnotempty(tostring(parse_json(RequestParameters).userName)), tostring(parse_json(RequestParameters).userName),
+            isnotempty(tostring(parse_json(RequestParameters).roleName)), tostring(parse_json(RequestParameters).roleName),
+            isnotempty(tostring(parse_json(RequestParameters).functionName)), tostring(parse_json(RequestParameters).functionName),
+            isnotempty(tostring(parse_json(RequestParameters).trailName)), tostring(parse_json(RequestParameters).trailName),
+            isnotempty(tostring(parse_json(RequestParameters).logGroupName)), tostring(parse_json(RequestParameters).logGroupName),
+            isnotempty(tostring(parse_json(RequestParameters).bucketName)), tostring(parse_json(RequestParameters).bucketName),
+            isnotempty(tostring(parse_json(RequestParameters).groupName)), tostring(parse_json(RequestParameters).groupName),
+            isnotempty(tostring(parse_json(RequestParameters).keyId)), tostring(parse_json(RequestParameters).keyId),
+            isnotempty(tostring(parse_json(RequestParameters).dbClusterIdentifier)), tostring(parse_json(RequestParameters).dbClusterIdentifier),
+            isnotempty(tostring(parse_json(RequestParameters).dbInstanceIdentifier)), tostring(parse_json(RequestParameters).dbInstanceIdentifier),
+            "Undefined"
+        )
+    | extend ErrorCode = coalesce(ErrorCode, "Success")
+    | extend ErrorMessage = coalesce(ErrorMessage, "No error")
+    | extend Status = iff(isempty(ErrorCode), "Success", "Failed")
+    | extend Severity = case(
+    // Critical Severity
+    // Reference: https://docs.aws.amazon.com/
+    EventName has_any (
+    // Log/Trail Deletion
+        "DeleteTrail", "StopLogging", "DeleteFlowLogs", 
+        "DeleteEventBus", "DisableLogging", 
+        "DeleteEventDataSource", "UpdateTrail",
+    // Security Configuration Destruction
+        "DeleteConfigRule", "DeleteDeliveryChannel", 
+        "DeleteLogGroup", "DeleteCloudTrail",
+        "DisableKey", "ScheduleKeyDeletion",
+        "DeleteVpcFlowLogs", "DeleteAlarmRule"
+    // Policy Manipulation and Instance Deltion
+        "DeleteKeyPolicy",
+        "PutKeyPolicy",
+        "DeleteKmsKey",
+        "DisableKeyRotation",
+        "DeleteVault", 
+        "DeleteBackupVault",
+        "DeleteDBCluster",
+        "DeleteDBInstance"
+    ), "Critical",
+    // High Severity 
+    EventName has_any (
+        "CreateUser", "AttachUserPolicy", "AttachGroupPolicy", 
+        "AttachRolePolicy", "CreateIAMPolicy", 
+        "PutRolePolicy", "CreateAccessKey", 
+        "DeleteAccessKey", "CreateRole",
+        "ConsoleLogin", "GetSessionToken", 
+        "GetFederationToken", "GetPasswordData",
+        "ImportKeyPair", "CreateKeyPair", 
+        "GetSecretValue", "ChangePassword",
+        "CreateIdentityProvider", "CreateSAMLProvider",
+        "UpdateSAMLProvider", "CreateLoginProfile",
+        "UpdateLoginProfile", "DeleteSecurityGroup",
+        "StartSession", "CreateGroup", "ModifySecurityGroupRules",
+        "UpdateFunctionCode", "UpdateFunctionConfiguration",
+        "UpdateFunctionCode20150331v2",
+        "UpdateFunctionEventInvokeConfig", "UpdateFunctionUrlConfig",
+        "CreateFunction20150331", "UpdateFunctionCode20150331v2"
+    ), "High",
+    // Medium Severity
+    EventName has_any (
+        "CreateSecurityGroup", "AuthorizeSecurityGroupIngress", 
+        "AuthorizeSecurityGroupEgress", "RevokeSecurityGroupEgress", 
+        "CreateVpc", "ModifyVpcAttribute", "CreateSubnet",
+        "CreateVpcPeeringConnection", "AcceptVpcPeeringConnection", 
+        "CreateNetworkAclEntry", "DeleteNetworkAcl", 
+        "CreateRoute", "ReplaceRoute", "Invoke", "CreateFunction",
+        "CreateInstance", "ModifyInstance", 
+        "ModifyInstanceAttribute", "RunInstances",
+        "CreateCustomerGateway", "CreateVpcEndpoint", 
+        "ModifyVpcEndpoint", "CreateWebACL", 
+        "UpdateWebACL", "AuthorizeConnectionAttempt",
+        "DisableTransitGatewayRouteTablePropagation",
+        "CreateSnapshot", "CopySnapshot", "CreatePolicy",
+        "CreateVolume", "ModifyVolume", "DeleteUser",
+        "CreateNetworkInterface", "ModifyNetworkInterfaceAttribute",
+        "SharedSnapshotCopyInitiated", "RestoreDBSnapshot", "ModifyDBSnapshotAttribute",
+        "ModifySnapshotAttribute", "SharedSnapshotVolumeCreated",
+        "AddPermission20150331v2", "DeleteFunction20150331", "GetSigninToken"
+    ), "Medium",
+    // Low Severity
+    EventName has_any (
+       "CreateBucket", "DeleteBucket", "ListBuckets", "CreateInstanceProfile",
+        "GetObject", "PutObject", "DeleteObject", "ListUsers",
+        "CopyObject", "HeadObject", "GetBucketPolicy", "CreateServiceLinkedRole",
+        "UploadPart", "RestoreObject", "GetBucketAcl", "DeleteRole",
+        "PutBucketPolicy", "PutBucketAcl", "DeleteRolePolicy",
+        "GetBucketVersioning", "ConsoleLogout", 
+        "DescribeHub", "ListWorkspaces", 
+        "UpdateInstanceInformation", "PutSubscriptionFilter", 
+        "DescribeEventAggregates", "DescribeLogGroups", 
+        "ListDelegatedAdministrators", "ListRoles",
+        "ListAWSServiceAccessForOrganization", 
+        "DescribeHealthServiceStatusForOrganization", 
+        "ListRoots", "GetTopicAttributes", 
+        "GetMfaDeviceManagementForDirectory", 
+        "CreateEnvironment", "AssumeRole", 
+        "PutRetentionPolicy", "DescribeAccount", 
+        "AccessDenied", "ListInstances", 
+        "DescribeInstances", "DescribeVolumes",
+        "ListAutoshifts", "ListGroups", 
+        "GetBucketOwnershipControls", "ListSubscriptionsByTopic", 
+        "DescribeBackupVault", "ListTrails", 
+        "ListApplications", "ListZonalShifts", 
+        "DescribeRepositories", "GetBucketEncryption", 
+        "ListLicenseConfigurations", "ListLandingZones", 
+        "GetLandingZoneStatus", "GetAdminScope", 
+        "ListEventDataStores", "ListProblems", "ListAccessKeys",
+        "ListDashboards", "GetEc2DeepInspectionConfiguration", "ListAccountAliases",
+        "SendSerialConsoleSSHPublicKey", "GetManagedResource", "GetAccountSummary",
+        "GetFunctionConfiguration20150331v2","ListFunctions20150331","GetFunction20150331v2",
+        "GetPolicy20150331v2", "ListLayers20181031", "GetAccountSettings20160819",
+        "GetLayerVersionPolicy20181031","ListLayerVersions20181031","ListEventSourceMappings20150331",
+        "GetPolicy20150331","ListTags20170331","ListVersionsByFunction20150331","ListAliases20150331",
+        "GetRuntimeManagementConfig","ListProvisionedConcurrencyConfigs","GetFunctionEventInvokeConfig",
+        "DescribeInstance", "DescribeConfigurationRecorderStatus",
+        "DescribeEvents", "DescribeOrganizationConfiguration",
+        "DescribeTrails", "DescribeRuleGroupMetadata","UpdateFunctionConfiguration20150331v2",
+        "GetProvisionedConcurrencyConfig","GetLayerVersionByArn20181031",
+        "GetLayerVersion20181031","PublishLayerVersion20181031","RemovePermission20150331v2",
+        "DeleteLayerVersion20181031", "DescribeDBSnapshots", "DescribeDBClusterSnapshots", "DescribeDBInstances", "DescribeDBEngineVersions", "DescribeDBSnapshotTenantDatabases", "GetControlFindingSummary", "DescribeAlarms", "DescribeListeners", "DescribeSecurityGroups", "ListServerCertificates", "GetResources", "DescribeLoadBalancerAttributes", "CreateBucket", "DeleteBucket", "GetObject", "PutObject", "PutBucketPolicy", "CheckMfa", "ConsoleLogout", "DescribeLoadBalancers", "DescribeTargetGroups", "DescribeTargetHealth", "DescribeRules", "DescribeTags", "DescribeCertificate", "LookupEvents", "DescribeAvailabilityZones", "DescribeAccountAttributes", "DescribeAccountLimits", "DescribeTargetGroupAttributes", "DescribeImages", "DescribeMetricFilters", "DescribeVpcs", "DescribeSubnets", "DescribeRouteTables", "DescribeNetworkAcls", "DescribeSnapshots", "GetTrailStatus", "DescribeOrganization", "DescribeImageAttribute", "DescribeRegions"
+    ), "Low", 
+    // Default to Info
+    "Info"
+)
+        // Keep existing AlertDetails (unchanged)
+        | extend AlertDetails = case(
+            // Critical - Logging and Monitoring Changes
+            EventName == "DeleteTrail", "CloudTrail logging deleted - Potential attempt to hide malicious activity",
+            EventName == "StopLogging", "CloudTrail logging stopped - Potential attempt to hide malicious activity",
+            EventName == "DeleteFlowLogs", "VPC Flow logs deleted - Potential attempt to hide network activity",
+            EventName == "DeleteEventBus", "EventBus deleted - Impact to event routing and monitoring",
+            EventName == "DisableLogging", "Logging disabled - Potential attempt to hide activities",
+            EventName == "DeleteEventDataSource", "Event data source deleted - Impact to monitoring coverage",
+            EventName == "UpdateTrail", "CloudTrail configuration modified - Verify changes",
+            EventName == "DeleteLogGroup", "CloudTrail configuration moddified - Permanently deleted all archived log events",
+            EventName == "DeleteKeyPolicy", "KMS Key policy deleted - Potential cryptographic material exposure",
+            EventName == "DisableKeyRotation", "KMS Key rotation disabled - Security best practice violation",
+            EventName == "DeleteDBCluster", strcat("Database cluster deleted: ", ResourceName),
+            EventName == "DeleteDBInstance", strcat("Database instance deleted: ", ResourceName),
+            // High - Identity and Access Management
+            EventName == "CreateUser", strcat("New IAM user created: ", ResourceName),
+            EventName == "AttachUserPolicy", strcat("Policy attached to user: ", ResourceName),
+            EventName == "AttachGroupPolicy", strcat("Policy attached to group: ", ResourceName),
+            EventName == "AttachRolePolicy", strcat("Policy attached to role: ", ResourceName),
+            EventName == "ConsoleLogin", "AWS Console login detected",
+            EventName == "GetSessionToken", "Temporary credentials requested",
+            EventName == "GetFederationToken", "Federation token requested",
+            EventName == "CreateIAMPolicy", "New IAM policy created",
+            EventName == "CreateAccessKey", strcat("New access key created for: ", ResourceName),
+            EventName == "DeleteAccessKey", strcat("Access key deleted for: ", ResourceName),
+            EventName == "GetPasswordData", "Password data retrieved for instance",
+            EventName == "GetSecretValue", "Secret value retrieved from Secrets Manager",
+            EventName == "GetSigninToken", "Using console API to temporary sign into AWS",
+            // High - Update Function Code
+            EventName == "UpdateFunctionCode", "Updates a Lambda function's code",
+            EventName == "UpdateFunctionCode20150331v2", "Updates a Lambda function's code",
+                        // Medium - Network and Infrastructure
+            EventName == "SharedSnapshotCopyInitiated", "Shared Snapshot to a User",
+            EventName == "RestoreDBSnapshot", "Restore a Database snapshot",
+            EventName == "ModifySnapshotAttribute", "Modify attribute(s) to a snapshot",
+            EventName == "SharedSnapshotVolumeCreated", "Shared a volume of a snapshot",
+            EventName == "ModifyDBSnapshotAttribute", "Modify a Database snapshot",
+            EventName == "CreateSecurityGroup", "New security group created",
+            EventName == "AuthorizeSecurityGroupIngress", "Security group ingress rule added",
+            EventName == "AuthorizeSecurityGroupEgress", "Security group egress rule added",
+            EventName == "CreateVpc", "New VPC created",
+            EventName == "ModifyVpcAttribute", "VPC attributes modified",
+            EventName == "CreateVpcPeeringConnection", "New VPC peering connection created",
+            EventName == "CreateNetworkAclEntry", "Network ACL entry created/modified",
+            EventName == "CreateWebACL", "New WAF Web ACL created",
+            EventName == "RunInstances", "New EC2 instances launched",
+            EventName == "AuthorizeConnectionAttempt", "Connection attempt authorized",
+                        // Low - S3 and Standard Operations
+            EventName == "CreateBucket", strcat("New S3 bucket created: ", ResourceName),
+            EventName == "DeleteBucket", strcat("S3 bucket deleted: ", ResourceName),
+            EventName == "GetObject", strcat("S3 object accessed in bucket: ", ResourceName),
+            EventName == "PutObject", strcat("S3 object uploaded to bucket: ", ResourceName),
+            EventName == "PutBucketPolicy", strcat("S3 bucket policy modified for: ", ResourceName),
+            EventName == "DescribeDBSnapshots", strcat("RDS DB Snapshots described: ", ResourceName),
+            EventName == "DescribeDBClusterSnapshots", strcat("RDS DB Cluster Snapshots described: ", ResourceName),
+            EventName == "DescribeDBInstances", strcat("RDS DB Instances described: ", ResourceName),
+            EventName == "DescribeDBEngineVersions", strcat("RDS DB Engine Versions described: ", ResourceName),
+            EventName == "DescribeDBSnapshotTenantDatabases", strcat("RDS DB Snapshot Tenant Databases described: ", ResourceName),
+            EventName == "CheckMfa", strcat("MFA check performed: ", ResourceName),
+            EventName == "GetControlFindingSummary", strcat("Control finding summary retrieved: ", ResourceName),
+            EventName == "ConsoleLogout", "User logged out of AWS Console",
+            EventName == "GetResources", strcat("Resources retrieved: ", ResourceName),
+            EventName == "ListServerCertificates", strcat("Server certificates listed: ", ResourceName),
+            EventName == "DescribeLoadBalancerAttributes", strcat("Load Balancer attributes described: ", ResourceName),
+            EventName == "DescribeSecurityGroups", strcat("Security Groups described: ", ResourceName),
+            EventName == "DescribeLoadBalancers", strcat("Load Balancers described: ", ResourceName),
+            EventName == "DescribeListeners", strcat("Listeners described: ", ResourceName),
+            EventName == "DescribeTargetGroups", strcat("Target Groups described: ", ResourceName),
+            EventName == "DescribeTargetHealth", strcat("Target Health described: ", ResourceName),
+            EventName == "DescribeRules", strcat("Rules described: ", ResourceName),
+            EventName == "DescribeTags", strcat("Tags described: ", ResourceName),
+            EventName == "DescribeCertificate", strcat("Certificate described: ", ResourceName),
+            EventName == "LookupEvents", strcat("Events looked up: ", ResourceName),
+            EventName == "DescribeAvailabilityZones", strcat("Availability Zones described: ", ResourceName),
+            EventName == "DescribeAccountAttributes", strcat("Account Attributes described: ", ResourceName),
+            EventName == "DescribeAccountLimits", strcat("Account Limits described: ", ResourceName),
+            EventName == "DescribeTargetGroupAttributes", strcat("Target Group Attributes described: ", ResourceName),
+            EventName == "DescribeImages", strcat("Images described: ", ResourceName),
+            EventName == "DescribeMetricFilters", strcat("Metric Filters described: ", ResourceName),
+            EventName == "DescribeVpcs", strcat("VPCs described: ", ResourceName),
+            EventName == "DescribeSubnets", strcat("Subnets described: ", ResourceName),
+            EventName == "DescribeRouteTables", strcat("Route Tables described: ", ResourceName),
+            EventName == "DescribeNetworkAcls", strcat("Network ACLs described: ", ResourceName),
+            EventName == "DescribeSnapshots", strcat("Snapshots described: ", ResourceName),
+            EventName == "GetTrailStatus", strcat("Trail Status retrieved: ", ResourceName),
+            EventName == "DescribeOrganization", strcat("Organization described: ", ResourceName),
+            EventName == "DescribeImageAttribute", strcat("Image Attribute described: ", ResourceName),
+            EventName == "DescribeRegions", strcat("Regions described: ", ResourceName),
+                        strcat("Configuration change detected: ", EventName)
+        )
+        // Clean user agent string
+        | extend CleanUserAgent = iff(UserAgent contains "(", 
+            substring(UserAgent, 0, indexof(UserAgent, "(")),
+            UserAgent)
+        // New 5W components
+        | extend Who = case(
+            isnotempty(UserIdentityArn), UserIdentityArn,
+            isnotempty(UserIdentityAccountId), strcat("AWS Account: ", UserIdentityAccountId),
+            "Unknown User"
+        )
+        | extend What = strcat(
+            EventName, 
+            " (", 
+            coalesce(Description, "No description available"),
+            ")"
+        )
+        | extend When = TimeGenerated
+        | extend Where = strcat(
+            "Region: ", AWSRegion,
+            " | Source IP: ", SourceIpAddress,
+            " | Tool: ", CleanUserAgent
+        )
+        | extend Why = case(
+            Severity == "Critical", "CRITICAL SECURITY EVENT - Immediate attention required",
+            Severity == "High", "HIGH-RISK configuration change",
+            Severity == "Medium", "Infrastructure modification",
+            Severity == "Low", "Routine operation",
+            "Informational event"
+        )
+        | where Severity <> "Info"
+        // New structured summary
+        | extend Summary = strcat(
+            "WHO: ", Who, "\n",
+            "WHAT: ", What, "\n",
+            "WHEN: ", When, "\n",
+            "WHERE: ", Where, "\n",
+            "WHY: ", Why, "\n",
+            "DETAILS: ", AlertDetails, "\n",
+            "SEVERITY: ", Severity
+        )
+    | project
+        TimeGenerated,
+        Severity,
+        Who,
+        What,
+        When,
+        Where,
+        Why,
+        EventName,
+        Description,
+        AlertDetails,
+        Summary,
+        ResourceName,
+        SourceIpAddress,
+        AWSRegion,
+        CleanUserAgent,
+        UserIdentityType,
+        UserIdentityArn,
+        UserIdentityUserName,
+        UserIdentityAccountId
+    | sort by TimeGenerated desc, Severity asc
+};
+AWS_generateSummary()

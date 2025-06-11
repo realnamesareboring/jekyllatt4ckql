@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Detection Rules with MITRE ATT&CK Mapping</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js"></script>
+    <script src="./table.js"></script>
+</head>
+<body>
+    <a href="../index.html" class="nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Back to Home
+    </a>
+    
+    <h1>AWS Detection Rules with MITRE ATT&CK Mapping</h1>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">Detection Rules</div>
+            <div class="results-count" id="results-count">Loading...</div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th data-sort="name">Detection Name</th>
+                    <th data-sort="description">Description</th>
+                    <th>MITRE Tactics & Techniques</th>
+                    <th data-sort="dataSource">Data Source</th>
+                    <th>Query Link</th>
+                    <th>Attack Path Reference</th>
+                    <th>Sample Logs</th>
+                </tr>
+            </thead>
+            <tbody id="detection-rules-table-body">
+                <tr>
+                    <td colspan="7" class="loading-indicator">
+                        <div class="modal-loading">Loading detection rules...</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal containers for each set of logs and queries -->
+    <!-- EC2 Related Modals -->
+    <div id="imdsv1-logstest" class="modal"></div>
+    <div id="aws-imdsv1-kql" class="modal"></div>
+    <div id="ec2-suspicious-deployment-logs" class="modal"></div>
+    <div id="ec2-suspicious-deployment-kql" class="modal"></div>
+    <div id="ec2-password-data-retrieved-logs" class="modal"></div>
+    <div id="ec2-password-kql" class="modal"></div>
+    <div id="snapshot-exfiltration-logs" class="modal"></div>
+    <div id="snapshot-exfil-kql" class="modal"></div>
+    
+    <!-- S3 Related Modals -->
+    <div id="s3-bucket-modification-log" class="modal"></div>
+    <div id="s3-modification-kql" class="modal"></div>
+    <div id="s3-buckets-untrusted-network-log" class="modal"></div>
+    <div id="s3-untrusted-access-kql" class="modal"></div>
+    
+    <!-- IAM Related Modals -->
+    <div id="iam-access-keys-created-deleted-logs" class="modal"></div>
+    <div id="iam-keys-created-deleted-kql" class="modal"></div>
+    <div id="iam-cloud-user-creation-logs" class="modal"></div>
+    <div id="iam-user-creation-kql" class="modal"></div>
+    <div id="iam-console-login-no-mfa-logs" class="modal"></div>
+    <div id="iam-login-no-mfa-kql" class="modal"></div>
+    
+    <!-- Network Related Modals -->
+    <div id="aws-malicious-ip-connections-logs" class="modal"></div>
+    <div id="network-malicious-ips-kql" class="modal"></div>
+    <div id="aws-network-suspicious-changes-logs" class="modal"></div>
+    <div id="network-suspicious-changes-kql" class="modal"></div>
+    
+    <!-- Other AWS Service Modals -->
+    <div id="aws-config-changes-logs" class="modal"></div>
+    <div id="operations-config-changes-kql" class="modal"></div>
+    <div id="aws-cloudtrail-tamper-logs" class="modal"></div>
+    <div id="security-cloudtrail-tamper-kql" class="modal"></div>
+    <div id="aws-enhanced-guardduty-logs" class="modal"></div>
+    <div id="security-enhanced-guardduty-kql" class="modal"></div>
+    <div id="aws-unauthorized-api-calls-logs" class="modal"></div>
+    <div id="security-unauthorized-api-kql" class="modal"></div>
+
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" id="theme-toggle" title="Switch theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+</body>
+</html>

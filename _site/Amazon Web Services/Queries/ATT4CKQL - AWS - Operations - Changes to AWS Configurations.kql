@@ -1,0 +1,71 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+let summaries = AWS_generateSummary();
+let untrustedIPs = AWS_filterCloudTrailCIDR();
+//===================================================================
+// Main query to get configuration changes
+//===================================================================
+let configchanges = AWS_extendUserIdentity
+    | where TimeGenerated > ago(1h)
+    | where SourceIpAddress in (untrustedIPs)
+    | where UserName !in ("AWS-SSO", "AWSCloudFormation", "Logging")
+    | where ErrorCode == ""
+    // Filter for specific configuration change events
+    | where EventName in (
+    // IAM Changes
+        "AttachUserPolicy", "AttachRolePolicy", "CreateAccessKey", "CreateLoginProfile",  
+        "UpdateLoginProfile",
+    // Network Security Changes
+        "AuthorizeSecurityGroupIngress", "RevokeSecurityGroupEgress", "ModifyVpcEndpoint", 
+        "PutEventSelectors",
+    // KMS Changes
+        "DisableKey", "DeleteKey", "ScheduleKeyDeletion",
+    // Config and CloudWatch Changes
+        "DeleteConfigRule", "StopConfigurationRecorder", "DeleteDeliveryChannel", 
+        "DeleteEVentDataSource", "DeleteLogGroup", "PutEventSelectors", 
+    // Lambda Changes
+        "UpdateFunctionCode", "UpdateFunctionConfiguration"
+)
+// Extract CloudTrail name from request parameters
+    | extend 
+        CloudTrail = parse_json(RequestParameters).name
+    | project
+        SessionCreationDate,
+        TimeGenerated,
+        CloudTrail,
+        EventName,
+        SourceIpAddress,
+        UserIdentityAccountId,
+        AWSRegion,
+        UserAgent,
+        AccountName,
+        UserIdentityArn;
+//===================================================================
+// Join with summaries and format final output
+//===================================================================
+    configchanges
+        | join kind=leftouter (summaries) 
+            on $left.EventName == $right.EventName 
+            and $left.TimeGenerated == $right.TimeGenerated 
+            and $left.UserIdentityArn == $right.UserIdentityArn
+    | summarize 
+        arg_max(TimeGenerated, *) 
+        by 
+        SessionCreationDate,
+        EventName,
+        UserIdentityAccountId,
+        SourceIpAddress
+    | project
+        TimeGenerated,
+        Summary,
+        EventName,
+        Severity,
+        AlertDetails,
+        ResourceName,
+        AccountName,
+        UserIdentityType,
+        UserIdentityAccountId,
+        SourceIpAddress,
+        UserAgent
+    | sort by Severity asc, TimeGenerated desc

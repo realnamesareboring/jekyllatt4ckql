@@ -1,0 +1,110 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+// Get summaries for event context
+let summaries = AWS_generateSummary;
+// Define filter for non-trusted IP ranges
+let Filter_for_non_trusted = AWS_filterCloudTrailCIDR();
+//===================================================================
+// Calculate historical source IP usage patterns
+// Looks back 90 days to establish baseline source IP usage
+//===================================================================
+let source_ip_counts = 
+    AWSCloudTrail
+        // Filter events within the last 90 days
+        | where TimeGenerated >= ago(90d)
+        // Filter for "RunInstances" events
+        | where EventName == "RunInstances"
+        // Exclude specific source IP addresses
+        | where SourceIpAddress !in ("imagebuilder.amazonaws.com", "autoscaling.amazonaws.com", "cloudformation.amazonaws.com")
+        // Filter for "AssumedRole" user identity type
+        | where UserIdentityType == "AssumedRole"
+        // Summarize historical count of events by SourceIpAddress
+        | summarize HistoricalCount = count() by SourceIpAddress;
+//===================================================================
+// Main query for recent IMDS events
+// Analyzes last 1 hour of RunInstances events
+//===================================================================
+let IMDS = 
+    AWSCloudTrail
+        // Filter events within the last 1 day
+        | where TimeGenerated >= ago(1d)
+        // Filter for "RunInstances" events
+        | where EventName == "RunInstances"
+        // Filters only to show non-admin accounts
+        | where UserIdentityArn !endswith '@privusr.vuln.org'
+        // Exclude specific source IP addresses
+        | where SourceIpAddress !in ("imagebuilder.amazonaws.com", "autoscaling.amazonaws.com", "cloudformation.amazonaws.com")
+        // Exclude events from databricks users
+        | where UserIdentityArn !has "databricks"
+        // Filter for "AssumedRole" user identity type
+        | where UserIdentityType == "AssumedRole"
+        // Ensure ResponseElements are not empty
+        | where isnotempty(ResponseElements)
+        // Parse and expand instance data
+        | extend 
+            responseElements = tostring(parse_json(ResponseElements)),
+            IMDSV1 = tostring(parse_json(ResponseElements).instancesSet.items[0].metadataOptions.httpTokens),
+            InstanceType = tostring(parse_json(ResponseElements).instancesSet.items[0].instanceType),
+            InstanceId = tostring(parse_json(ResponseElements).instancesSet.items[0].instanceId),
+            PrivateIP = parse_json(tostring(parse_json(tostring(parse_json(ResponseElements).instancesSet)).items))[0].privateIpAddress
+        // Join with summaries on TimeGenerated and EventName
+        | join kind=inner (summaries) 
+            on TimeGenerated, 
+                EventName;
+//===================================================================
+// Final analysis and output formatting
+// Identifies unusual source IP deployments based on historical patterns
+//===================================================================
+    IMDS
+        // Add historical context by looking up source IP counts
+        | lookup kind=leftouter (source_ip_counts) on SourceIpAddress
+        | extend HistoricalCount = iif(isempty(HistoricalCount), 1, HistoricalCount)
+        // Filter for valid data and non-empty fields
+        | where isnotempty(SourceIpAddress)
+        | where isnotempty(UserIdentityAccountId)
+        // Aggregate deployment details
+        | summarize 
+            SourceIPs = make_set(SourceIpAddress),     // List of source IPs
+            AccountIds = make_set(UserIdentityAccountId), // Affected accounts
+            Regions = make_set(AWSRegion),                // Deployment regions
+            InstanceTypes = make_set(InstanceType),    // Instance types used
+            Summaries = make_set(Summary),  
+            IMDSV1 = make_set(IMDSV1),           // Event summaries
+            CurrentDeploymentCount = dcount(SourceIpAddress) // Current deployment count
+            by 
+            TimeGenerated,
+            EventName,
+            HistoricalCount,
+            UserIdentityType,
+            UserIdentityArn,
+            InstanceId,
+            tostring(PrivateIP)
+        // Format array outputs for readability
+        | extend 
+            SourceIPs = array_strcat(SourceIPs, "\n"),
+            AccountIds = array_strcat(AccountIds, "\n"),
+            Regions = array_strcat(Regions, "\n"),
+            InstanceTypes = array_strcat(InstanceTypes, "\n"),
+            Summaries = array_strcat(Summaries, "\n"),
+            IMDSV1 = array_strcat(coalesce(IMDSV1, dynamic([])), "\n")
+        // Filter for optional IMDSV1 only
+        | where IMDSV1 == "optional"
+        // Select final output fields
+        | project 
+            TimeGenerated,
+            Summaries,
+            EventName,
+            InstanceTypes,
+            InstanceId,
+            tostring(PrivateIP),
+            IMDSV1,
+            CurrentDeploymentCount,
+            HistoricalCount,
+            UserIdentityArn,
+            SourceIPs,
+            UserIdentityType,
+            AccountIds,
+            Regions
+        // Sort by most recent events first
+        | sort by TimeGenerated desc

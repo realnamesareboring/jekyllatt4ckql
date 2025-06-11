@@ -1,0 +1,61 @@
+// Define patterns for legitimate pipe structures and suspicious ones
+let mojoPattern = @"\\mojo\.\d+\.\d+\.";
+let legitMojoPattern = @"\\mojo\.\d+\.\d+\.\d+$";
+let chromeSyncPattern = @"\\(edge|chrome)\.sync\.\d+\.\d+\.";
+let legitChromeSyncPattern = @"\\(edge|chrome|edge\.sync|chrome\.sync)\.\d+\.\d+\.\d+$";
+let psHostPattern = @"\\PSHost\.\d+\.";
+let legitPSHostPattern = @"\\PSHost\.\d+\.\d+\.";
+let crashpadPattern = @"\\crashpad_";
+let legitCrashpadPattern = @"\\crashpad_\d+_[A-Z]+";
+let firefoxPattern = @"\\cubeb-pipe-";
+let legitFirefoxPattern = @"\\cubeb-pipe-\d+_[0-9]{1,3}+";
+// CobaltStrike patterns (normally would include a list of CobaltStrikeMallable strings)
+let cobaltStrikeHexSuffix = @"[a-fA-F0-9]{2,10}$";
+let genericPipeHexPatterns = @"\\pipe\\[0-9a-f]{7,10}|\\pipe\\[0-9a-f]{8}";
+    DeviceEvents
+    | where ActionType == "NamedPipeEvent" 
+    | where AdditionalFields has "\\"  // Filter for named pipes
+    | extend parsedFields = parse_json(AdditionalFields)
+    | where 
+        // Mojo pattern anomalies
+        (parsedFields.PipeName matches regex mojoPattern and 
+            not(parsedFields.PipeName matches regex legitMojoPattern or 
+                parsedFields.PipeName contains tostring(InitiatingProcessId) or 
+                parsedFields.PipeName contains tostring(parsedFields.ThreadId)))
+        or
+        // Chrome/Edge sync anomalies
+        (parsedFields.PipeName matches regex chromeSyncPattern and 
+            not(parsedFields.PipeName matches regex legitChromeSyncPattern or 
+                parsedFields.PipeName contains tostring(InitiatingProcessId) or 
+                parsedFields.PipeName contains tostring(parsedFields.ThreadId)))
+        or
+        // PowerShell PSHost anomalies
+        (parsedFields.PipeName matches regex psHostPattern and 
+            not(parsedFields.PipeName matches regex legitPSHostPattern or 
+                parsedFields.PipeName contains tostring(InitiatingProcessId)))
+        or
+        // Crashpad anomalies
+        (parsedFields.PipeName matches regex crashpadPattern and 
+            not(parsedFields.PipeName matches regex legitCrashpadPattern or 
+                parsedFields.PipeName contains tostring(InitiatingProcessId)))
+        or
+        // Firefox cubeb-pipe anomalies
+        (parsedFields.PipeName matches regex firefoxPattern and 
+            not(parsedFields.PipeName matches regex legitFirefoxPattern or 
+                parsedFields.PipeName contains tostring(InitiatingProcessId)))
+        or
+        // Generic suspicious hex patterns often used by CobaltStrike
+        (parsedFields.PipeName matches regex genericPipeHexPatterns)
+    | where not(parsedFields.RemoteClientsAccess contains "RejectRemote")
+    | project 
+        TimeGenerated, 
+        DeviceName, 
+        DeviceId, 
+        ActionType, 
+        InitiatingProcessAccountDomain, 
+        InitiatingProcessAccountName, 
+        InitiatingProcessAccountSid, 
+        InitiatingProcessCommandLine, 
+        InitiatingProcessFileName, 
+        InitiatingProcessFolderPath, 
+        InitiatingProcessParentId

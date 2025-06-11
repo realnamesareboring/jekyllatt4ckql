@@ -1,0 +1,61 @@
+//===================================================================
+// Define base variables and functions
+//===================================================================
+// Get summary data from AWS summary function
+let summaries = AWS_generateSummary();
+// Get list of untrusted IP addresses
+let untrustedIPs = AWS_filterCloudTrailCIDR();
+// Define monitored S3 bucket operations
+let EventNameList = dynamic([
+    "DeleteBucket",
+    "CreateBucket", 
+    "PutObject",
+    "DeleteObject",
+    "GetObject"
+]);
+//===================================================================
+// Main query to get S3 bucket events
+//===================================================================
+AWS_ExtendUserIdentityV2
+    // Time and IP filtering
+    | where TimeGenerated > ago(1h)
+    | where SourceIpAddress in (untrustedIPs)
+    //| where UserName !in ("AWS-SSO", "AWSCloudFormation", "Logging")
+    // Only include successful events
+    | where isempty(ErrorCode) 
+        and isempty(ErrorMessage)
+    // Filter for targeted S3 operations
+    | where EventName in~ (EventNameList)
+//===================================================================
+// Enrich events with bucket details
+//===================================================================
+    | extend 
+        BucketName = tostring(parse_json(RequestParameters).bucketName),
+        ObjectKey = tostring(parse_json(RequestParameters).key)
+//===================================================================
+// Join with summaries and format final output
+//===================================================================
+    | join 
+        kind=leftouter (summaries) 
+        on $left.EventName == $right.EventName 
+        and $left.TimeGenerated == $right.TimeGenerated 
+        and $left.UserIdentityArn == $right.UserIdentityArn 
+    // Select final output fields
+    | project
+        TimeGenerated,
+        Summary,
+        EventName, 
+        Description,
+        BucketName,
+        SourceIpAddress,
+        UserIdentityArn,
+        UserIdentityAccountId,
+        UserIdentityUserName,
+        SessionMfaAuthenticated,
+        AWSRegion,
+        UserIdentityType,
+        UserAgent,
+        EventSource,
+        ObjectKey
+    // Sort by time, most recent first
+    | order by TimeGenerated desc

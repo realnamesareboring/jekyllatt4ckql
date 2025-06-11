@@ -1,0 +1,206 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('aws-config-changes-logs')">&times;</span>
+    <h2>AWS Operations - Critical Configuration Changes</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 1 hour | Source: Untrusted IPs</div>
+        </div>
+        <div class="results-info">8 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>Summary</th>
+                    <th>EventName</th>
+                    <th>Severity</th>
+                    <th>AlertDetails</th>
+                    <th>ResourceName</th>
+                    <th>AccountName</th>
+                    <th>UserIdentityType</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>SourceIpAddress</th>
+                    <th>UserAgent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:55:22.651Z</td>
+                    <td class="highlight-cell">IAM policy attached to user</td>
+                    <td>AttachUserPolicy</td>
+                    <td class="highlight-cell">High</td>
+                    <td>Administrator policy attached to IAM user</td>
+                    <td>arn:aws:iam::aws:policy/AdministratorAccess</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>203.0.113.42</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:48:15.789Z</td>
+                    <td class="highlight-cell">AWS CloudTrail configuration modified</td>
+                    <td>PutEventSelectors</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td>CloudTrail event selectors were modified</td>
+                    <td>main-trail</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>198.51.100.23</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:38:08.456Z</td>
+                    <td class="highlight-cell">KMS key deletion scheduled</td>
+                    <td>ScheduleKeyDeletion</td>
+                    <td class="highlight-cell">High</td>
+                    <td>KMS encryption key scheduled for deletion</td>
+                    <td>app-encryption-key</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>192.0.2.155</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:32:47.321Z</td>
+                    <td class="highlight-cell">IAM user login profile created</td>
+                    <td>CreateLoginProfile</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td>Console access enabled for IAM user</td>
+                    <td>service-account</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>aws-cli/2.12.0 Python/3.9.16</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:25:33.654Z</td>
+                    <td class="highlight-cell">Config rule deleted</td>
+                    <td>DeleteConfigRule</td>
+                    <td class="highlight-cell">High</td>
+                    <td>AWS Config compliance rule was deleted</td>
+                    <td>s3-bucket-public-access-prohibited</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>198.51.100.87</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:18:22.987Z</td>
+                    <td class="highlight-cell">Lambda function code updated</td>
+                    <td>UpdateFunctionCode</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td>Lambda function code was modified</td>
+                    <td>security-monitoring-function</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>10.0.12.45</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:12:58.345Z</td>
+                    <td class="highlight-cell">CloudWatch Log Group deleted</td>
+                    <td>DeleteLogGroup</td>
+                    <td class="highlight-cell">High</td>
+                    <td>CloudWatch log group containing security event logs was deleted</td>
+                    <td>/aws/lambda/security-monitoring</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>198.51.100.23</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:05:37.876Z</td>
+                    <td class="highlight-cell">Role policy attached with privileged access</td>
+                    <td>AttachRolePolicy</td>
+                    <td class="highlight-cell">High</td>
+                    <td>Administrative policy attached to IAM role</td>
+                    <td>arn:aws:iam::aws:policy/AdministratorAccess</td>
+                    <td>Production</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td>203.0.113.42</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies critical AWS configuration changes made from untrusted IP addresses within the last hour. It focuses on high-impact security changes including IAM policy modifications, security group changes, encryption key operations, and logging/monitoring alterations.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>EventName</code> field shows what type of configuration change occurred</li>
+        <li>The <code>Summary</code> provides a high-level description of the change</li>
+        <li>The <code>Severity</code> indicates the potential security impact of the change:
+            <ul>
+                <li><strong>High</strong>: Changes that could directly impact security posture (IAM admin permissions, deletion of monitoring)</li>
+                <li><strong>Medium</strong>: Changes that could indirectly impact security (CloudTrail modifications, Lambda code updates)</li>
+            </ul>
+        </li>
+        <li>The <code>AlertDetails</code> field provides additional context about the security implications</li>
+        <li>The <code>SourceIpAddress</code> indicates the origin of the change request, which is from an untrusted source</li>
+        <li>The <code>UserAgent</code> shows whether changes were made via console, CLI, or other methods</li>
+        <li>Patterns of multiple changes in sequence may indicate coordinated activities</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1562.008 - Impair Defenses: Disable or Modify Cloud Logs</li>
+        <li><strong>Persistence (TA0003)</strong><br>T1098.001 - Account Manipulation: Additional Cloud Credentials</li>
+        <li><strong>Privilege Escalation (TA0004)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+        <li><strong>Impact (TA0040)</strong><br>T1485 - Data Destruction</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1578.005 - Modify Cloud Compute Infrastructure: Modify Cloud Compute Configurations</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>IAM Policy Changes:
+            <ul>
+                <li>Immediately review the permissions granted</li>
+                <li>If unauthorized, remove the policies and investigate access gained</li>
+                <li>Consider implementing just-in-time access instead of persistent admin permissions</li>
+            </ul>
+        </li>
+        <li>Monitoring/Logging Changes:
+            <ul>
+                <li>Restore deleted log groups or Config rules</li>
+                <li>Review CloudTrail modifications to ensure proper event capture</li>
+                <li>Implement CloudTrail log integrity validation</li>
+            </ul>
+        </li>
+        <li>Encryption Key Changes:
+            <ul>
+                <li>Cancel scheduled key deletions if unauthorized</li>
+                <li>Review what resources were using the targeted keys</li>
+                <li>Check for data exfiltration attempts during the time window</li>
+            </ul>
+        </li>
+        <li>Lambda Function Changes:
+            <ul>
+                <li>Compare previous and current function code</li>
+                <li>Check for unauthorized code insertions or backdoors</li>
+                <li>Review function permissions and triggers</li>
+            </ul>
+        </li>
+        <li>General Response:
+            <ul>
+                <li>Implement SCPs (Service Control Policies) to prevent critical configuration changes</li>
+                <li>Require MFA for sensitive operations</li>
+                <li>Review CloudTrail logs for additional suspicious activity from same source IPs or users</li>
+                <li>Implement automated rollback procedures for unauthorized changes</li>
+            </ul>
+        </li>
+    </ul>
+</div>

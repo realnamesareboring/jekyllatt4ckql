@@ -1,0 +1,12 @@
+let LogClearedEvents = SecurityEvent
+    | where EventID == 1102 and EventSourceName == "Microsoft-Windows-Eventlog"
+    //| where TimeGenerated >= ago(30m)
+    | project LogClearedTime = TimeGenerated, Computer, AccountCleared = Account, EventID;
+SecurityEvent
+    | where EventID == 4624
+    //| where TimeGenerated >= ago(30m)
+    | project LogonTime = TimeGenerated, Computer, AccountLoggedOn = Account, LogonType, IpAddress, EventID
+    | join kind=inner (LogClearedEvents) on Computer
+    | where LogonTime between (LogClearedTime - 1m .. LogClearedTime + 1m)
+    | summarize arg_max(LogonTime, *) by Computer, AccountCleared, AccountLoggedOn, LogClearedTime, LogonType, IpAddress
+    | project LogClearedTime, EventID1, LogonTime, EventID, TargetComputer = Computer, AccountLoggedOn, LogonType, SourceIP = IpAddress //,AccountCleared

@@ -1,0 +1,268 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('aws-network-suspicious-changes-logs')">&times;</span>
+    <h2>AWS Network Suspicious Changes to Network Resources</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | Severity: Medium | Source: Untrusted IPs</div>
+        </div>
+        <div class="results-info">8 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>EventName</th>
+                    <th>Severity</th>
+                    <th>DetailSummary</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>UserIdentityArn</th>
+                    <th>UserIdentityPrincipalid</th>
+                    <th>UserIdentityUserName</th>
+                    <th>networknicID</th>
+                    <th>SecurityGroupId</th>
+                    <th>GroupID</th>
+                    <th>ModifiedRuleID</th>
+                    <th>SourceIpAddress</th>
+                    <th>networkAclId</th>
+                    <th>ruleAction</th>
+                    <th>cidrBlock</th>
+                    <th>ruleNumber</th>
+                    <th>PortRange</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:45:22.651Z</td>
+                    <td>AuthorizeSecurityGroupIngress</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">Security group modified to allow inbound traffic
+ADDITIONAL INFO: SecurityGroup: sg-0a1b2c3d4e5f6789 Open CIDR: 0.0.0.0/0 Open PortRange: {"From":22,"To":22}</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/admin-user</td>
+                    <td>AIDA1EXAMPLE123456789</td>
+                    <td>admin-user</td>
+                    <td></td>
+                    <td>sg-0a1b2c3d4e5f6789</td>
+                    <td></td>
+                    <td></td>
+                    <td>203.0.113.42</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">0.0.0.0/0</td>
+                    <td></td>
+                    <td class="highlight-cell">{"From":22,"To":22}</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:28:15.789Z</td>
+                    <td>ModifySecurityGroupRules</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">Security group rules modified
+ADDITIONAL INFO: Modified Group: sg-0p9o8i7u6y5t4r3e Modified Rule ID: sgr-0a1b2c3d4e5f6789 Rule Details: {"CidrIpv4":"0.0.0.0/0","Description":"HTTP access","FromPort":80,"IpProtocol":"tcp","ToPort":80}</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/developer</td>
+                    <td>AIDA2EXAMPLE987654321</td>
+                    <td>developer</td>
+                    <td></td>
+                    <td></td>
+                    <td>sg-0p9o8i7u6y5t4r3e</td>
+                    <td>sgr-0a1b2c3d4e5f6789</td>
+                    <td>198.51.100.23</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">0.0.0.0/0</td>
+                    <td></td>
+                    <td>{"From":80,"To":80}</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:12:08.456Z</td>
+                    <td>CreateRoute</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">VPC route created or modified
+ADDITIONAL INFO: Open CIDR: 0.0.0.0/0</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:role/NetworkAdminRole</td>
+                    <td>AROA3EXAMPLE123456789</td>
+                    <td>AssumedRole</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>192.0.2.155</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">0.0.0.0/0</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:58:33.217Z</td>
+                    <td>AuthorizeSecurityGroupIngress</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">Security group modified to allow inbound RDP traffic
+ADDITIONAL INFO: SecurityGroup: sg-0q1w2e3r4t5y6u7i Open CIDR: 0.0.0.0/0 Open PortRange: {"From":3389,"To":3389}</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/windows-admin</td>
+                    <td>AIDA4EXAMPLE135792468</td>
+                    <td>windows-admin</td>
+                    <td></td>
+                    <td>sg-0q1w2e3r4t5y6u7i</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">0.0.0.0/0</td>
+                    <td></td>
+                    <td class="highlight-cell">{"From":3389,"To":3389}</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:42:49.631Z</td>
+                    <td>DeleteFlowLogs</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">VPC Flow Logs were deleted
+ADDITIONAL INFO: Flow logs for network traffic monitoring have been deleted</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/security-admin</td>
+                    <td>AIDA5EXAMPLE246813579</td>
+                    <td>security-admin</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>198.51.100.87</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:27:14.882Z</td>
+                    <td>CreateNetworkAclEntry</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">Network ACL entry created
+ADDITIONAL INFO: NetworkACL: acl-0z9x8c7v6b5n4m3l RuleAction: allow Open CIDR: 0.0.0.0/0 Rule Number: 100 Open PortRange: {"From":1024,"To":65535}</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:role/NetworkAdminRole</td>
+                    <td>AROA6EXAMPLE357924681</td>
+                    <td>AssumedRole</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>192.0.2.155</td>
+                    <td>acl-0z9x8c7v6b5n4m3l</td>
+                    <td>allow</td>
+                    <td class="highlight-cell">0.0.0.0/0</td>
+                    <td>100</td>
+                    <td>{"From":1024,"To":65535}</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:14:22.123Z</td>
+                    <td>CreateVpcEndpoint</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">VPC endpoint created
+ADDITIONAL INFO: Endpoint created connecting private VPC to AWS service</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/network-admin</td>
+                    <td>AIDA7EXAMPLE468135792</td>
+                    <td>network-admin</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>10.0.12.45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T12:57:38.456Z</td>
+                    <td>ModifyVpcEndpoint</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">VPC endpoint modified
+ADDITIONAL INFO: Endpoint policy modified to potentially allow broader access</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/network-admin</td>
+                    <td>AIDA7EXAMPLE468135792</td>
+                    <td>network-admin</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>10.0.12.45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies network security configuration changes made from untrusted IP addresses or known malicious IPs. It focuses on modifications to security groups, network ACLs, routes, and other network components that could indicate unauthorized access attempts or potential compromise.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>EventName</code> field shows what type of network configuration change occurred</li>
+        <li>The <code>DetailSummary</code> provides a comprehensive description of the change, including security implications</li>
+        <li>Modifications that open access to <code>0.0.0.0/0</code> (all IPs) are highlighted as particularly concerning</li>
+        <li>Changes to port ranges, especially for sensitive ports like 22 (SSH) or 3389 (RDP)</li>
+        <li>The <code>SourceIpAddress</code> indicates the origin of the change request, which may be untrusted</li>
+        <li>All events have a <code>Medium</code> severity based on the query filtering</li>
+        <li>Network visibility changes like <code>DeleteFlowLogs</code> could indicate attempts to hide malicious activity</li>
+        <li>VPC endpoint modifications may indicate attempts to create unauthorized data paths</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Initial Access (TA0001)</strong><br>T1133 - External Remote Services</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1562.001 - Impair Defenses: Disable or Modify Tools</li>
+        <li><strong>Persistence (TA0003)</strong><br>T1098 - Account Manipulation</li>
+        <li><strong>Lateral Movement (TA0008)</strong><br>T1021 - Remote Services</li>
+        <li><strong>Command and Control (TA0011)</strong><br>T1090 - Proxy</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Immediately review all security group modifications, especially those allowing:
+            <ul>
+                <li>Inbound traffic from 0.0.0.0/0 (anywhere)</li>
+                <li>Access to management ports (SSH 22, RDP 3389)</li>
+                <li>Overly permissive port ranges</li>
+            </ul>
+        </li>
+        <li>Verify if the network changes were authorized by:
+            <ul>
+                <li>Consulting with the change management system</li>
+                <li>Checking with the users who made the changes</li>
+                <li>Reviewing any automation scripts that might have triggered these changes</li>
+            </ul>
+        </li>
+        <li>For changes from untrusted or known malicious IPs, treat as a potential compromise:
+            <ul>
+                <li>Immediately revert unauthorized changes</li>
+                <li>Enable flow logs if they were disabled</li>
+                <li>Scan affected instances for signs of compromise</li>
+            </ul>
+        </li>
+        <li>Implement preventative controls:
+            <ul>
+                <li>Service Control Policies (SCPs) to restrict critical network changes</li>
+                <li>Require MFA for sensitive network operations</li>
+                <li>Implement VPC endpoint policies with least privilege</li>
+                <li>Create automated alerts for suspicious network changes</li>
+            </ul>
+        </li>
+        <li>Check for additional suspicious activity by the same users/roles</li>
+        <li>Ensure flow logs are enabled for all VPCs to maintain visibility</li>
+    </ul>
+</div>

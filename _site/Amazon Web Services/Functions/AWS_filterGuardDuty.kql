@@ -1,0 +1,78 @@
+let FilteredGuardDuty = () {
+    AWSGuardDuty
+        | where ServiceDetails !contains "sample"
+        | extend InstanceId=tostring(parse_json(ResourceDetails.instanceDetails.instanceId))
+        | extend findingTokens=split(ActivityType, ":")
+        | extend ThreatPurpose=findingTokens[0], findingTokens=split(findingTokens[1], "/")
+        | extend ResourceTypeAffected=findingTokens[0], findingTokens=split(findingTokens[1], ".")
+        | extend ThreatFamilyName=findingTokens[0], findingTokens=split(findingTokens[1], "!")
+        | extend DetectionMechanism=findingTokens[0], Artifact=findingTokens[1]
+        | extend Severity=case(Severity >= 7.0, "High", Severity between (4.0 .. 6.9), "Medium", Severity between (1.0 .. 3.9), "Low", "Unknown")
+        | extend SeveritySort = case( Severity == "High", 1, Severity == "Medium", 2, Severity == "Low", 3, 4)
+        | extend AccessKeyDetails=ResourceDetails.accessKeyDetails
+        | extend RdsDbUserDetails=ResourceDetails.rdsDbUserDetails
+        | extend KubernetesDetails=ResourceDetails.kubernetesDetails
+        | extend ServiceAction=case(
+            isnotempty(ServiceDetails.action.awsApiCallAction), ServiceDetails.action.awsApiCallAction,
+            isnotempty(ServiceDetails.action.kubernetesApiCallAction), ServiceDetails.action.kubernetesApiCallAction,
+            isnotempty(ServiceDetails.action.networkConnectionAction), ServiceDetails.action.networkConnectionAction,
+            isnotempty(ServiceDetails.action.rdsLoginAttemptAction), ServiceDetails.action.rdsLoginAttemptAction,
+            dynamic(null)
+        )
+        | extend RemoteIpAddress=coalesce(tostring(ServiceAction.remoteIpDetails.ipAddressV4), tostring(parse_json(ServiceAction.sourceIPs)[0]))
+        | extend LocalIpAddress=ServiceAction.localIpDetails.ipAddressV4
+        | extend RemoteAWSAccountId=ServiceAction.remoteAccountDetails.accountId
+        | extend AccountUpn=case(
+            AccessKeyDetails.userType == "IAMUser", AccessKeyDetails.userName,
+            AccessKeyDetails.userType == "AssumedRole", split(AccessKeyDetails.principalId, ":", 1)[0],
+            isnotempty(RdsDbUserDetails.user), RdsDbUserDetails.user,
+            isnotempty(KubernetesDetails.kubernetesUserDetails.username), KubernetesDetails.kubernetesUserDetails.username,
+            ""
+        )
+        | extend AccountName=split(AccountUpn, "@", 0)[0]
+        | extend UPNSuffix=split(AccountUpn, "@", 1)[0]
+        | extend GuardDutyDetails=bag_pack("DetectorId", ServiceDetails.detectorId, "Partition", Partition, "Region", Region)
+        | extend FindingLink=iff(isnotempty(Region) and isnotempty(Id), strcat("https://", Region, ".console.aws.amazon.com/guardduty/home?region=", Region, "#/findings?fId=", Id), "")
+        | extend FindingLinkDescription=iff(isnotempty(FindingLink), strcat("Link to GuardDuty finding (AWS): ", FindingLink), "")
+        | project-rename 
+            FindingArn=Arn, 
+            FindingId=Id, 
+            AWSAccountId=AccountId
+        | project-away 
+            TimeCreated, 
+            findingTokens, 
+            Partition, 
+            Region, 
+            SchemaVersion, 
+            Type, 
+            Title
+        | project 
+            TimeGenerated, 
+            AWSAccountId, 
+            FindingId, 
+            FindingArn, 
+            ActivityType, 
+            ResourceDetails, 
+            ServiceDetails, 
+            ServiceAction, 
+            Severity, 
+            Description, 
+            InstanceId, 
+            ThreatPurpose, 
+            ThreatFamilyName, 
+            ResourceTypeAffected, 
+            DetectionMechanism, 
+            Artifact, 
+            AccessKeyDetails, 
+            KubernetesDetails,
+            RemoteIpAddress, 
+            LocalIpAddress, 
+            RemoteAWSAccountId, 
+            AccountUpn, 
+            GuardDutyDetails, 
+            FindingLink, 
+            FindingLinkDescription, 
+            TenantId, 
+            SeveritySort;
+};
+FilteredGuardDuty()

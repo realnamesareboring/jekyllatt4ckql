@@ -1,0 +1,17 @@
+platform_name: "aws"
+title: "Amazon Web Services (AWS)"
+description: "Enhanced KQL queries for AWS environments"
+
+detection_rules:
+  - name: "EC2 Instance Created with IMDSv1"
+    description: "Identifies EC2 instances launched with IMDSv1 set to optional"
+    data_source: "AWS EC2"
+    query_file: "ATT4CKQL - AWS - EC2 - Instance Created with IMDSv1.kql"
+    query_modal_id: "aws-imdsv1-kql"
+    sample_log_id: "ec2-imdsv1-logs"
+  - name: "EC2 Suspicious Deployment"
+    description: "Identifies unusual EC2 instance deployments"
+    data_source: "AWS EC2"
+    query_file: "ATT4CKQL - AWS - EC2 - Suspicious Deployment Detected.kql"
+    query_modal_id: "ec2-suspicious-deployment-kql"
+    sample_log_id: "ec2-suspicious-deployment-logs"

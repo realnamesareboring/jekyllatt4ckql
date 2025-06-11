@@ -1,0 +1,187 @@
+<div id="security-enhanced-guardduty-query-explanation" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query enhances Amazon GuardDuty findings by correlating them with threat intelligence feeds and applying additional filtering logic. It augments native GuardDuty detections with custom context and threat IP matching to provide richer security insights for analysts.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>The enhanced GuardDuty query works through several enrichment steps:</p>
+    <ol>
+        <li>
+            <strong>GuardDuty Data Ingestion:</strong>
+            <ul>
+                <li>Processes filtered GuardDuty findings from the last 24 hours</li>
+                <li>Extracts local and remote IP addresses from GuardDuty events</li>
+                <li>Preserves original GuardDuty severity and activity classifications</li>
+                <li>Captures detailed service action information and resource context</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Threat Intelligence Enrichment:</strong>
+            <ul>
+                <li>Correlates findings with known malicious IPs from the <code>badguyIPs</code> watchlist</li>
+                <li>Matches local IP addresses against threat intelligence feeds</li>
+                <li>Adds <code>ThreatIpMatch</code> flag when IPs are found in threat databases</li>
+                <li>Provides additional context for prioritizing high-risk findings</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Noise Reduction Filtering:</strong>
+            <ul>
+                <li>Excludes traffic from known security vendors (e.g., Palo Alto Networks)</li>
+                <li>Filters out automated CloudTrail organization replication activities</li>
+                <li>Reduces false positives from legitimate security infrastructure</li>
+                <li>Focuses on actionable threats requiring analyst attention</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context Enhancement:</strong>
+            <ul>
+                <li>Extracts access key details and usernames from GuardDuty findings</li>
+                <li>Preserves granular service details for deeper investigation</li>
+                <li>Maintains detection mechanism information (GuardDuty vs. other sources)</li>
+                <li>Sorts findings by severity and recency for efficient analysis</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>Severity:</strong> GuardDuty's original severity assessment (High, Medium, Low)</li>
+        <li><strong>SeveritySort:</strong> Numeric value for sorting findings by priority</li>
+        <li><strong>ActivityType:</strong> GuardDuty's classification of the detected activity</li>
+        <li><strong>Description:</strong> Human-readable description of the security finding</li>
+        <li><strong>ResourceTypeAffected:</strong> Type of AWS resource involved (EC2, IAM, S3, etc.)</li>
+        <li><strong>LocalIpAddress:</strong> Internal IP address associated with the finding</li>
+        <li><strong>RemoteIpAddress:</strong> External IP address involved in the activity</li>
+        <li><strong>ThreatIpMatch:</strong> Indicates if an IP matches threat intelligence (True/empty)</li>
+        <li><strong>AccessKey:</strong> AWS access key involved in the finding</li>
+        <li><strong>UserName:</strong> AWS username associated with the activity</li>
+        <li><strong>ServiceDetails:</strong> Detailed JSON information about the specific action</li>
+        <li><strong>DetectionMechanism:</strong> Source of the detection (GuardDuty, runtime monitoring, etc.)</li>
+        <li><strong>Artifact:</strong> Specific artifact or object involved in the finding</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Machine Learning Enhancement:</strong> Combines GuardDuty's ML capabilities with custom threat intelligence</li>
+        <li><strong>Threat Actor Attribution:</strong> IP matching helps identify known threat actors and campaigns</li>
+        <li><strong>Prioritization Improvement:</strong> Additional context helps analysts focus on highest-risk activities</li>
+        <li><strong>False Positive Reduction:</strong> Filtering logic reduces noise from known-good sources</li>
+        <li><strong>Attack Pattern Recognition:</strong> Enhanced context enables better understanding of attack sequences</li>
+        <li><strong>Operational Efficiency:</strong> Streamlined findings reduce analyst workload and response times</li>
+        <li><strong>Cross-Source Correlation:</strong> Integrates multiple detection sources for comprehensive visibility</li>
+    </ul>
+    
+    <h4>GuardDuty Finding Types Enhanced</h4>
+    <p>This query enhances various GuardDuty finding categories:</p>
+    <ul>
+        <li><strong>Backdoor Findings:</strong> C&C communications with threat IP correlation</li>
+        <li><strong>Cryptocurrency Findings:</strong> Mining activities with enhanced IP reputation data</li>
+        <li><strong>Malware Findings:</strong> Malicious software detections with threat intelligence context</li>
+        <li><strong>Recon Findings:</strong> Reconnaissance activities from known malicious sources</li>
+        <li><strong>Stealth Findings:</strong> Unusual behaviors enhanced with IP reputation</li>
+        <li><strong>Trojan Findings:</strong> Trojan activities correlated with threat actor infrastructure</li>
+        <li><strong>UnauthorizedAccess Findings:</strong> Credential misuse with enhanced threat context</li>
+    </ul>
+    
+    <h4>Response Actions</h4>
+    <p>Enhanced GuardDuty findings enable targeted response actions:</p>
+    <ol>
+        <li><strong>Immediate Triage:</strong>
+            <ul>
+                <li>Prioritize findings with <code>ThreatIpMatch = True</code> for urgent investigation</li>
+                <li>Focus on High severity findings affecting critical resources</li>
+                <li>Examine service details for specific attack techniques and indicators</li>
+                <li>Cross-reference findings with recent security events or alerts</li>
+            </ul>
+        </li>
+        <li><strong>Investigation Deep Dive:</strong>
+            <ul>
+                <li>Analyze the complete attack timeline using GuardDuty's temporal context</li>
+                <li>Investigate associated AWS resources and potential lateral movement</li>
+                <li>Review CloudTrail logs for activities by identified access keys or users</li>
+                <li>Check for persistence mechanisms established by threat actors</li>
+            </ul>
+        </li>
+        <li><strong>Containment Actions:</strong>
+            <ul>
+                <li>Isolate affected EC2 instances through security group modifications</li>
+                <li>Disable compromised access keys and rotate credentials</li>
+                <li>Block malicious IP addresses at network perimeter</li>
+                <li>Implement temporary access restrictions for affected users</li>
+            </ul>
+        </li>
+        <li><strong>Remediation Steps:</strong>
+            <ul>
+                <li>Remove malware and backdoors from compromised systems</li>
+                <li>Reset passwords and enable MFA for affected accounts</li>
+                <li>Review and update security group configurations</li>
+                <li>Patch vulnerable systems and update security policies</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Integration Benefits</h4>
+    <ul>
+        <li><strong>Threat Intelligence Fusion:</strong> Combines GuardDuty's anomaly detection with real-world threat data</li>
+        <li><strong>Custom Filtering:</strong> Adapts to organizational infrastructure and known-good sources</li>
+        <li><strong>Severity Enhancement:</strong> Provides additional context for risk assessment</li>
+        <li><strong>Operational Streamlining:</strong> Reduces alert fatigue through intelligent filtering</li>
+        <li><strong>Historical Context:</strong> Maintains 24-hour visibility window for trend analysis</li>
+        <li><strong>Multi-Source Detection:</strong> Incorporates runtime monitoring and other detection mechanisms</li>
+    </ul>
+    
+    <h4>Threat Hunting Applications</h4>
+    <p>The enhanced GuardDuty data supports proactive threat hunting:</p>
+    <ul>
+        <li><strong>IP Reputation Hunting:</strong> Search for other activities involving flagged IP addresses</li>
+        <li><strong>Access Key Analysis:</strong> Track credential usage patterns across multiple findings</li>
+        <li><strong>Resource Correlation:</strong> Identify patterns across different AWS resource types</li>
+        <li><strong>Temporal Analysis:</strong> Analyze attack timelines and progression patterns</li>
+        <li><strong>Campaign Attribution:</strong> Group related findings by threat actor infrastructure</li>
+        <li><strong>Baseline Deviation:</strong> Identify activities that differ from normal GuardDuty patterns</li>
+    </ul>
+    
+    <h4>Integration with MITRE ATT&CK</h4>
+    <p>Enhanced GuardDuty findings map to multiple MITRE ATT&CK techniques:</p>
+    <ul>
+        <li><strong>T1526 - Cloud Service Discovery:</strong> AWS service enumeration and discovery activities</li>
+        <li><strong>T1552.005 - Cloud Instance Metadata API:</strong> IMDS exploitation attempts</li>
+        <li><strong>T1078.004 - Valid Accounts: Cloud Accounts:</strong> Legitimate credential misuse</li>
+        <li><strong>T1496 - Resource Hijacking:</strong> Cryptomining and computational resource abuse</li>
+        <li><strong>T1071.001 - Application Layer Protocol: Web Protocols:</strong> C&C communications over HTTP/HTTPS</li>
+        <li><strong>T1566 - Phishing:</strong> Initial access through social engineering</li>
+    </ul>
+    
+    <h4>Query Customization</h4>
+    <p>Organizations can customize this query for their specific environment:</p>
+    <ul>
+        <li><strong>Threat Intelligence Sources:</strong> Add additional watchlists or threat feeds</li>
+        <li><strong>Filtering Logic:</strong> Include/exclude specific vendors or service accounts</li>
+        <li><strong>Time Window:</strong> Adjust the 24-hour window based on retention and analysis needs</li>
+        <li><strong>Severity Weighting:</strong> Modify severity sorting based on organizational risk appetite</li>
+        <li><strong>Resource Prioritization:</strong> Weight findings by critical asset involvement</li>
+        <li><strong>Geographic Filtering:</strong> Focus on specific regions or exclude expected locations</li>
+        <li><strong>Service Integration:</strong> Enhance with additional AWS security service data</li>
+    </ul>
+    
+    <h4>Operational Considerations</h4>
+    <ul>
+        <li><strong>Performance Impact:</strong> Optimize join operations for large GuardDuty datasets</li>
+        <li><strong>Data Retention:</strong> Balance historical context with query performance</li>
+        <li><strong>Alert Tuning:</strong> Regularly review filtering logic to reduce false positives</li>
+        <li><strong>Threat Feed Updates:</strong> Ensure threat intelligence feeds are current and relevant</li>
+        <li><strong>Documentation:</strong> Maintain clear documentation of custom enhancements and filters</li>
+        <li><strong>Validation:</strong> Regularly validate that enhanced findings correlate with actual threats</li>
+    </ul>
+    
+    <h4>Metrics and KPIs</h4>
+    <p>Track the effectiveness of enhanced GuardDuty detection:</p>
+    <ul>
+        <li><strong>True Positive Rate:</strong> Percentage of findings that represent actual threats</li>
+        <li><strong>False Positive Reduction:</strong> Improvement in signal-to-noise ratio compared to raw GuardDuty</li>
+        <li><strong>Response Time:</strong> Time from detection to initial analyst response</li>
+        <li><strong>Threat IP Coverage:</strong> Percentage of findings enhanced with threat intelligence</li>
+        <li><strong>Investigation Efficiency:</strong> Time saved through enhanced context and prioritization</li>
+        <li><strong>Detection Coverage:</strong> Breadth of activity types and resources covered</li>
+    </ul>
+</div>

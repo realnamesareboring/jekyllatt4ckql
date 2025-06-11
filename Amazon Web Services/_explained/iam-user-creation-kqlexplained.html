@@ -1,0 +1,373 @@
+<div id="iam-user-creation-kqlexplained" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query detects the creation of new IAM users and tracks their immediate policy attachments within organizational networks. It monitors for potential persistence establishment, privilege escalation attempts, or unauthorized user provisioning by analyzing user creation patterns from trusted IP addresses and correlating them with role assignments and policy grants.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This detection operates through several integrated analysis stages:</p>
+    <ol>
+        <li>
+            <strong>Trusted Network Filtering:</strong>
+            <ul>
+                <li>Uses <code>AWS_filterCloudTrailCIDR()</code> to focus on operations from trusted IP ranges</li>
+                <li>Monitors internal or organizational network activity rather than external threats</li>
+                <li>Enables detection of insider threats and compromised internal systems</li>
+                <li>Focuses on last hour activity for rapid detection and response</li>
+            </ul>
+        </li>
+        <li>
+            <strong>User Creation Event Collection:</strong>
+            <ul>
+                <li>Captures all <code>CreateUser</code> events within the monitoring window</li>
+                <li>Extracts comprehensive user identity information about the creator</li>
+                <li>Preserves network context (source IP, region, user agent)</li>
+                <li>Tracks both the creator and the newly created user details</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Policy Attachment Correlation:</strong>
+            <ul>
+                <li>Monitors immediate policy attachments: <code>AttachUserPolicy</code>, <code>AttachGroupPolicy</code>, <code>AttachRolePolicy</code></li>
+                <li>Correlates policy assignments with user creation timing</li>
+                <li>Identifies simultaneous or near-simultaneous privilege grants</li>
+                <li>Tracks policy ARNs to assess permission levels being granted</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Role and Context Integration:</strong>
+            <ul>
+                <li>Leverages <code>AWS_getRoleEvents()</code> to provide role context for creators</li>
+                <li>Maps user creation activities to broader organizational role structures</li>
+                <li>Links creators to their assumed roles and associated permissions</li>
+                <li>Provides hierarchical context for authorization assessment</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Timeline and Summarization:</strong>
+            <ul>
+                <li>Groups events by user creation occurrences using <code>min(TimeGenerated)</code></li>
+                <li>Integrates with summary data for enriched event descriptions</li>
+                <li>Formats role information for clear presentation</li>
+                <li>Provides comprehensive audit trail for each user creation</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>StartTimeUtc:</strong> Timestamp when the new IAM user was created</li>
+        <li><strong>CreatorUserName:</strong> The identity that performed the user creation (derived from UserName)</li>
+        <li><strong>NewlyCreatedUserName:</strong> Name of the IAM user that was created</li>
+        <li><strong>SourceIpAddress:</strong> IP address from which the creation was performed (from trusted range)</li>
+        <li><strong>AWSRegion:</strong> AWS region where the user creation occurred</li>
+        <li><strong>NewlyCreatedUserPolicy:</strong> Any policies immediately attached to the new user</li>
+        <li><strong>RoleNames:</strong> Roles associated with the creator's identity</li>
+        <li><strong>UserAgent:</strong> Tool used for the creation (Console, CLI, SDK)</li>
+        <li><strong>UserIdentityAccountId:</strong> AWS account where the operation occurred</li>
+        <li><strong>UserIdentityArn:</strong> Full ARN of the identity that created the user</li>
+        <li><strong>AccountName:</strong> Account context for the operation</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Persistence Establishment:</strong> New users can provide long-term access for attackers</li>
+        <li><strong>Privilege Escalation:</strong> Immediate policy attachments may grant excessive permissions</li>
+        <li><strong>Insider Threat Detection:</strong> Monitoring internal user provisioning activities</li>
+        <li><strong>Authority Validation:</strong> Ensures user creation follows proper authorization</li>
+        <li><strong>Compliance Adherence:</strong> Tracks user lifecycle management for audit purposes</li>
+        <li><strong>Access Control Verification:</strong> Validates appropriate permission assignment</li>
+    </ul>
+    
+    <h4>User Creation Risk Patterns</h4>
+    <p>Different user creation scenarios present varying risk levels:</p>
+    <ul>
+        <li><strong>High-Risk Indicators:</strong>
+            <ul>
+                <li>Users created with administrative permissions (<code>AdministratorAccess</code>)</li>
+                <li>Creation during off-hours or from unusual locations</li>
+                <li>Suspicious naming patterns (random strings, service-like names)</li>
+                <li>Multiple users created in rapid succession</li>
+                <li>Users created by compromised or unusual creator accounts</li>
+            </ul>
+        </li>
+        <li><strong>Medium-Risk Indicators:</strong>
+            <ul>
+                <li>Users with broad service permissions (EC2FullAccess, S3FullAccess)</li>
+                <li>Creation by users who don't typically manage IAM</li>
+                <li>Missing or incomplete documentation in creation context</li>
+                <li>Users created without following organizational naming conventions</li>
+            </ul>
+        </li>
+        <li><strong>Policy Attachment Risks:</strong>
+            <ul>
+                <li>Immediate attachment of powerful AWS managed policies</li>
+                <li>Custom policies with broad permissions</li>
+                <li>Cross-service access permissions</li>
+                <li>Policies that allow IAM management capabilities</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Attack Scenarios and Motivations</h4>
+    <p>This detection helps identify various malicious activities:</p>
+    <ul>
+        <li><strong>Persistence and Backdoor Creation:</strong>
+            <ul>
+                <li>Attackers creating backup access methods after initial compromise</li>
+                <li>Establishing covert accounts for long-term access</li>
+                <li>Creating users that appear legitimate to avoid detection</li>
+                <li>Building redundant access paths across multiple accounts</li>
+            </ul>
+        </li>
+        <li><strong>Insider Threat Activities:</strong>
+            <ul>
+                <li>Employees creating unauthorized accounts for personal use</li>
+                <li>Malicious insiders establishing persistent access before leaving</li>
+                <li>Unauthorized privilege delegation to external parties</li>
+                <li>Shadow IT initiatives bypassing proper governance</li>
+            </ul>
+        </li>
+        <li><strong>Compromised Administrator Abuse:</strong>
+            <ul>
+                <li>Leveraging hijacked admin accounts to create new users</li>
+                <li>Using compromised automation accounts for user provisioning</li>
+                <li>Exploiting temporary elevated privileges for permanent access</li>
+                <li>Creating accounts with permissions exceeding the creator's authority</li>
+            </ul>
+        </li>
+        <li><strong>Supply Chain and Third-Party Risks:</strong>
+            <ul>
+                <li>Compromised vendor accounts creating unauthorized users</li>
+                <li>Malicious contractors establishing persistent access</li>
+                <li>Third-party integrations creating excessive privileged accounts</li>
+                <li>Partner account compromise leading to unauthorized provisioning</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Immediate Response Actions</h4>
+    <p>When this detection triggers, follow this structured response approach:</p>
+    <ol>
+        <li><strong>Initial Assessment (0-5 minutes):</strong>
+            <ul>
+                <li>Verify if the user creation was authorized through proper channels</li>
+                <li>Check if the creator has legitimate authority for user management</li>
+                <li>Assess the permissions being granted to the new user</li>
+                <li>Determine if the creation follows organizational naming conventions</li>
+            </ul>
+        </li>
+        <li><strong>Authorization Verification (5-15 minutes):</strong>
+            <ul>
+                <li>Confirm user creation request through change management systems</li>
+                <li>Validate business justification for the new account</li>
+                <li>Check approval workflows and documentation</li>
+                <li>Verify the creator's current authorization and account status</li>
+            </ul>
+        </li>
+        <li><strong>Risk Evaluation (15-30 minutes):</strong>
+            <ul>
+                <li>Analyze attached policies for appropriateness and necessity</li>
+                <li>Review the creator's recent activities for suspicious patterns</li>
+                <li>Check for other recent user creations by the same identity</li>
+                <li>Assess potential impact of the new user's permissions</li>
+            </ul>
+        </li>
+        <li><strong>Containment and Investigation (30-60 minutes):</strong>
+            <ul>
+                <li>If unauthorized, immediately disable the newly created user</li>
+                <li>Suspend the creator account if compromise is suspected</li>
+                <li>Remove or modify excessive policy attachments</li>
+                <li>Document all containment actions for audit purposes</li>
+            </ul>
+        </li>
+        <li><strong>Remediation and Hardening (1-4 hours):</strong>
+            <ul>
+                <li>Implement proper user creation workflows if missing</li>
+                <li>Review and tighten IAM permissions for user management</li>
+                <li>Establish monitoring for the creator account going forward</li>
+                <li>Update security policies based on findings</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Policy Attachment Analysis</h4>
+    <p>Special attention should be paid to immediate policy attachments:</p>
+    <ul>
+        <li><strong>AWS Managed Policies of Concern:</strong>
+            <ul>
+                <li><code>AdministratorAccess</code> - Full administrative privileges</li>
+                <li><code>IAMFullAccess</code> - Complete IAM management capabilities</li>
+                <li><code>SecurityAudit</code> - Broad read access across services</li>
+                <li><code>PowerUserAccess</code> - Extensive service permissions</li>
+            </ul>
+        </li>
+        <li><strong>Patterns Requiring Investigation:</strong>
+            <ul>
+                <li>Multiple policies attached simultaneously</li>
+                <li>Policies exceeding the creator's own permissions</li>
+                <li>Cross-service access policies (S3 + EC2 + IAM)</li>
+                <li>Custom policies with unclear or broad permissions</li>
+            </ul>
+        </li>
+        <li><strong>Appropriate Policy Patterns:</strong>
+            <ul>
+                <li>Single, specific service policies (ReadOnlyAccess)</li>
+                <li>Job-function specific policies (DatabaseAdministrator)</li>
+                <li>Policies with resource-level restrictions</li>
+                <li>Temporary access policies with expiration</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Organizational Context Integration</h4>
+    <p>Consider these organizational factors when analyzing user creation:</p>
+    <ul>
+        <li><strong>Timing Analysis:</strong>
+            <ul>
+                <li>Business hours vs. off-hours creation</li>
+                <li>Correlation with onboarding/offboarding cycles</li>
+                <li>Seasonal or project-based access patterns</li>
+                <li>Emergency vs. planned access provisioning</li>
+            </ul>
+        </li>
+        <li><strong>Creator Authorization:</strong>
+            <ul>
+                <li>HR personnel for employee onboarding</li>
+                <li>IT administrators for system accounts</li>
+                <li>Project managers for temporary access</li>
+                <li>Security team for investigation accounts</li>
+            </ul>
+        </li>
+        <li><strong>Naming Convention Compliance:</strong>
+            <ul>
+                <li>Standard prefixes for different user types</li>
+                <li>Department or project identifiers</li>
+                <li>Service account vs. human user patterns</li>
+                <li>Temporary vs. permanent account indicators</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Advanced Detection Enhancements</h4>
+    <p>Consider these improvements for more sophisticated detection:</p>
+    <ul>
+        <li><strong>Machine Learning Integration:</strong>
+            <ul>
+                <li>Baseline creator behavior patterns</li>
+                <li>Anomaly detection for unusual creation patterns</li>
+                <li>Policy attachment recommendation analysis</li>
+                <li>Temporal pattern recognition for legitimate creation cycles</li>
+            </ul>
+        </li>
+        <li><strong>Risk Scoring Model:</strong>
+            <ul>
+                <li>Weight factors: creator risk + policy risk + timing + conventions</li>
+                <li>Dynamic scoring based on organizational context</li>
+                <li>Integration with identity governance platforms</li>
+                <li>Continuous risk adjustment based on user behavior</li>
+            </ul>
+        </li>
+        <li><strong>Automation Integration:</strong>
+            <ul>
+                <li>Workflow integration with ITSM platforms</li>
+                <li>Automatic policy compliance checking</li>
+                <li>Identity lifecycle management system integration</li>
+                <li>Approval workflow validation</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Detection Tuning Guidelines</h4>
+    <p>Customize this detection for your organizational needs:</p>
+    <ul>
+        <li><strong>Creator Whitelist Management:</strong>
+            <ul>
+                <li>Maintain list of authorized user managers</li>
+                <li>Role-based creation authorization</li>
+                <li>Department-specific provisioning rights</li>
+                <li>Temporary delegation tracking</li>
+            </ul>
+        </li>
+        <li><strong>Policy Risk Assessment:</strong>
+            <ul>
+                <li>Classify policies by risk level and impact</li>
+                <li>Define acceptable policy combinations</li>
+                <li>Set alerts for high-risk policy attachments</li>
+                <li>Monitor policy drift over time</li>
+            </ul>
+        </li>
+        <li><strong>Temporal Filtering:</strong>
+            <ul>
+                <li>Adjust monitoring window based on organizational needs</li>
+                <li>Account for business hours and geographic distribution</li>
+                <li>Consider maintenance and change windows</li>
+                <li>Implement escalation based on timing context</li>
+            </ul>
+        </li>
+        <li><strong>Integration Points:</strong>
+            <ul>
+                <li>HRIS systems for employee lifecycle validation</li>
+                <li>Change management systems for approval tracking</li>
+                <li>Identity governance platforms for policy analysis</li>
+                <li>Security orchestration for automated response</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Compliance and Governance</h4>
+    <p>This detection supports various compliance frameworks:</p>
+    <ul>
+        <li><strong>Identity Management Standards:</strong>
+            <ul>
+                <li>ISO/IEC 24760 identity framework compliance</li>
+                <li>NIST 800-63 digital identity guidelines</li>
+                <li>Zero Trust Architecture user verification</li>
+                <li>Privileged Access Management (PAM) controls</li>
+            </ul>
+        </li>
+        <li><strong>Regulatory Requirements:</strong>
+            <ul>
+                <li>SOX user access management and audit trails</li>
+                <li>PCI-DSS access control and monitoring</li>
+                <li>GDPR data processor access management</li>
+                <li>HIPAA workforce member access controls</li>
+            </ul>
+        </li>
+        <li><strong>Industry Frameworks:</strong>
+            <ul>
+                <li>COBIT governance and risk management</li>
+                <li>ITIL service management processes</li>
+                <li>COSO internal control frameworks</li>
+                <li>FAIR risk quantification models</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Key Performance Indicators</h4>
+    <p>Monitor these metrics to assess detection effectiveness:</p>
+    <ul>
+        <li><strong>Operational Metrics:</strong>
+            <ul>
+                <li>Number of user creations detected vs. actual creations</li>
+                <li>False positive rate for legitimate user provisioning</li>
+                <li>Time to investigation for flagged user creations</li>
+                <li>Coverage of user creation across different creator types</li>
+            </ul>
+        </li>
+        <li><strong>Security Metrics:</strong>
+            <ul>
+                <li>Unauthorized user creations prevented</li>
+                <li>Policy attachment violations detected</li>
+                <li>Insider threat incidents identified</li>
+                <li>Compliance violations avoided through monitoring</li>
+            </ul>
+        </li>
+        <li><strong>Process Metrics:</strong>
+            <ul>
+                <li>Workflow compliance rate for user provisioning</li>
+                <li>Average time for legitimate user creation approval</li>
+                <li>Policy attachment review and correction rate</li>
+                <li>Creator authorization validation accuracy</li>
+            </ul>
+        </li>
+    </ul>
+</div>

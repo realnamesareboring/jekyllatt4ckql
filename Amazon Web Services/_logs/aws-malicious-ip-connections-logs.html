@@ -1,0 +1,188 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('aws-malicious-ip-connections-logs')">&times;</span>
+    <h2>AWS Network Connection to Malicious IPs and Domains</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | Source: VPC Flow Logs + CloudTrail + Threat Intelligence</div>
+        </div>
+        <div class="results-info">7 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>Summary</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>UserIdentityArn</th>
+                    <th>Region</th>
+                    <th>SourceInstance</th>
+                    <th>SourceIpAddress</th>
+                    <th>DstAddr</th>
+                    <th>SrcPort</th>
+                    <th>DstPort</th>
+                    <th>EventName</th>
+                    <th>InterfaceId</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:23:17.652Z</td>
+                    <td class="highlight-cell">Unauthorized SSH access attempt from known malicious IP</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/admin-user</td>
+                    <td>us-east-1</td>
+                    <td>i-0abc123def456789</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>10.0.1.145</td>
+                    <td>54321</td>
+                    <td class="highlight-cell">22</td>
+                    <td>NetworkConnection</td>
+                    <td>eni-0a1b2c3d4e5f6789</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:15:05.321Z</td>
+                    <td class="highlight-cell">EC2 instance connecting to known C2 infrastructure</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:role/EC2ServiceRole</td>
+                    <td>us-west-2</td>
+                    <td>i-0def456ghi789012</td>
+                    <td>10.0.2.156</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td>49876</td>
+                    <td class="highlight-cell">443</td>
+                    <td>NetworkConnection</td>
+                    <td>eni-07h8i9j0k1l2m3n4</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:52:09.887Z</td>
+                    <td class="highlight-cell">IAM user creation attempt from known malicious IP</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/admin-user</td>
+                    <td>eu-west-1</td>
+                    <td></td>
+                    <td class="highlight-cell">45.227.253.98</td>
+                    <td>10.0.3.201</td>
+                    <td>60123</td>
+                    <td class="highlight-cell">443</td>
+                    <td>CreateUser</td>
+                    <td>eni-0p9q7r5s6t4u3v2w</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:37:42.456Z</td>
+                    <td class="highlight-cell">Database instance connecting to known exfiltration endpoint</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:role/RDSServiceRole</td>
+                    <td>us-east-2</td>
+                    <td>i-0jkl345mno678901</td>
+                    <td>10.0.4.178</td>
+                    <td class="highlight-cell">203.0.113.42</td>
+                    <td>33896</td>
+                    <td class="highlight-cell">1433</td>
+                    <td>NetworkConnection</td>
+                    <td>eni-0x9y8z7w6v5u4t3s</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T12:58:23.789Z</td>
+                    <td class="highlight-cell">EC2 instance connecting to cryptocurrency mining pool</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:role/EC2ServiceRole</td>
+                    <td>eu-central-1</td>
+                    <td>i-0stu678vwx901234</td>
+                    <td>10.0.5.192</td>
+                    <td class="highlight-cell">198.51.100.23</td>
+                    <td>45678</td>
+                    <td class="highlight-cell">3333</td>
+                    <td>NetworkConnection</td>
+                    <td>eni-0a2b3c4d5e6f7g8h</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T12:04:56.123Z</td>
+                    <td class="highlight-cell">S3 bucket access from known malicious IP</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:user/s3-user</td>
+                    <td>us-east-1</td>
+                    <td></td>
+                    <td class="highlight-cell">45.227.253.98</td>
+                    <td>s3.amazonaws.com</td>
+                    <td>57321</td>
+                    <td class="highlight-cell">443</td>
+                    <td>GetObject</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T11:37:11.543Z</td>
+                    <td class="highlight-cell">EC2 instance communicating with Tor exit node</td>
+                    <td>123456789012</td>
+                    <td>arn:aws:iam::123456789012:role/EC2ServiceRole</td>
+                    <td>ap-southeast-1</td>
+                    <td>i-0bcd234efg567890</td>
+                    <td>10.0.6.217</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>39547</td>
+                    <td class="highlight-cell">9001</td>
+                    <td>NetworkConnection</td>
+                    <td>eni-0i1j2k3l4m5n6o7p</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection correlates AWS CloudTrail events and VPC Flow Logs with known malicious IP addresses from threat intelligence feeds. It focuses on identifying security-relevant actions performed from or connections to IP addresses associated with Advanced Persistent Threats (APTs) or other known malicious actors.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>SourceIpAddress</code> or <code>DstAddr</code> fields show IPs that match entries in the <code>badguyIPs</code> watchlist</li>
+        <li>The <code>EventName</code> indicates what action was performed from or to the suspicious IP</li>
+        <li>The <code>DstPort</code> can indicate targeted services:
+            <ul>
+                <li>Port 22 - SSH access attempts</li>
+                <li>Port 443 - HTTPS traffic (potentially C2 communications)</li>
+                <li>Port 1433 - SQL Server (potential database exfiltration)</li>
+                <li>Port 3333 - Common cryptocurrency mining pool port</li>
+                <li>Port 9001 - Tor network communications</li>
+            </ul>
+        </li>
+        <li>The <code>Summary</code> field provides context about the detected activity</li>
+        <li>The correlation with VPC Flow logs provides network traffic context around the events</li>
+        <li>The <code>UserIdentityArn</code> shows which accounts or roles may be compromised</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Command and Control (TA0011)</strong><br>T1071.001 - Application Layer Protocol: Web Protocols</li>
+        <li><strong>Exfiltration (TA0010)</strong><br>T1048 - Exfiltration Over Alternative Protocol</li>
+        <li><strong>Discovery (TA0007)</strong><br>T1526 - Cloud Service Discovery</li>
+        <li><strong>Impact (TA0040)</strong><br>T1496 - Resource Hijacking</li>
+        <li><strong>Initial Access (TA0001)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Immediately isolate affected instances by modifying security groups to block all non-essential traffic</li>
+        <li>Investigate the nature of the communications with the malicious IP addresses</li>
+        <li>For EC2 instances:
+            <ul>
+                <li>Capture a memory dump if possible</li>
+                <li>Review running processes and network connections</li>
+                <li>Consider replacing the instance rather than remediating it</li>
+                <li>Scan EC2 instance with anti-malware tools</li>
+            </ul>
+        </li>
+        <li>For IAM users and roles:
+            <ul>
+                <li>Review CloudTrail logs for all actions taken by the identity</li>
+                <li>Reset credentials or deactivate the user/role</li>
+                <li>Review all resources the user/role had access to for signs of compromise</li>
+            </ul>
+        </li>
+        <li>Check for data exfiltration from S3 buckets or databases</li>
+        <li>Review GuardDuty findings for additional context</li>
+        <li>Implement more restrictive security groups and Network ACLs</li>
+        <li>Consider implementing a Web Application Firewall (WAF) for public-facing resources</li>
+    </ul>
+</div>

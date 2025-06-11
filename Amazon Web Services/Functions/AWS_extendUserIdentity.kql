@@ -1,0 +1,16 @@
+let ExtendUserIdentity = () {
+    AWSCloudTrail
+        | extend UserIdentityArn = iif(isempty(UserIdentityArn), tostring(parse_json(Resources)[0].ARN), UserIdentityArn)
+        | extend UserName = tostring(split(UserIdentityArn, '/')[-1])
+        | extend AccountName = case(UserIdentityPrincipalid == "Anonymous", "Anonymous", isempty(UserIdentityUserName), UserName, UserIdentityUserName)
+        | extend
+            AccountName = iif(AccountName contains "@", tostring(split(AccountName, '@', 0)[0]), AccountName),
+            AccountUPNSuffix = iif(AccountName contains "@", tostring(split(AccountName, '@', 1)[0]), "")
+        | extend PrincipalSessionID = UserIdentityPrincipalid
+        | extend noSCIM = todynamic(parse_json(ResponseElements)) 
+        | where noSCIM has ("SCIM") == false 
+        | where ErrorCode != 'AccessDenied'
+        | extend CreatedUserName = tostring(parse_json(RequestParameters).userName)
+        | extend ResponseElements = iff(isnull(ResponseElements), "", ResponseElements);
+};
+ExtendUserIdentity();

@@ -1,0 +1,137 @@
+//===================================================================
+// Define base variables and functions
+// Initialize core data sources for network security monitoring
+//===================================================================
+let summaries = AWS_generateSummary();
+let APTIPs = _GetWatchlist('badguyIPs')           // Get known malicious IPs
+    | project IOC;
+let untrustedIPs = AWS_filterCloudTrailCIDR();
+//===================================================================
+// Define network security events to monitor
+// Track critical changes to network infrastructure and security groups 
+//===================================================================
+let EventNameList = dynamic([
+  // Security Group Changes
+  "CreateSecurityGroup", "DeleteSecurityGroup", "AuthorizeSecurityGroupIngress",
+  "RevokeSecurityGroupEgress", "ModifySecurityGroupRules", "ModifySecurityGroupIngress",
+  // Instance and Interface Changes
+  "ModifyInstanceAttribute", "DeleteNetworkInterface",
+  // VPC and Routing Changes
+  "CreateVpcPeeringConnection", "AcceptVpcPeeringConnection",
+  "CreateNetworkAclEntry", "DeleteNetworkAcl", "CreateRoute", "ReplaceRoute",
+  "CreateCustomerGateway", "CreateVpcEndpoint", "ModifyVpcEndpoint",
+  // Logging and Gateway Changes
+  "DeleteFlowLogs", "DisableTransitGatewayRouteTablePropagation",
+  // Role Assumptions
+  "AssumedRole"
+]);
+//===================================================================
+// Monitor Network Configuration Changes
+// Track security-relevant network modifications from untrusted sources
+//===================================================================
+let NetworkEvents = AWS_extendUserIdentity()
+   | where SourceIpAddress in (untrustedIPs)
+        or SourceIpAddress in (APTIPs)
+   | where EventName in (EventNameList)
+   | where UserName !in ("AWSConfig-Describe", "configLambdaExecution", "AWSCloudFormation")
+       and UserName !has "EKS"
+   | distinct 
+       TimeGenerated, 
+       EventName, 
+       UserIdentityArn, 
+       UserIdentityAccountId, 
+       UserIdentityPrincipalid, 
+       UserAgent, 
+       AccountName, 
+       UserName, 
+       SourceIpAddress, 
+       AWSRegion, 
+       RequestParameters, 
+       AdditionalEventData, 
+       Resources, 
+       RecipientAccountId, 
+       EventSource;
+//===================================================================
+// Enrich Events with Network Details
+// Parse and extract network configuration changes
+//===================================================================
+NetworkEvents
+   | join kind=leftouter (summaries) 
+       on $left.EventName == $right.EventName 
+       and $left.TimeGenerated == $right.TimeGenerated 
+       and $left.UserIdentityArn == $right.UserIdentityArn
+   | where Severity == 'Medium'
+   | where isnotempty(Severity)
+   | where EventName != 'CreateNetworkAclEntry' 
+        and EventName != 'DeleteNetworkAcl'
+   | extend
+       cidrBlock = tostring(parse_json(RequestParameters).cidrBlock),        // CIDR range affected
+       networkAclId = tostring(parse_json(RequestParameters).networkAclId),  // Network ACL modified
+       ruleAction = tostring(parse_json(RequestParameters).ruleAction),      // Allow/Deny action
+       SecurityGroupId = tostring(parse_json(RequestParameters).groupId),
+       PortRange = tostring(parse_json(tostring(parse_json(RequestParameters).portRange))),  // Port range modified
+       ruleNumber = tostring(parse_json(RequestParameters).ruleNumber),      // ACL rule number
+       networknicID = tostring(parse_json(RequestParameters).networkInterfaceId),  // Network interface ID
+       // Security group modification details
+       GroupID = parse_json(tostring(parse_json(RequestParameters).ModifySecurityGroupRulesRequest)).GroupId,
+       ModifiedRuleID = parse_json(tostring(parse_json(tostring(parse_json(RequestParameters).ModifySecurityGroupRulesRequest)).SecurityGroupRule)).SecurityGroupRuleId,
+       ModifiedEntireRule = parse_json(tostring(parse_json(tostring(parse_json(tostring(parse_json(RequestParameters).ModifySecurityGroupRulesRequest)).SecurityGroupRule)).SecurityGroupRule))
+//===================================================================
+// Create Detailed Summary
+// Combine all network changes into comprehensive description
+//===================================================================
+   | extend DetailSummary = strcat(
+       Summary,
+       "\nADDITIONAL INFO: ",
+       iif(isnotempty(networkAclId), strcat("NetworkACL: ", networkAclId, " "), ""),
+       iif(isnotempty(ruleAction), strcat("RuleAction: ", ruleAction, " "), ""),
+       iif(isnotempty(cidrBlock), strcat("Open CIDR: ", cidrBlock, " "), ""),
+       iif(isnotempty(SecurityGroupId), strcat("SecurityGroup: ", SecurityGroupId, " "), ""),
+       iif(isnotempty(GroupID), strcat("Modified Group: ", GroupID, " "), ""),
+       iif(isnotempty(ModifiedRuleID), strcat("Modified Rule ID: ", ModifiedRuleID, " "), ""),
+       iif(isnotempty(ModifiedEntireRule), strcat("Rule Details: ", ModifiedEntireRule, " "), ""),
+       iif(isnotempty(ruleNumber), strcat("Rule Number: ", ruleNumber, " "), ""),
+       iif(isnotempty(PortRange), strcat("Open PortRange: ", PortRange), ""),
+       iif(isnotempty(networknicID), strcat("Network Interface: ", networknicID), "")
+)
+//===================================================================
+// Format Final Output
+// Present comprehensive view of network security changes
+//===================================================================
+    | summarize arg_max(TimeGenerated, *)
+        by 
+        TimeGenerated, 
+        EventName, 
+        UserIdentityArn, 
+        SourceIpAddress,
+        networknicID,
+        networkAclId,
+        ruleAction,
+        cidrBlock,
+        SecurityGroupId,
+        tostring(GroupID),           // Cast to string
+        tostring(ModifiedRuleID),    // Cast to string
+        ruleNumber,
+        PortRange
+| distinct 
+        TimeGenerated,
+        EventName, 
+        Severity, 
+        DetailSummary,
+        UserIdentityAccountId,
+        UserIdentityArn,
+        UserIdentityPrincipalid,
+        UserIdentityUserName,
+        networknicID,
+        SecurityGroupId,
+        tostring(GroupID),
+        tostring(ModifiedRuleID),
+        tostring(ModifiedEntireRule),
+        SourceIpAddress,
+        networkAclId,
+        ruleAction,
+        cidrBlock,
+        ruleNumber,
+        PortRange
+   | sort by 
+       Severity asc 

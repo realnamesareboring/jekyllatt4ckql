@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ site.title }}</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    
+    {% if page.show_theme_chooser %}
+    <div class="theme-chooser-overlay" id="theme-chooser">
+        <div class="theme-chooser-content">
+            <h2>Which side do you belong?</h2>
+            <p>Choose your perspective</p>
+            <button class="theme-button defender-button" onclick="showMain('defender')">Defender</button>
+            <button class="theme-button attacker-button" onclick="showMain('attacker')">Attacker</button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="main-content" id="main-content" {% if page.show_theme_chooser %}style="opacity: 0;"{% endif %}>
+        {{ content }}
+    </div>
+
+    <script>
+        function showMain(theme) {
+            // Hide theme chooser
+            document.getElementById('theme-chooser').style.display = 'none';
+            
+            // Show main content properly
+            const mainContent = document.getElementById('main-content');
+            mainContent.style.display = 'block';
+            mainContent.style.opacity = '1';
+            mainContent.classList.add('visible');
+            
+            // Apply theme
+            if (theme === 'attacker') {
+                document.body.classList.add('theme-attacker');
+                document.body.style.background = '#1c1c1c';
+                document.body.style.color = '#f0f0f0';
+            } else {
+                document.body.classList.remove('theme-attacker');
+            }
+        }
+    </script>
+</body>
+</html>
