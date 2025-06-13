@@ -100,7 +100,7 @@ const detectionRules = [
         queryModalId: "s3-modification-kql",
         attackPath: "https://stratus-red-team.cloud/attack-techniques/AWS/aws.execution.ec2-launch-unusual-instances/",
         attackPathText: "stratus-red-team: Launch Unusual EC2 instances",
-        sampleLogId: "s3-bucket-modification-log"
+        sampleLogId: "s3-bucket-modification-logs"
     },
     
     // S3 Bucket Accessed from Untrusted Network
@@ -121,7 +121,7 @@ const detectionRules = [
         queryModalId: "s3-untrusted-access-kql",
         attackPath: "https://www.intigriti.com/researchers/blog/hacking-tools/hacking-misconfigured-aws-s3-buckets-a-complete-guide",
         attackPathText: "intigriti: Hacking misconfigured AWS S3 buckets: A complete guide",
-        sampleLogId: "s3-buckets-untrusted-network-log"
+        sampleLogId: "s3-buckets-untrusted-network-logs"
     },
     
     // IAM Access Keys Created and Deleted

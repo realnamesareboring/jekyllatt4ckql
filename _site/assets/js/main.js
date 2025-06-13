@@ -3,13 +3,22 @@
  * For the main ATT4CKQL landing page
  */
 
+/*
 document.addEventListener('DOMContentLoaded', function() {
     const themeChooser = document.getElementById('theme-chooser');
     const mainContent = document.getElementById('main-content');
     const defenderButton = document.getElementById('defender-button');
     const attackerButton = document.getElementById('attacker-button');
     const themeToggle = document.getElementById('theme-toggle');
-    
+*/
+
+document.addEventListener('DOMContentLoaded', function() {
+    const themeChooser = document.getElementById('theme-chooser');
+    const mainContent = document.getElementById('main-content');
+    defenderButton.addEventListener('click', function() {
+    attackerButton.addEventListener('click', function() {
+    themeToggle.addEventListener('click', function() {
+
     // Set fixed counts initially (can be updated with Jekyll later)
     const counts = {
         'active-directory': 42,

@@ -35,7 +35,7 @@ title: "AWS Detection Rules with MITRE ATT&CK Mapping"
     <div id="ec2-password-kql" class="modal"></div>
     <div id="snapshot-exfiltration-logs" class="modal"></div>
     <div id="snapshot-exfil-kql" class="modal"></div>
-    
+
     <!-- S3 Related Modals -->
     <div id="s3-bucket-modification-logs" class="modal"></div>
     <div id="s3-modification-kql" class="modal"></div>
