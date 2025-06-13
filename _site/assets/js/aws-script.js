@@ -1,9 +1,9 @@
 /**
- * AWS Script - Complete Updated Version for Local File Loading
- * Updated to use local Jekyll-served files instead of GitHub API
+ * AWS Script - Complete Fixed Version for Local File Loading with Proper Console Styling
+ * Fixes: Console look, button layout, and scroll-to-explanation functionality
  */
 
-// Function to load modal content from Jekyll-served files (UPDATED)
+// Function to load modal content from Jekyll-served files
 async function loadExternalModalContent(modalId, modalType) {
     const modalElement = document.getElementById(modalId);
     
@@ -12,7 +12,7 @@ async function loadExternalModalContent(modalId, modalType) {
         return;
     }
     
-    // UPDATED: Use renamed directories (without underscores)
+    // Use local Jekyll paths (fixed)
     const modalPath = `/Amazon Web Services/logs/${modalId}.html`;
     
     console.log(`Loading from local Jekyll: ${modalPath}`);
@@ -137,13 +137,13 @@ async function loadExternalModalContent(modalId, modalType) {
     }
 }
 
-// Function to fetch KQL query from Jekyll-served files (UPDATED)
+// Function to fetch KQL query from Jekyll-served files (FIXED)
 async function fetchQueryWithShellDisplay(modalId, githubPath) {
     const modalElement = document.getElementById(modalId);
     const fileName = githubPath.split('/').pop(); // Extract just the filename
     
     try {
-        // UPDATED: Use platform-specific local path instead of GitHub API
+        // Use local Jekyll path (fixed)
         const queryPath = `/Amazon Web Services/Queries/${fileName}`;
         
         console.log(`Fetching KQL query from local Jekyll: ${queryPath}`);
@@ -156,8 +156,11 @@ async function fetchQueryWithShellDisplay(modalId, githubPath) {
         
         const queryContent = await response.text();
         
+        // Remove any front matter from Jekyll files
+        const cleanedQuery = queryContent.replace(/^---[\s\S]*?---\s*/m, '').trim();
+        
         // Process the content and display with explanation
-        await processQueryContent(modalId, queryContent, fileName);
+        await processQueryContent(modalId, cleanedQuery, fileName);
         
     } catch (error) {
         console.error('Error fetching query:', error);
@@ -169,14 +172,208 @@ async function fetchQueryWithShellDisplay(modalId, githubPath) {
                 </div>
                 <div class="modal-body">
                     <p>There was an error loading the KQL query: ${error.message}</p>
-                    <p>Path attempted: /Amazon Web Services/Queries/${fileName}</p>
+                    <p>Path attempted: ${queryPath}</p>
                     <p>Make sure the KQL file exists in the repository.</p>
-                    <p>Expected path: Amazon Web Services/Queries/[filename].kql</p>
-                    <p>You can try viewing the repository directly: <a href="https://github.com/realnamesareboring/ATT4CKQL/tree/main/Amazon%20Web%20Services/Queries" target="_blank">GitHub Repository Queries</a></p>
                 </div>
             </div>
         `;
     }
+}
+
+// Function to fetch explanation content from local Jekyll files (FIXED)
+async function fetchExplanationContent(modalId) {
+    try {
+        let explanationId = modalId;
+        console.log("Original modalId:", modalId);
+        
+        // If modalId starts with 'aws-', remove it
+        if (modalId.startsWith('aws-')) {
+            explanationId = modalId.substring(4); // Remove 'aws-' prefix
+            console.log("After removing 'aws-' prefix:", explanationId);
+        }
+        
+        // If explanationId ends with '-kql', remove it
+        if (explanationId.endsWith('-kql')) {
+            explanationId = explanationId.substring(0, explanationId.length - 4);
+            console.log("After removing '-kql' suffix:", explanationId);
+        }
+        
+        // Use local Jekyll path for explanations (fixed)
+        const explanationPath = `/Amazon Web Services/explained/${explanationId}-kqlexplained.html`;
+        
+        console.log(`Fetching explanation from local Jekyll: ${explanationPath}`);
+        
+        const response = await fetch(explanationPath);
+        
+        if (!response.ok) {
+            console.error(`Failed to fetch explanation from local Jekyll. Status: ${response.status}`);
+            return `
+                <div class='explanation' id="explanation-section">
+                    <h3>Query Explanation</h3>
+                    <p>Explanation not available for this query yet. Please check back later or contact the administrator.</p>
+                </div>
+            `;
+        }
+        
+        const explanationContent = await response.text();
+        console.log("Explanation content successfully loaded");
+        
+        // Ensure explanation content is properly wrapped with class and ID
+        let wrappedContent = explanationContent;
+        
+        // If content doesn't have explanation class, wrap it
+        if (!wrappedContent.includes('class="explanation"')) {
+            wrappedContent = `<div class="explanation" id="explanation-section">${wrappedContent}</div>`;
+        } else {
+            // Ensure it has an ID for scrolling
+            if (!wrappedContent.includes('id="explanation-section"')) {
+                wrappedContent = wrappedContent.replace(
+                    '<div class="explanation"', 
+                    '<div class="explanation" id="explanation-section"'
+                );
+            }
+        }
+        
+        return wrappedContent;
+    } catch (error) {
+        console.error("Error fetching explanation:", error);
+        return `
+            <div class='explanation' id="explanation-section">
+                <h3>Query Explanation</h3>
+                <p>Error loading explanation. Please try again later.</p>
+            </div>
+        `;
+    }
+}
+
+// Helper function to process and display query content with explanation (FIXED)
+async function processQueryContent(modalId, queryContent, fileName) {
+    const modalElement = document.getElementById(modalId);
+    
+    // Store the query content for copying
+    window[`${modalId}_content`] = queryContent;
+    
+    // Fetch the explanation content
+    const explanationContent = await fetchExplanationContent(modalId);
+    
+    // Create properly styled modal with shell console look (FIXED)
+    modalElement.innerHTML = `
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
+            <div class="modal-header">
+                <div class="modal-title">${fileName.replace('.kql', ' - Detection Query')}</div>
+                <div class="modal-actions">
+                    <button onclick="copyQueryToClipboard('${modalId}')" class="copy-btn">📋 Copy Query</button>
+                    <button onclick="scrollToExplanation('${modalId}')" class="explain-btn">📖 Explain</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="query-container">
+                    <div class="shell-header">
+                        <div class="shell-controls">
+                            <span class="shell-control close"></span>
+                            <span class="shell-control minimize"></span>
+                            <span class="shell-control maximize"></span>
+                        </div>
+                        <div class="shell-title">Microsoft Sentinel - KQL Query</div>
+                    </div>
+                    <div class="shell-content">
+                        <pre class="kql-query" id="query-${modalId}"><code>${escapeHtml(queryContent)}</code></pre>
+                    </div>
+                </div>
+                <div class="query-explanation">
+                    ${explanationContent}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Function to scroll to explanation section (FIXED - Modal-specific)
+function scrollToExplanation(modalId) {
+    console.log(`Looking for explanation in modal: ${modalId}`);
+    
+    // If no modalId provided, use old behavior as fallback
+    if (!modalId) {
+        console.log("No modalId provided, using global search");
+        const explanationSection = document.querySelector('.explanation') || 
+                                  document.querySelector('.query-explanation');
+        if (explanationSection) {
+            explanationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+    }
+    
+    // Get the specific modal element first
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) {
+        console.error(`Modal ${modalId} not found`);
+        return;
+    }
+    
+    // Try multiple selectors within this specific modal
+    let explanationSection = modalElement.querySelector('#explanation-section') || 
+                            modalElement.querySelector('.explanation') ||
+                            modalElement.querySelector('.query-explanation') ||
+                            modalElement.querySelector('[class*="explanation"]');
+    
+    console.log(`Found explanation element:`, explanationSection);
+    
+    if (explanationSection) {
+        explanationSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+        
+        // Add a subtle highlight effect
+        explanationSection.style.transition = 'background-color 0.3s ease';
+        explanationSection.style.backgroundColor = 'rgba(0, 120, 212, 0.1)';
+        setTimeout(() => {
+            explanationSection.style.backgroundColor = '';
+        }, 2000);
+        
+        console.log("Scrolled to explanation section successfully");
+    } else {
+        console.warn(`No explanation section found in modal ${modalId}. Available elements:`, {
+            explanationById: !!modalElement.querySelector('#explanation-section'),
+            explanationByClass: !!modalElement.querySelector('.explanation'),
+            queryExplanation: !!modalElement.querySelector('.query-explanation'),
+            allDivs: modalElement.querySelectorAll('div').length
+        });
+        
+        // Fallback: scroll to bottom of modal body
+        const modalBody = modalElement.querySelector('.modal-body');
+        if (modalBody) {
+            modalBody.scrollTop = modalBody.scrollHeight;
+            console.log("Scrolled to bottom of modal as fallback");
+        }
+    }
+}
+
+// Function to copy query to clipboard (FIXED)
+function copyQueryToClipboard(modalId) {
+    const queryContent = window[`${modalId}_content`];
+    
+    if (!queryContent) {
+        console.error('No query content found to copy');
+        return;
+    }
+    
+    navigator.clipboard.writeText(queryContent).then(function() {
+        const copyBtn = document.querySelector(`#${modalId} .copy-btn`) || document.querySelector('.copy-btn');
+        if (copyBtn) {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "✅ Copied!";
+            copyBtn.style.background = '#107c10'; // Azure success green
+            setTimeout(function() {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = '';
+            }, 2000);
+        }
+    }).catch(function(err) {
+        console.error('Unable to copy text: ', err);
+        alert('Failed to copy. Please try again.');
+    });
 }
 
 // Function to open external modals
@@ -230,126 +427,30 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
-// Function to fetch explanation content (STILL USES GITHUB - explanations not migrated)
-async function fetchExplanationContent(modalId) {
-    try {
-        let explanationId = modalId;
-        console.log("Original modalId:", modalId);
-        
-        // If modalId starts with 'aws-', remove it
-        if (modalId.startsWith('aws-')) {
-            explanationId = modalId.substring(4); // Remove 'aws-' prefix
-            console.log("After removing 'aws-' prefix:", explanationId);
-        }
-        
-        // If explanationId ends with '-kql', remove it
-        if (explanationId.endsWith('-kql')) {
-            explanationId = explanationId.substring(0, explanationId.length - 4);
-            console.log("After removing '-kql' suffix:", explanationId);
-        }
-        
-        // UPDATED: Use local explained files instead of GitHub API
-        const explanationPath = `/Amazon Web Services/explained/${explanationId}-kqlexplained.html`;
-        
-        console.log(`Fetching explanation from local Jekyll: ${explanationPath}`);
-        
-        const response = await fetch(explanationPath);
-        
-        if (!response.ok) {
-            console.error(`Failed to fetch explanation from local Jekyll. Status: ${response.status}`);
-            return `
-                <div class='explanation'>
-                    <h3>Query Explanation</h3>
-                    <p>Explanation not available for this query yet. Please check back later or contact the administrator.</p>
-                </div>
-            `;
-        }
-        
-        const explanationContent = await response.text();
-        console.log("Explanation content successfully loaded");
-        
-        // If the content doesn't already have the explanation class, wrap it
-        if (!explanationContent.includes('class="explanation"')) {
-            return `<div class="explanation">${explanationContent}</div>`;
-        }
-        
-        return explanationContent;
-    } catch (error) {
-        console.error("Error fetching explanation:", error);
-        return `
-            <div class='explanation'>
-                <h3>Query Explanation</h3>
-                <p>Error loading explanation. Please try again later.</p>
-            </div>
-        `;
-    }
-}
-
-// Helper function to process and display query content with explanation
-async function processQueryContent(modalId, queryContent, fileName) {
-    const modalElement = document.getElementById(modalId);
-    
-    // Store the query content for copying
-    window[`${modalId}_content`] = queryContent;
-    
-    // Fetch the explanation content
-    const explanationContent = await fetchExplanationContent(modalId);
-    
-    // Create a shell-styled modal with the query content and explanation
-    modalElement.innerHTML = `
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
-            <div class="modal-header">
-                <div class="modal-title">${fileName.replace('.kql', ' - Detection Query')}</div>
-                <div class="modal-actions">
-                    <button onclick="copyQueryToClipboard('${modalId}')" class="copy-btn">📋 Copy Query</button>
-                    <button onclick="fetchExplanationContent('${modalId}')" class="explain-btn">📖 Explain Query</button>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="query-container">
-                    <div class="shell-header">
-                        <div class="shell-controls">
-                            <span class="shell-control close"></span>
-                            <span class="shell-control minimize"></span>
-                            <span class="shell-control maximize"></span>
-                        </div>
-                        <div class="shell-title">Microsoft Sentinel - KQL Query</div>
-                    </div>
-                    <div class="shell-content">
-                        <pre class="kql-query" id="query-${modalId}"><code>${escapeHtml(queryContent)}</code></pre>
-                    </div>
-                </div>
-                <div class="query-explanation" id="explanation-${modalId}">
-                    ${explanationContent}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Function to copy query to clipboard
-function copyQueryToClipboard(modalId) {
-    const queryContent = window[`${modalId}_content`];
-    
-    if (!queryContent) {
-        console.error('No query content found to copy');
-        return;
+// Theme toggle functionality (ADDED)
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply theme if stored in session storage
+    const savedTheme = sessionStorage.getItem('att4ckql-theme');
+    if (savedTheme === 'attacker') {
+        document.body.classList.add('theme-attacker');
     }
     
-    navigator.clipboard.writeText(queryContent).then(function() {
-        const copyBtn = document.querySelector(`#${modalId} .copy-btn`);
-        if (copyBtn) {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = "✅ Copied!";
-            copyBtn.style.background = '#107c10'; // Azure success green
-            setTimeout(function() {
-                copyBtn.textContent = originalText;
-                copyBtn.style.background = '';
-            }, 2000);
-        }
-    }).catch(function(err) {
-        console.error('Unable to copy text: ', err);
-        alert('Failed to copy. Please try again.');
-    });
-}
+    // Add event listener for theme toggle if it exists
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            console.log('Theme toggle clicked');
+            if (document.body.classList.contains('theme-attacker')) {
+                document.body.classList.remove('theme-attacker');
+                sessionStorage.setItem('att4ckql-theme', 'defender');
+                console.log('Switched to defender theme');
+            } else {
+                document.body.classList.add('theme-attacker');
+                sessionStorage.setItem('att4ckql-theme', 'attacker');
+                console.log('Switched to attacker theme');
+            }
+        });
+    } else {
+        console.warn('Theme toggle button not found');
+    }
+});

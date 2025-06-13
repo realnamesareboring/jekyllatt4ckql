@@ -947,3 +947,302 @@ body.theme-attacker .kql-string {
         align-items: flex-start;
     }
 }
+
+/* ===================================================
+   CONFLICT-SAFE ADDITIONAL CSS - Add to END of aws-style.css
+   These styles use specific selectors to avoid conflicts
+   =================================================== */
+
+/* Shell Header Styling (NEW - no conflicts) */
+.shell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #2d2d30 0%, #1e1e1e 100%);
+    padding: 8px 16px;
+    border-bottom: 1px solid #444;
+    border-radius: 6px 6px 0 0;
+}
+
+.shell-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.shell-control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.shell-control.close {
+    background-color: #ff5f57;
+}
+
+.shell-control.minimize {
+    background-color: #ffbd2e;
+}
+
+.shell-control.maximize {
+    background-color: #28ca42;
+}
+
+.shell-title {
+    color: #e1e1e1;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: center;
+    flex: 1;
+    margin: 0 20px;
+}
+
+/* Shell Content Styling (NEW - no conflicts) */
+.shell-content {
+    background-color: #1e1e1e;
+    padding: 16px;
+    border-radius: 0 0 6px 6px;
+    overflow-x: auto;
+    min-height: 200px;
+}
+
+body.theme-attacker .shell-content {
+    background-color: #0d1117;
+}
+
+/* KQL Query Styling (SPECIFIC - won't conflict) */
+.kql-query {
+    margin: 0 !important;
+    color: #d4d4d4 !important;
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    background: transparent !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    display: block !important;
+}
+
+.kql-query code {
+    background: transparent !important;
+    color: #d4d4d4 !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+    display: block !important;
+}
+
+body.theme-attacker .kql-query,
+body.theme-attacker .kql-query code {
+    color: #c9d1d9 !important;
+}
+
+/* Modal Actions (SPECIFIC SELECTOR - won't conflict with existing .modal-header) */
+.modal-content .modal-header .modal-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-actions .copy-btn,
+.modal-actions .explain-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.modal-actions .copy-btn {
+    background-color: var(--azure-primary);
+    color: white;
+}
+
+.modal-actions .copy-btn:hover {
+    background-color: var(--azure-primary-dark);
+    transform: translateY(-1px);
+}
+
+.modal-actions .explain-btn {
+    background-color: var(--azure-selected);
+    color: var(--azure-primary);
+    border: 1px solid var(--azure-primary);
+}
+
+.modal-actions .explain-btn:hover {
+    background-color: var(--azure-primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Enhanced Modal Header Layout (SPECIFIC - won't override existing) */
+.modal-content .modal-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 16px 60px 16px 24px !important;
+    position: relative !important;
+    gap: 16px !important;
+}
+
+/* Enhanced Close Button (SPECIFIC - won't override existing) */
+.modal-content .modal-header ~ .close-btn,
+.modal-content > .close-btn {
+    position: absolute !important;
+    top: 16px !important;
+    right: 24px !important;
+    z-index: 10 !important;
+    background: none !important;
+    border: none !important;
+    font-size: 24px !important;
+    cursor: pointer !important;
+    color: var(--azure-text-secondary) !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+}
+
+.modal-content .modal-header ~ .close-btn:hover,
+.modal-content > .close-btn:hover {
+    color: var(--azure-text) !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    transform: none !important;
+}
+
+/* Modal Title Enhancement (SPECIFIC - won't conflict) */
+.modal-content .modal-header .modal-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Explanation Section Styling (SPECIFIC - won't conflict with existing .explanation) */
+.query-explanation {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--azure-border);
+}
+
+.query-explanation .explanation {
+    padding: 16px;
+    background-color: var(--azure-surface);
+    border-radius: 6px;
+    border-left: 4px solid var(--azure-primary);
+}
+
+body.theme-attacker .query-explanation .explanation {
+    background-color: var(--azure-surface);
+    border-left-color: var(--azure-primary);
+}
+
+.query-explanation .explanation h3 {
+    color: var(--azure-primary);
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.query-explanation .explanation p,
+.query-explanation .explanation li {
+    color: var(--azure-text);
+    line-height: 1.6;
+}
+
+.query-explanation .explanation ul {
+    padding-left: 20px;
+}
+
+.query-explanation .explanation code {
+    background-color: rgba(0, 120, 212, 0.1);
+    color: var(--azure-primary);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+}
+
+/* Text Selection Fixes (NEW - no conflicts) */
+.shell-content *,
+.kql-query *,
+.modal-content * {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+.shell-content::selection,
+.kql-query::selection {
+    background-color: rgba(0, 120, 212, 0.3);
+    color: inherit;
+}
+
+/* Responsive Design (SPECIFIC - won't conflict) */
+@media (max-width: 768px) {
+    .modal-content .modal-header {
+        padding: 12px 50px 12px 16px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+    
+    .modal-content .modal-header .modal-title {
+        font-size: 14px !important;
+        width: 100% !important;
+    }
+    
+    .modal-content .modal-header .modal-actions {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+    }
+    
+    .modal-content > .close-btn {
+        top: 12px !important;
+        right: 16px !important;
+    }
+    
+    .modal-actions .copy-btn,
+    .modal-actions .explain-btn {
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+        flex: 1 !important;
+        justify-content: center !important;
+        max-width: 120px !important;
+    }
+    
+    .shell-title {
+        font-size: 12px !important;
+        margin: 0 10px !important;
+    }
+    
+    .kql-query {
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content .modal-header .modal-title {
+        font-size: 13px !important;
+        line-height: 1.3 !important;
+    }
+    
+    .modal-actions .copy-btn,
+    .modal-actions .explain-btn {
+        font-size: 10px !important;
+        padding: 4px 8px !important;
+    }
+}
