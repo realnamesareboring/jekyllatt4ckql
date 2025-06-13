@@ -1,0 +1,153 @@
+<div id="security-cloudtrail-tamper-query-explanation" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query detects attempts to disable, delete, or modify AWS CloudTrail and related logging services within the last hour. These actions are commonly used by attackers to reduce visibility into their activities and evade detection by security monitoring systems.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>The detection works through several key components:</p>
+    <ol>
+        <li>
+            <strong>Critical Event Monitoring:</strong>
+            <ul>
+                <li>Monitors specific CloudTrail modification events: <code>UpdateTrail</code>, <code>DeleteTrail</code>, <code>StopLogging</code></li>
+                <li>Tracks deletion of related logging services: <code>DeleteFlowLogs</code>, <code>DeleteEventBus</code></li>
+                <li>Identifies attempts to disable event data sources: <code>DeleteEVentDataSource</code></li>
+                <li>Focuses on recent activity (last 1 hour) for rapid detection and response</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Legitimate Service Filtering:</strong>
+            <ul>
+                <li>Excludes known automation accounts like "CloudTrailOrganizationReplication"</li>
+                <li>Filters out CloudFormation service actions to reduce false positives</li>
+                <li>Focuses on human-initiated changes that might be malicious</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context Enrichment:</strong>
+            <ul>
+                <li>Extracts CloudTrail names from request parameters for specific trail identification</li>
+                <li>Captures user identity information including principal ID and access key ID</li>
+                <li>Records source IP addresses to identify unusual access patterns</li>
+                <li>Joins with summary data to provide additional event context</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Comprehensive Tracking:</strong>
+            <ul>
+                <li>Tracks session creation dates to understand the timeline of activities</li>
+                <li>Captures AWS regions to identify cross-region logging modifications</li>
+                <li>Records user agents to understand the tools used for modifications</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>EventName:</strong> The specific action taken (StopLogging, DeleteTrail, etc.)</li>
+        <li><strong>CloudTrail:</strong> Name of the affected CloudTrail trail</li>
+        <li><strong>UserIdentityPrincipalid:</strong> Unique identifier of the user or role that performed the action</li>
+        <li><strong>UserIdentityAccessKeyId:</strong> Access key used for the action (helps track credential usage)</li>
+        <li><strong>SessionIssuerUserName:</strong> Name of the role assumed (for cross-account access tracking)</li>
+        <li><strong>SourceIpAddress:</strong> IP address from which the modification originated</li>
+        <li><strong>UserAgent:</strong> Tool or interface used (Console, CLI, SDK)</li>
+        <li><strong>AWSRegion:</strong> AWS region where the modification occurred</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Defense Evasion:</strong> Disabling CloudTrail is a classic technique to hide malicious activities from security monitoring</li>
+        <li><strong>Anti-Forensics:</strong> Deleting trails removes audit evidence that could be used during incident investigation</li>
+        <li><strong>Persistence Preparation:</strong> Attackers often disable logging before establishing persistent access mechanisms</li>
+        <li><strong>Privilege Escalation Cover:</strong> Logging modifications often precede attempts to escalate privileges undetected</li>
+        <li><strong>Data Exfiltration Preparation:</strong> Reducing visibility before large-scale data access or transfer operations</li>
+        <li><strong>Attack Progression Indicator:</strong> CloudTrail tampering typically indicates the attacker has already gained significant access</li>
+    </ul>
+    
+    <h4>Attack Scenarios</h4>
+    <p>This detection helps identify several attack scenarios:</p>
+    <ul>
+        <li><strong>Credential Compromise:</strong> Stolen credentials used to disable monitoring before malicious activities</li>
+        <li><strong>Insider Threats:</strong> Malicious insiders attempting to hide unauthorized actions</li>
+        <li><strong>Advanced Persistent Threats (APT):</strong> Sophisticated attackers establishing long-term presence</li>
+        <li><strong>Ransomware Preparation:</strong> Attackers disabling logging before deploying ransomware</li>
+        <li><strong>Data Theft Operations:</strong> Criminals preparing for large-scale data exfiltration</li>
+        <li><strong>Compliance Violations:</strong> Attempts to hide activities that violate regulatory requirements</li>
+    </ul>
+    
+    <h4>Response Actions</h4>
+    <p>When this detection triggers, immediate action is required:</p>
+    <ol>
+        <li><strong>Immediate Assessment:</strong>
+            <ul>
+                <li>Verify if the CloudTrail modification was authorized through change management</li>
+                <li>Check if the user identity is legitimate and expected to make such changes</li>
+                <li>Review the source IP address for unusual locations or known malicious indicators</li>
+                <li>Assess the timing - changes during off-hours are particularly suspicious</li>
+            </ul>
+        </li>
+        <li><strong>Rapid Containment:</strong>
+            <ul>
+                <li>Re-enable CloudTrail logging immediately if it was disabled</li>
+                <li>Recreate deleted trails with identical configurations</li>
+                <li>Enable CloudTrail log file validation to detect tampering</li>
+                <li>Consider restricting the compromised user's access pending investigation</li>
+            </ul>
+        </li>
+        <li><strong>Investigation Activities:</strong>
+            <ul>
+                <li>Review all activities by the user identity in the hours before and after the event</li>
+                <li>Check for other security service modifications (GuardDuty, Config, Security Hub)</li>
+                <li>Analyze VPC Flow Logs for unusual network activity during the logging gap</li>
+                <li>Examine CloudWatch metrics for anomalous resource usage patterns</li>
+            </ul>
+        </li>
+        <li><strong>Long-term Hardening:</strong>
+            <ul>
+                <li>Implement Service Control Policies (SCPs) to prevent CloudTrail modifications</li>
+                <li>Set up cross-region CloudTrail replication for redundancy</li>
+                <li>Enable MFA requirements for sensitive logging operations</li>
+                <li>Implement real-time alerts for any CloudTrail configuration changes</li>
+                <li>Consider using AWS Organizations for centralized trail management</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Prevention Strategies</h4>
+    <ul>
+        <li><strong>Access Controls:</strong> Implement least privilege access and require MFA for CloudTrail operations</li>
+        <li><strong>Service Control Policies:</strong> Use SCPs to prevent CloudTrail modifications at the organizational level</li>
+        <li><strong>Cross-Account Logging:</strong> Send CloudTrail logs to a separate security account to prevent tampering</li>
+        <li><strong>Log File Validation:</strong> Enable CloudTrail log file validation to detect unauthorized modifications</li>
+        <li><strong>Real-time Monitoring:</strong> Set up CloudWatch Events rules for immediate notification of CloudTrail changes</li>
+        <li><strong>Backup Strategies:</strong> Maintain multiple logging mechanisms beyond CloudTrail (VPC Flow Logs, GuardDuty, etc.)</li>
+    </ul>
+    
+    <h4>Integration with MITRE ATT&CK</h4>
+    <p>This detection maps to the following MITRE ATT&CK techniques:</p>
+    <ul>
+        <li><strong>T1562.008 - Impair Defenses: Disable or Modify Cloud Logs:</strong> Direct mapping to CloudTrail tampering activities</li>
+        <li><strong>T1070 - Indicator Removal on Host:</strong> Covers the broader category of evidence elimination</li>
+        <li><strong>T1562 - Impair Defenses:</strong> General category of defensive system interference</li>
+    </ul>
+    
+    <h4>Query Customization</h4>
+    <p>Organizations can customize this query based on their specific needs:</p>
+    <ul>
+        <li><strong>Time Window:</strong> Adjust the 1-hour window based on response team capabilities and alert fatigue concerns</li>
+        <li><strong>Service Account Filtering:</strong> Add organization-specific service accounts to the exclusion list</li>
+        <li><strong>Event Scope:</strong> Add additional logging service events (CloudWatch Logs, Config, etc.) for broader coverage</li>
+        <li><strong>Region Filtering:</strong> Focus on specific regions where sensitive resources are deployed</li>
+        <li><strong>Severity Classification:</strong> Add business impact assessment based on affected trails or services</li>
+        <li><strong>Integration Points:</strong> Enhance with external threat intelligence feeds for IP reputation checking</li>
+    </ul>
+    
+    <h4>Compliance Considerations</h4>
+    <p>CloudTrail tampering has significant compliance implications:</p>
+    <ul>
+        <li><strong>SOX Compliance:</strong> Audit trail integrity is critical for financial reporting accuracy</li>
+        <li><strong>HIPAA:</strong> Healthcare organizations must maintain audit logs for patient data access</li>
+        <li><strong>GDPR:</strong> Data processing activities must be logged and auditable</li>
+        <li><strong>PCI DSS:</strong> Payment card industry requires comprehensive audit logging</li>
+        <li><strong>SOC 2:</strong> Service organization controls demand logging of security-relevant events</li>
+    </ul>
+</div>

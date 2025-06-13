@@ -1,0 +1,117 @@
+<div id="ec2-suspicious-deployment-query-explanation" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query identifies unusual EC2 instance deployments that may indicate cryptomining, data exfiltration, or other malicious activities. It establishes a 90-day baseline of instance type usage and flags deployments of rare instance types that have only been used 1-3 times historically.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This detection query works through several key steps:</p>
+    <ol>
+        <li>
+            <strong>Baseline Establishment (90-day lookback):</strong>
+            <ul>
+                <li>Analyzes historical <code>RunInstances</code> events from the last 90 days</li>
+                <li>Counts the frequency of each EC2 instance type deployment</li>
+                <li>Creates a baseline to identify what's "normal" in the environment</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Recent Activity Monitoring (1-day window):</strong>
+            <ul>
+                <li>Focuses on EC2 instances launched in the last 24 hours</li>
+                <li>Extracts instance type, instance ID, and other metadata from CloudTrail events</li>
+                <li>Joins with the AWS summary table for enriched context</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Anomaly Detection:</strong>
+            <ul>
+                <li>Identifies instance types with historical counts between 1-3 occurrences</li>
+                <li>Filters for significant deployments (non-empty instance types and IDs)</li>
+                <li>Enriches findings with OS version and computer name from instance metadata</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context Aggregation:</strong>
+            <ul>
+                <li>Groups related deployment information by time, event, and user identity</li>
+                <li>Aggregates instance IDs, regions, source IPs, and other relevant details</li>
+                <li>Provides comprehensive view of the deployment including who, what, when, where</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>InstanceType:</strong> The specific EC2 instance type (e.g., p4d.24xlarge for GPU-intensive workloads)</li>
+        <li><strong>HistoricalCount:</strong> Number of times this instance type was used in the past 90 days (1-3 indicates rarity)</li>
+        <li><strong>CurrentDeploymentCount:</strong> Number of instances of this type deployed in the current event</li>
+        <li><strong>ComputerNames:</strong> Hostnames assigned to instances (can reveal suspicious naming patterns)</li>
+        <li><strong>OSVersions:</strong> Operating system information for the deployed instances</li>
+        <li><strong>UserIdentityArn:</strong> Who performed the deployment action</li>
+        <li><strong>SourceIPs:</strong> IP addresses from which the deployment originated</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Cryptomining Detection:</strong> Attackers often deploy high-performance GPU instances (g5, p4d series) for unauthorized cryptocurrency mining</li>
+        <li><strong>Data Processing:</strong> Unusual instance types may indicate large-scale data processing for exfiltration purposes</li>
+        <li><strong>Baseline Approach:</strong> By using historical data, the query reduces false positives while catching truly anomalous behavior</li>
+        <li><strong>Instance Naming Patterns:</strong> Computer names like "MINING-NODE" or random strings can indicate malicious intent</li>
+        <li><strong>Scale Detection:</strong> Multiple instances deployed simultaneously may indicate coordinated malicious activity</li>
+        <li><strong>Identity Tracking:</strong> Links unusual deployments to specific user identities for investigation</li>
+    </ul>
+    
+    <h4>Response Actions</h4>
+    <p>When this detection triggers, security teams should:</p>
+    <ol>
+        <li><strong>Immediate Assessment:</strong>
+            <ul>
+                <li>Verify if the deployment was authorized through change management processes</li>
+                <li>Check with the user identity who performed the deployment</li>
+                <li>Assess the business justification for the specific instance types</li>
+            </ul>
+        </li>
+        <li><strong>Instance Investigation:</strong>
+            <ul>
+                <li>Connect to the instances and examine running processes</li>
+                <li>Check network connections for suspicious outbound traffic</li>
+                <li>Review CPU and GPU utilization patterns</li>
+                <li>Scan for cryptomining software or malicious payloads</li>
+            </ul>
+        </li>
+        <li><strong>Identity Analysis:</strong>
+            <ul>
+                <li>Review all recent activities by the user identity</li>
+                <li>Check for other unusual AWS API calls or resource modifications</li>
+                <li>Verify the source IP addresses are from expected locations</li>
+            </ul>
+        </li>
+        <li><strong>Preventative Measures:</strong>
+            <ul>
+                <li>Implement Service Control Policies (SCPs) to restrict certain instance types</li>
+                <li>Require approval workflows for high-cost instance deployments</li>
+                <li>Set up billing alerts for unexpected cost increases</li>
+                <li>Enable detailed CloudTrail logging for all EC2 operations</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Common Attack Scenarios</h4>
+    <p>This detection helps identify several attack scenarios:</p>
+    <ul>
+        <li><strong>Compromised Credentials:</strong> Attackers using stolen AWS credentials to deploy instances for malicious purposes</li>
+        <li><strong>Insider Threats:</strong> Malicious insiders deploying unauthorized compute resources</li>
+        <li><strong>Cloud Resource Hijacking:</strong> Abuse of legitimate cloud accounts for cryptomining or computational attacks</li>
+        <li><strong>Data Exfiltration:</strong> Deployment of high-memory instances to process and transfer large datasets</li>
+        <li><strong>Covert Infrastructure:</strong> Setting up infrastructure for command and control or lateral movement</li>
+    </ul>
+    
+    <h4>Query Customization</h4>
+    <p>Organizations can customize this query based on their specific needs:</p>
+    <ul>
+        <li><strong>Historical Window:</strong> Adjust the 90-day baseline period based on organizational change patterns</li>
+        <li><strong>Rarity Threshold:</strong> Modify the 1-3 historical count threshold based on environment diversity</li>
+        <li><strong>Recent Window:</strong> Change the 1-day detection window for different response requirements</li>
+        <li><strong>Instance Type Filtering:</strong> Add specific instance types to allowlists or blocklists as needed</li>
+        <li><strong>User Filtering:</strong> Exclude known service accounts or automation users from detection</li>
+    </ul>
+</div>

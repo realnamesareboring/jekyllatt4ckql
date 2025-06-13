@@ -1,0 +1,204 @@
+<div id="snapshot-exfil-kqlexplained" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query identifies potential data exfiltration attempts via AWS snapshot sharing mechanisms. It detects when EBS snapshots, AMIs, or RDS snapshots are shared with unauthorized or unknown AWS accounts, establishing a behavioral baseline to distinguish between legitimate sharing and potential data exfiltration activities.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This detection query operates through several sophisticated stages:</p>
+    <ol>
+        <li>
+            <strong>Known Accounts Baseline (90-day lookback):</strong>
+            <ul>
+                <li>Creates an allowlist of legitimate AWS accounts based on 90 days of historical data</li>
+                <li>Establishes patterns of normal cross-account interactions within the organization</li>
+                <li>Uses <code>RecipientAccountId</code> from CloudTrail to build this baseline</li>
+                <li>Reduces false positives by understanding organizational relationships</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Sensitive Event Monitoring (1-day window):</strong>
+            <ul>
+                <li>Monitors critical snapshot operations that could indicate exfiltration</li>
+                <li>Tracks <code>ModifySnapshotAttribute</code>, <code>ModifyDBSnapshotAttribute</code></li>
+                <li>Detects <code>SharedSnapshotVolumeCreated</code> and <code>SharedSnapshotCopyInitiated</code> events</li>
+                <li>Focuses on recent activity to enable rapid response</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Permission Analysis:</strong>
+            <ul>
+                <li>Extracts account IDs that are granted or removed from snapshot permissions</li>
+                <li>Uses complex JSON parsing to identify <code>createVolumePermission</code> changes</li>
+                <li>Identifies both additions and removals of account access</li>
+                <li>Captures snapshot IDs and database snapshot identifiers</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Anomaly Detection:</strong>
+            <ul>
+                <li>Cross-references shared accounts against the known good baseline</li>
+                <li>Flags sharing with accounts not in the 90-day historical data</li>
+                <li>Categorizes actions as "Add", "Remove", or "Add and Remove"</li>
+                <li>Particularly flags "Add and Remove" patterns as highly suspicious</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context Enrichment:</strong>
+            <ul>
+                <li>Joins with summary table for additional event context</li>
+                <li>Provides comprehensive details about who performed the action</li>
+                <li>Includes timestamps, source information, and affected resources</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>ActionType:</strong> Categorizes the type of sharing modification:
+            <ul>
+                <li><code>Add</code> - New account granted access to snapshots</li>
+                <li><code>Remove</code> - Account access revoked from snapshots</li>
+                <li><code>Add and Remove</code> - Temporary access granted then revoked (highly suspicious)</li>
+            </ul>
+        </li>
+        <li><strong>CreatedVolumeSnapshotId:</strong> The EBS snapshot identifier being shared</li>
+        <li><strong>ModifiedDBSnapshotIdentifier:</strong> The RDS snapshot identifier being shared</li>
+        <li><strong>ModifiedSnapshotAttributeType:</strong> The type of permission being modified</li>
+        <li><strong>ModifiedSnapShot_to_SuspiciousAccount:</strong> External account granted access</li>
+        <li><strong>ModifiedSnapShot_remove_SuspiciousAccount:</strong> External account removed from access</li>
+        <li><strong>UserIdentityArn:</strong> The IAM entity that performed the sharing action</li>
+        <li><strong>SourceAccountId:</strong> The AWS account containing the original snapshot</li>
+    </ul>
+    
+    <h4>Security Significance</h4>
+    <ul>
+        <li><strong>Data Exfiltration Vector:</strong> Snapshot sharing is a common method for exfiltrating large amounts of data</li>
+        <li><strong>Stealth Operation:</strong> Can appear as legitimate administrative activity</li>
+        <li><strong>Complete Data Access:</strong> Snapshots contain full copies of volumes or databases</li>
+        <li><strong>Cross-Account Movement:</strong> Enables data movement across organizational boundaries</li>
+        <li><strong>Compliance Violations:</strong> May violate data sovereignty or regulatory requirements</li>
+        <li><strong>Attack Sophistication:</strong> "Add and Remove" patterns show attempt to cover tracks</li>
+    </ul>
+    
+    <h4>High-Risk Patterns</h4>
+    <p>The query specifically identifies these suspicious behaviors:</p>
+    <ul>
+        <li><strong>"Add and Remove" Pattern:</strong>
+            <ul>
+                <li>Most suspicious pattern detected by the query</li>
+                <li>Indicates temporary sharing followed by cleanup</li>
+                <li>Suggests attacker attempting to avoid detection</li>
+                <li>Short time window between add and remove actions</li>
+            </ul>
+        </li>
+        <li><strong>Unknown Account Sharing:</strong>
+            <ul>
+                <li>Sharing with accounts not seen in 90-day baseline</li>
+                <li>Could indicate compromise or unauthorized activity</li>
+                <li>Requires validation against organizational relationships</li>
+            </ul>
+        </li>
+        <li><strong>Database Snapshot Sharing:</strong>
+            <ul>
+                <li>RDS snapshots often contain highly sensitive data</li>
+                <li>Customer information, authentication data, business intelligence</li>
+                <li>Requires immediate investigation and validation</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Attack Scenarios</h4>
+    <p>This detection helps identify several attack scenarios:</p>
+    <ul>
+        <li><strong>Insider Data Theft:</strong> Employees exfiltrating data before leaving the organization</li>
+        <li><strong>Compromised Credentials:</strong> Attackers using stolen AWS credentials for data theft</li>
+        <li><strong>Supply Chain Attacks:</strong> Malicious third-parties accessing shared resources</li>
+        <li><strong>Competitor Espionage:</strong> Industrial espionage through cloud data access</li>
+        <li><strong>Ransomware Preparation:</strong> Exfiltrating data before encryption for double extortion</li>
+        <li><strong>Compliance Bypass:</strong> Moving data to less regulated environments</li>
+    </ul>
+    
+    <h4>Response Actions</h4>
+    <p>When this detection triggers, immediate actions should include:</p>
+    <ol>
+        <li><strong>Immediate Assessment:</strong>
+            <ul>
+                <li>Verify if snapshot sharing was authorized through proper channels</li>
+                <li>Check if the recipient account belongs to your organization</li>
+                <li>Determine the sensitivity of data in the shared snapshots</li>
+                <li>Assess the business justification for the sharing</li>
+            </ul>
+        </li>
+        <li><strong>Access Revocation:</strong>
+            <ul>
+                <li>Immediately revoke access for unauthorized accounts</li>
+                <li>Remove sharing permissions from suspicious snapshots</li>
+                <li>Document all actions taken for forensic purposes</li>
+            </ul>
+        </li>
+        <li><strong>Forensic Investigation:</strong>
+            <ul>
+                <li>Analyze the timeline of sharing and any data access</li>
+                <li>Check for volume creation in the recipient account</li>
+                <li>Review other activities by the same IAM entity</li>
+                <li>Examine network traffic and API calls during the sharing window</li>
+            </ul>
+        </li>
+        <li><strong>Impact Assessment:</strong>
+            <ul>
+                <li>Inventory what data was potentially exposed</li>
+                <li>Determine if any compliance obligations are triggered</li>
+                <li>Assess customer notification requirements</li>
+                <li>Evaluate business impact and reputation risk</li>
+            </ul>
+        </li>
+        <li><strong>Preventative Measures:</strong>
+            <ul>
+                <li>Implement Service Control Policies (SCPs) to restrict snapshot sharing</li>
+                <li>Enable resource-based policies on critical snapshots</li>
+                <li>Implement approval workflows for cross-account sharing</li>
+                <li>Regular audits of existing snapshot sharing permissions</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Technical Implementation Notes</h4>
+    <p>Key technical aspects of this detection:</p>
+    <ul>
+        <li><strong>JSON Parsing Complexity:</strong> The query performs deep JSON parsing to extract account IDs from nested permission structures</li>
+        <li><strong>Baseline Accuracy:</strong> 90-day baseline balances accuracy with capturing legitimate organizational relationships</li>
+        <li><strong>Event Correlation:</strong> Links multiple events to identify "Add and Remove" patterns</li>
+        <li><strong>Multiple Snapshot Types:</strong> Covers EBS, AMI, and RDS snapshots comprehensively</li>
+    </ul>
+    
+    <h4>Detection Tuning</h4>
+    <p>Organizations should customize this query based on their specific needs:</p>
+    <ul>
+        <li><strong>Baseline Period:</strong> Adjust 90-day window based on organizational change frequency</li>
+        <li><strong>Account Allowlisting:</strong> Maintain explicit lists of trusted partner accounts</li>
+        <li><strong>Sensitivity Classification:</strong> Focus on snapshots containing sensitive data</li>
+        <li><strong>Geographic Restrictions:</strong> Flag sharing with accounts in restricted regions</li>
+        <li><strong>Time-based Analysis:</strong> Alert on sharing during unusual hours</li>
+        <li><strong>Volume Analysis:</strong> Monitor for large-scale sharing activities</li>
+    </ul>
+    
+    <h4>Integration with Other Detections</h4>
+    <p>This detection works effectively with:</p>
+    <ul>
+        <li><strong>Volume Creation Monitoring:</strong> Track when shared snapshots are used to create volumes</li>
+        <li><strong>Cross-Account Role Assumptions:</strong> Monitor for access to the recipient account</li>
+        <li><strong>Data Transfer Monitoring:</strong> Correlate with network traffic analysis</li>
+        <li><strong>IAM Activity Tracking:</strong> Monitor other activities by the sharing user</li>
+        <li><strong>Resource Tagging Analysis:</strong> Check for changes in resource classifications</li>
+    </ul>
+    
+    <h4>False Positive Management</h4>
+    <p>Common legitimate scenarios that may trigger this detection:</p>
+    <ul>
+        <li>Disaster recovery exercises with partner organizations</li>
+        <li>Mergers and acquisitions involving data migration</li>
+        <li>Legitimate business partnerships requiring data sharing</li>
+        <li>Development and testing across multiple AWS accounts</li>
+        <li>Backup and archival to external security accounts</li>
+    </ul>
+    <p>Maintain documentation of approved sharing relationships and consider implementing automated approval workflows for routine sharing activities.</p>
+</div>

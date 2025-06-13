@@ -1,4 +1,9 @@
-// Function to load modal content from GitHub raw content URL
+/**
+ * AWS Script - Complete Updated Version for Local File Loading
+ * Updated to use local Jekyll-served files instead of GitHub API
+ */
+
+// Function to load modal content from Jekyll-served files (UPDATED)
 async function loadExternalModalContent(modalId, modalType) {
     const modalElement = document.getElementById(modalId);
     
@@ -7,11 +12,10 @@ async function loadExternalModalContent(modalId, modalType) {
         return;
     }
     
-    // Use GitHub raw content URL - properly encode URL components
-    const githubRawBaseUrl = "https://raw.githubusercontent.com/realnamesareboring/ATT4CKQL/main/";
-    const modalPath = `${githubRawBaseUrl}Amazon%20Web%20Services/_${modalType}/${modalId}.html`;
+    // UPDATED: Use renamed directories (without underscores)
+    const modalPath = `/Amazon Web Services/logs/${modalId}.html`;
     
-    console.log(`Loading from GitHub: ${modalPath}`);
+    console.log(`Loading from local Jekyll: ${modalPath}`);
     
     try {
         // Show loading indicator and display the modal
@@ -23,16 +27,29 @@ async function loadExternalModalContent(modalId, modalType) {
         `;
         modalElement.style.display = "block";
         
-        // Fetch the modal content from GitHub
+        // Fetch the modal content from Jekyll-served files
         const response = await fetch(modalPath);
         
         if (!response.ok) {
-            console.error(`GitHub fetch failed: ${modalPath}. Status: ${response.status}`);
-            throw new Error(`Could not load content (Status: ${response.status})`);
+            console.error(`Local fetch failed: ${modalPath}. Status: ${response.status}`);
+            modalElement.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
+                    <div class="modal-header">
+                        <div class="modal-title">Error Loading Content</div>
+                    </div>
+                    <div class="modal-body">
+                        <p>Could not load sample logs content.</p>
+                        <p>Path attempted: ${modalPath}</p>
+                        <p>Make sure the file exists in the repository.</p>
+                    </div>
+                </div>
+            `;
+            return;
         }
         
         const modalContent = await response.text();
-        console.log(`Content loaded successfully`);
+        console.log(`Content loaded successfully from Jekyll`);
         
         // Process the content to ensure proper modal structure
         let processedContent = modalContent;
@@ -112,8 +129,50 @@ async function loadExternalModalContent(modalId, modalType) {
                 </div>
                 <div class="modal-body">
                     <p>There was an error loading the content: ${error.message}</p>
-                    <p>URL attempted: ${modalPath}</p>
-                    <p>Note: This page loads content directly from GitHub. Make sure the file exists in the repository.</p>
+                    <p>Path attempted: ${modalPath}</p>
+                    <p>Content is served locally from Jekyll.</p>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Function to fetch KQL query from Jekyll-served files (UPDATED)
+async function fetchQueryWithShellDisplay(modalId, githubPath) {
+    const modalElement = document.getElementById(modalId);
+    const fileName = githubPath.split('/').pop(); // Extract just the filename
+    
+    try {
+        // UPDATED: Use platform-specific local path instead of GitHub API
+        const queryPath = `/Amazon Web Services/Queries/${fileName}`;
+        
+        console.log(`Fetching KQL query from local Jekyll: ${queryPath}`);
+        
+        const response = await fetch(queryPath);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const queryContent = await response.text();
+        
+        // Process the content and display with explanation
+        await processQueryContent(modalId, queryContent, fileName);
+        
+    } catch (error) {
+        console.error('Error fetching query:', error);
+        modalElement.innerHTML = `
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
+                <div class="modal-header">
+                    <div class="modal-title">Error Loading Query</div>
+                </div>
+                <div class="modal-body">
+                    <p>There was an error loading the KQL query: ${error.message}</p>
+                    <p>Path attempted: /Amazon Web Services/Queries/${fileName}</p>
+                    <p>Make sure the KQL file exists in the repository.</p>
+                    <p>Expected path: Amazon Web Services/Queries/[filename].kql</p>
+                    <p>You can try viewing the repository directly: <a href="https://github.com/realnamesareboring/ATT4CKQL/tree/main/Amazon%20Web%20Services/Queries" target="_blank">GitHub Repository Queries</a></p>
                 </div>
             </div>
         `;
@@ -171,7 +230,7 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
-// Function to fetch explanation content
+// Function to fetch explanation content (STILL USES GITHUB - explanations not migrated)
 async function fetchExplanationContent(modalId) {
     try {
         let explanationId = modalId;
@@ -189,15 +248,15 @@ async function fetchExplanationContent(modalId) {
             console.log("After removing '-kql' suffix:", explanationId);
         }
         
-        const baseUrl = "https://raw.githubusercontent.com/realnamesareboring/ATT4CKQL/main/";
-        const explanationPath = `${baseUrl}Amazon%20Web%20Services/_explained/${explanationId}-kqlexplained.html`;
+        // UPDATED: Use local explained files instead of GitHub API
+        const explanationPath = `/Amazon Web Services/explained/${explanationId}-kqlexplained.html`;
         
-        console.log(`Fetching explanation from: ${explanationPath}`);
+        console.log(`Fetching explanation from local Jekyll: ${explanationPath}`);
         
         const response = await fetch(explanationPath);
         
         if (!response.ok) {
-            console.error(`Failed to fetch explanation. Status: ${response.status}`);
+            console.error(`Failed to fetch explanation from local Jekyll. Status: ${response.status}`);
             return `
                 <div class='explanation'>
                     <h3>Query Explanation</h3>
@@ -226,63 +285,6 @@ async function fetchExplanationContent(modalId) {
     }
 }
 
-// Function to fetch KQL query with shell-like display
-async function fetchQueryWithShellDisplay(modalId, githubPath) {
-    const modalElement = document.getElementById(modalId);
-    const baseUrl = "https://raw.githubusercontent.com/realnamesareboring/ATT4CKQL/main/";
-    const fileName = githubPath.split('/').pop(); // Declare fileName once at the top
-    
-    try {
-        // Properly encode URL components
-        const encodedPath = encodeURI(githubPath).replace(/ /g, '%20');
-        const fullUrl = baseUrl + encodedPath;
-        
-        console.log(`Fetching KQL query from: ${fullUrl}`);
-        
-        const response = await fetch(fullUrl);
-        
-        if (!response.ok) {
-            // Try an alternative path with different formatting
-            const altPath = `Amazon Web Services/Queries/${fileName}`;
-            const encodedAltPath = encodeURI(altPath).replace(/ /g, '%20');
-            const altUrl = baseUrl + encodedAltPath;
-            
-            console.log(`Trying alternative path: ${altUrl}`);
-            
-            const altResponse = await fetch(altUrl);
-            
-            if (!altResponse.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}/${altResponse.status}`);
-            }
-            
-            const queryContent = await altResponse.text();
-            await processQueryContent(modalId, queryContent, fileName);
-            return;
-        }
-        
-        const queryContent = await response.text();
-        await processQueryContent(modalId, queryContent, fileName);
-        
-    } catch (error) {
-        console.error("Error fetching KQL query:", error);
-        modalElement.innerHTML = `
-            <div class="modal-content">
-                <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
-                <div class="modal-header">
-                    <div class="modal-title">Error Loading Query</div>
-                </div>
-                <div class="modal-body">
-                    <p>There was an error loading the query: ${error.message}</p>
-                    <p>URL attempted: ${baseUrl + encodeURI(githubPath).replace(/ /g, '%20')}</p>
-                    <p>Note: This page loads content directly from GitHub. Make sure the KQL file exists in the repository.</p>
-                    <p>Expected path: Amazon Web Services/Queries/[filename].kql</p>
-                    <p>You can try viewing the repository directly: <a href="https://github.com/realnamesareboring/ATT4CKQL/tree/main/Amazon%20Web%20Services/Queries" target="_blank">GitHub Repository Queries</a></p>
-                </div>
-            </div>
-        `;
-    }
-}
-
 // Helper function to process and display query content with explanation
 async function processQueryContent(modalId, queryContent, fileName) {
     const modalElement = document.getElementById(modalId);
@@ -299,19 +301,28 @@ async function processQueryContent(modalId, queryContent, fileName) {
             <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
             <div class="modal-header">
                 <div class="modal-title">${fileName.replace('.kql', ' - Detection Query')}</div>
+                <div class="modal-actions">
+                    <button onclick="copyQueryToClipboard('${modalId}')" class="copy-btn">📋 Copy Query</button>
+                    <button onclick="fetchExplanationContent('${modalId}')" class="explain-btn">📖 Explain Query</button>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="query-container">
-                    <div class="query-header">
-                        <div class="query-title">Microsoft Sentinel KQL Query</div>
-                        <button class="copy-btn" onclick="copyQueryToClipboard('${modalId}')">Copy Query</button>
+                    <div class="shell-header">
+                        <div class="shell-controls">
+                            <span class="shell-control close"></span>
+                            <span class="shell-control minimize"></span>
+                            <span class="shell-control maximize"></span>
+                        </div>
+                        <div class="shell-title">Microsoft Sentinel - KQL Query</div>
                     </div>
-                    <div class="code-wrapper">
-                        <pre class="code-block" id="${modalId}-code">${escapeHtml(queryContent)}</pre>
+                    <div class="shell-content">
+                        <pre class="kql-query" id="query-${modalId}"><code>${escapeHtml(queryContent)}</code></pre>
                     </div>
                 </div>
-                
-                ${explanationContent}
+                <div class="query-explanation" id="explanation-${modalId}">
+                    ${explanationContent}
+                </div>
             </div>
         </div>
     `;
@@ -327,86 +338,18 @@ function copyQueryToClipboard(modalId) {
     }
     
     navigator.clipboard.writeText(queryContent).then(function() {
-        const copyBtn = document.querySelector('.copy-btn');
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = "Copied!";
-        copyBtn.style.background = '#107c10'; // Azure success green
-        setTimeout(function() {
-            copyBtn.textContent = originalText;
-            copyBtn.style.background = '';
-        }, 2000);
+        const copyBtn = document.querySelector(`#${modalId} .copy-btn`);
+        if (copyBtn) {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "✅ Copied!";
+            copyBtn.style.background = '#107c10'; // Azure success green
+            setTimeout(function() {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = '';
+            }, 2000);
+        }
     }).catch(function(err) {
         console.error('Unable to copy text: ', err);
         alert('Failed to copy. Please try again.');
     });
 }
-
-// Close modal when clicking outside of it
-window.onclick = function(event) {
-    const modals = document.getElementsByClassName('modal');
-    for (let i = 0; i < modals.length; i++) {
-        if (event.target == modals[i]) {
-            modals[i].style.display = "none";
-        }
-    }
-}
-
-// Initialize event listeners when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded. Modal functionality initialized.');
-    console.log('Loading content directly from GitHub repository.');
-    
-    // Add a notice at the top of the page (updated styling)
-    const notice = document.createElement('div');
-    notice.style.background = '#fff3cd';
-    notice.style.color = '#856404';
-    notice.style.padding = '12px 16px';
-    notice.style.marginBottom = '20px';
-    notice.style.borderRadius = '6px';
-    notice.style.border = '1px solid #ffeeba';
-    notice.style.fontSize = '13px';
-    notice.innerHTML = `
-        <strong>📡 GitHub Integration:</strong> This page loads content directly from the GitHub repository.
-        Internet connection is required for all functionality to work properly.
-        <button id="test-github" style="margin-left: 12px; padding: 4px 12px; background: #ffc107; border: 1px solid #856404; border-radius: 4px; cursor: pointer; font-size: 12px;">Test Connection</button>
-    `;
-    
-    const firstElement = document.body.firstChild;
-    document.body.insertBefore(notice, firstElement);
-    
-    // Add event listener for test button
-    document.getElementById('test-github').addEventListener('click', function() {
-        const testUrl = "https://raw.githubusercontent.com/realnamesareboring/ATT4CKQL/main/README.md";
-        fetch(testUrl)
-            .then(response => {
-                if (response.ok) {
-                    alert('✅ GitHub connection successful! Repository is accessible.');
-                } else {
-                    alert(`❌ GitHub connection failed! Status: ${response.status}. Repository might not exist or be private.`);
-                }
-            })
-            .catch(error => {
-                alert(`⚠️ GitHub connection error: ${error.message}. Check your internet connection.`);
-            });
-    });
-    
-    // Apply theme if stored in session storage
-    const savedTheme = sessionStorage.getItem('att4ckql-theme');
-    if (savedTheme === 'attacker') {
-        document.body.classList.add('theme-attacker');
-    }
-    
-    // Add event listener for theme toggle if it exists
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-            if (document.body.classList.contains('theme-attacker')) {
-                document.body.classList.remove('theme-attacker');
-                sessionStorage.setItem('att4ckql-theme', 'defender');
-            } else {
-                document.body.classList.add('theme-attacker');
-                sessionStorage.setItem('att4ckql-theme', 'attacker');
-            }
-        });
-    }
-});

@@ -1,0 +1,306 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('aws-enhanced-guardduty-logs')">&times;</span>
+    <h2>AWS Security - Enhanced GuardDuty Findings</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | Source: GuardDuty + Threat Intelligence</div>
+        </div>
+        <div class="results-info">8 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>Severity</th>
+                    <th>ActivityType</th>
+                    <th>Description</th>
+                    <th>ResourceTypeAffected</th>
+                    <th>AWSAccountId</th>
+                    <th>InstanceId</th>
+                    <th>LocalIpAddress</th>
+                    <th>RemoteIpAddress</th>
+                    <th>UserName</th>
+                    <th>AccessKey</th>
+                    <th>RemoteAWSAccountId</th>
+                    <th>AccountUpn</th>
+                    <th>ServiceDetails</th>
+                    <th>DetectionMechanism</th>
+                    <th>Artifact</th>
+                    <th>ThreatIpMatch</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:55:32.651Z</td>
+                    <td class="highlight-cell">High</td>
+                    <td>UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration.OutsideAWS</td>
+                    <td class="highlight-cell">EC2 instance credentials were used from an external IP address</td>
+                    <td>AccessKey</td>
+                    <td>123456789012</td>
+                    <td>i-0abc123def456789</td>
+                    <td>10.0.1.145</td>
+                    <td class="highlight-cell">203.0.113.42</td>
+                    <td>ec2-instance-role</td>
+                    <td>ASIA1EXAMPLE1EXAMPLE</td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"ec2","detectedAt":"2025-05-15T14:55:32.651Z","action":{"actionType":"AWS_API_CALL","awsApiCallAction":{"api":"AssumeRole","serviceName":"sts.amazonaws.com"}}}</td>
+                    <td>GuardDuty</td>
+                    <td>Role/AssumeRole</td>
+                    <td>True</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:42:18.789Z</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td>Execution:EC2/SuspiciousFile</td>
+                    <td class="highlight-cell">EC2 instance is executing suspicious files</td>
+                    <td>Instance</td>
+                    <td>123456789012</td>
+                    <td>i-0def456ghi789012</td>
+                    <td>10.0.2.35</td>
+                    <td>198.51.100.23</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"runtime-monitoring","detectedAt":"2025-05-15T14:42:18.789Z","action":{"actionType":"EXECUTION","executionAction":{"executablePath":"/tmp/suspicious-file.sh","processName":"bash"}}}</td>
+                    <td>Runtime-Monitoring</td>
+                    <td>File/Execute</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:28:43.456Z</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td>Discovery:S3/BucketEnumeration</td>
+                    <td class="highlight-cell">Multiple S3 buckets were accessed in a manner that indicates bucket enumeration attempts</td>
+                    <td>S3Bucket</td>
+                    <td>123456789012</td>
+                    <td></td>
+                    <td></td>
+                    <td>192.0.2.155</td>
+                    <td>developer-john</td>
+                    <td>AKIA2EXAMPLE2EXAMPLE</td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"s3","detectedAt":"2025-05-15T14:28:43.456Z","action":{"actionType":"AWS_API_CALL","awsApiCallAction":{"api":"ListBuckets","serviceName":"s3.amazonaws.com"}}}</td>
+                    <td>GuardDuty</td>
+                    <td>S3/ListBuckets</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:15:27.321Z</td>
+                    <td class="highlight-cell">High</td>
+                    <td>Backdoor:EC2/C&CActivity.B</td>
+                    <td class="highlight-cell">EC2 instance is attempting to communicate with a known command and control server</td>
+                    <td>Instance</td>
+                    <td>123456789012</td>
+                    <td>i-0ghi789jkl012345</td>
+                    <td>10.0.3.67</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"netflow","detectedAt":"2025-05-15T14:15:27.321Z","action":{"actionType":"NETWORK_CONNECTION","networkConnectionAction":{"connectionDirection":"OUTBOUND","remotePortDetails":{"port":443,"portName":"HTTPS"}}}}</td>
+                    <td>GuardDuty</td>
+                    <td>Network/Connection</td>
+                    <td>True</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:08:59.987Z</td>
+                    <td class="highlight-cell">High</td>
+                    <td>CryptoCurrency:EC2/BitcoinTool.B</td>
+                    <td class="highlight-cell">EC2 instance is querying a cryptocurrency-related domain associated with Bitcoin activity</td>
+                    <td>Instance</td>
+                    <td>123456789012</td>
+                    <td>i-0klm012nop345678</td>
+                    <td>10.0.4.89</td>
+                    <td>198.51.100.78</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"dns","detectedAt":"2025-05-15T14:08:59.987Z","action":{"actionType":"DNS_REQUEST","dnsRequestAction":{"domain":"crypto-pool.example.com","protocol":"UDP","blocked":false}}}</td>
+                    <td>GuardDuty</td>
+                    <td>DNS/Request</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:55:36.123Z</td>
+                    <td class="highlight-cell">Low</td>
+                    <td>Recon:IAMUser/MaliciousIPCaller</td>
+                    <td class="highlight-cell">AWS API was invoked from an IP address with a malicious reputation</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">203.0.113.87</td>
+                    <td>security-admin</td>
+                    <td>AKIA3EXAMPLE3EXAMPLE</td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"iam","detectedAt":"2025-05-15T13:55:36.123Z","action":{"actionType":"AWS_API_CALL","awsApiCallAction":{"api":"DescribeInstances","serviceName":"ec2.amazonaws.com"}}}</td>
+                    <td>GuardDuty</td>
+                    <td>API/DescribeInstances</td>
+                    <td>True</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:42:18.654Z</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td>UnauthorizedAccess:IAMUser/ConsoleLoginSuccess.B</td>
+                    <td class="highlight-cell">Console login was successful from a suspicious IP address</td>
+                    <td>IAMUser</td>
+                    <td>123456789012</td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight-cell">45.227.253.98</td>
+                    <td>admin-user</td>
+                    <td></td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"signin","detectedAt":"2025-05-15T13:42:18.654Z","action":{"actionType":"AWS_API_CALL","awsApiCallAction":{"api":"ConsoleLogin","serviceName":"signin.amazonaws.com"}}}</td>
+                    <td>GuardDuty</td>
+                    <td>Login/Console</td>
+                    <td>True</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T13:28:52.789Z</td>
+                    <td class="highlight-cell">High</td>
+                    <td>Trojan:EC2/BlackholeTraffic</td>
+                    <td class="highlight-cell">EC2 instance is attempting to communicate with an IP address of a black hole</td>
+                    <td>Instance</td>
+                    <td>123456789012</td>
+                    <td>i-0pqr345stu678901</td>
+                    <td>10.0.5.102</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Production</td>
+                    <td>{"service":"netflow","detectedAt":"2025-05-15T13:28:52.789Z","action":{"actionType":"NETWORK_CONNECTION","networkConnectionAction":{"connectionDirection":"OUTBOUND","remotePortDetails":{"port":80,"portName":"HTTP"}}}}</td>
+                    <td>GuardDuty</td>
+                    <td>Network/Connection</td>
+                    <td>True</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection presents AWS GuardDuty threat detection findings from the last 24 hours, enhanced with additional context from threat intelligence. GuardDuty uses machine learning, anomaly detection, and integrated threat intelligence to identify potentially unauthorized or malicious activity within AWS environments.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>Severity</code> field indicates the priority level of the threat (High, Medium, Low), with findings enhanced based on additional context</li>
+        <li>The <code>ActivityType</code> categorizes the type of threat detected using GuardDuty's classification system:
+            <ul>
+                <li><code>UnauthorizedAccess</code> - Potential compromised resource or credentials</li>
+                <li><code>Execution</code> - Suspicious code or files executed</li>
+                <li><code>Discovery</code> - Potential reconnaissance activities</li>
+                <li><code>Backdoor</code> - Command and control communications</li>
+                <li><code>CryptoCurrency</code> - Potential cryptomining activities</li>
+                <li><code>Recon</code> - Reconnaissance activity from suspicious sources</li>
+                <li><code>Trojan</code> - Malware indicators detected</li>
+            </ul>
+        </li>
+        <li>The <code>Description</code> provides context about the specific suspicious activity</li>
+        <li>The <code>ResourceTypeAffected</code> shows which AWS resource was targeted (EC2 instance, IAM user, S3 bucket)</li>
+        <li>The <code>ThreatIpMatch</code> field indicates when an IP address matches known threat intelligence</li>
+        <li>The <code>ServiceDetails</code> field contains detailed information about the specific action that triggered the alert</li>
+        <li>The <code>DetectionMechanism</code> shows how the threat was identified (GuardDuty, Runtime-Monitoring)</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Credential Access (TA0006)</strong><br>T1552.005 - Cloud Instance Metadata API</li>
+        <li><strong>Execution (TA0002)</strong><br>T1204.003 - User Execution: Malicious Image</li>
+        <li><strong>Discovery (TA0007)</strong><br>T1526 - Cloud Service Discovery</li>
+        <li><strong>Command and Control (TA0011)</strong><br>T1071.001 - Application Layer Protocol: Web Protocols</li>
+        <li><strong>Impact (TA0040)</strong><br>T1496 - Resource Hijacking</li>
+        <li><strong>Initial Access (TA0001)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <p>Follow these response procedures based on the type of finding detected:</p>
+    
+    <h4>High Severity Findings</h4>
+    <ul>
+        <li>Instance Credential Exfiltration:
+            <ul>
+                <li>Immediately rotate the compromised IAM credentials</li>
+                <li>Isolate the affected EC2 instance by implementing restrictive security groups</li>
+                <li>Investigate other activities performed with the compromised credentials</li>
+                <li>Review CloudTrail logs for unauthorized API calls</li>
+            </ul>
+        </li>
+        <li>Command and Control (C2) Communications:
+            <ul>
+                <li>Isolate the affected instance by implementing strict security groups</li>
+                <li>Perform memory/disk forensics to identify malware</li>
+                <li>Look for persistence mechanisms like cron jobs, startup scripts, or AWS Lambda functions</li>
+                <li>Monitor other resources for similar communications</li>
+            </ul>
+        </li>
+        <li>Cryptomining Activity:
+            <ul>
+                <li>Isolate the affected instance and check for resource utilization</li>
+                <li>Terminate and replace the instance rather than attempting remediation</li>
+                <li>Review IAM permissions that allowed the instance to be compromised</li>
+                <li>Scan AMIs and container images for embedded malware</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Medium Severity Findings</h4>
+    <ul>
+        <li>Suspicious File Execution:
+            <ul>
+                <li>Review the file at the specified path</li>
+                <li>Check for unusual processes and network connections</li>
+                <li>Determine if the file is part of legitimate operations or malicious</li>
+                <li>Implement EC2 Instance Connect for secure SSH access</li>
+            </ul>
+        </li>
+        <li>S3 Bucket Enumeration:
+            <ul>
+                <li>Verify if the user should be accessing multiple buckets in rapid succession</li>
+                <li>Review IAM permissions for least privilege</li>
+                <li>Enable S3 bucket logging to monitor ongoing access</li>
+                <li>Implement S3 bucket policies to restrict access</li>
+            </ul>
+        </li>
+        <li>Console Login from Suspicious IP:
+            <ul>
+                <li>Confirm whether the login was legitimate with the user</li>
+                <li>Review the IP address reputation and geolocation</li>
+                <li>Enable MFA for all IAM users with console access</li>
+                <li>Consider implementing IP-based restrictions</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Low Severity Findings</h4>
+    <ul>
+        <li>Malicious IP Caller:
+            <ul>
+                <li>Investigate why legitimate users might be coming from suspicious IPs</li>
+                <li>Check for VPN or proxy usage</li>
+                <li>Monitor for escalation to more serious activities</li>
+                <li>Implement AWS IAM conditions to restrict API access based on source IP</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>General Recommendations</h4>
+    <ul>
+        <li>Enable GuardDuty in all regions</li>
+        <li>Implement automated response using EventBridge rules and Lambda functions</li>
+        <li>Consolidate GuardDuty findings across multiple accounts using Security Hub</li>
+        <li>Configure custom insight rules to identify patterns across findings</li>
+        <li>Regularly review and tune the CloudWatch Events rules for GuardDuty findings</li>
+    </ul>
+</div>

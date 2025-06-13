@@ -1,0 +1,174 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('s3-bucket-modification-logs')">&times;</span>
+    <h2>AWS S3 Bucket Modification Detection</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 1 hour | Region: All regions</div>
+        </div>
+        <div class="results-info">6 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>Summary</th>
+                    <th>EventName</th>
+                    <th>Description</th>
+                    <th>BucketName</th>
+                    <th>SourceIpAddress</th>
+                    <th>UserIdentityArn</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>UserIdentityUserName</th>
+                    <th>SessionMfaAuthenticated</th>
+                    <th>AWSRegion</th>
+                    <th>UserIdentityType</th>
+                    <th>UserAgent</th>
+                    <th>EventSource</th>
+                    <th>ObjectKey</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:53:45.123Z</td>
+                    <td>User downloaded sensitive file from S3 bucket</td>
+                    <td class="highlight-cell">GetObject</td>
+                    <td>S3 object retrieved from untrusted network</td>
+                    <td>customer-data-backup-123</td>
+                    <td class="highlight-cell">203.0.113.42</td>
+                    <td>arn:aws:iam::123456789012:user/developer</td>
+                    <td>123456789012</td>
+                    <td>developer</td>
+                    <td>false</td>
+                    <td>us-east-1</td>
+                    <td>IAMUser</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                    <td>s3.amazonaws.com</td>
+                    <td class="highlight-cell">customers/export-2025-05-15.csv</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:45:33.452Z</td>
+                    <td>User deleted S3 bucket</td>
+                    <td class="highlight-cell">DeleteBucket</td>
+                    <td>S3 bucket deleted from untrusted network</td>
+                    <td>web-logs-analysis-prod</td>
+                    <td class="highlight-cell">198.51.100.23</td>
+                    <td>arn:aws:iam::123456789012:role/admin-role</td>
+                    <td>123456789012</td>
+                    <td>admin-role</td>
+                    <td>true</td>
+                    <td>us-east-1</td>
+                    <td>AssumedRole</td>
+                    <td>console.amazonaws.com</td>
+                    <td>s3.amazonaws.com</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:38:18.789Z</td>
+                    <td>User uploaded file to S3 bucket</td>
+                    <td class="highlight-cell">PutObject</td>
+                    <td>S3 object uploaded from untrusted network</td>
+                    <td>web-content-prod</td>
+                    <td class="highlight-cell">198.51.100.23</td>
+                    <td>arn:aws:iam::123456789012:role/developer-role</td>
+                    <td>123456789012</td>
+                    <td>developer-role</td>
+                    <td>true</td>
+                    <td>us-east-1</td>
+                    <td>AssumedRole</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                    <td>s3.amazonaws.com</td>
+                    <td>js/analytics.js</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:27:42.456Z</td>
+                    <td>User deleted sensitive object from S3 bucket</td>
+                    <td class="highlight-cell">DeleteObject</td>
+                    <td>S3 object deleted from untrusted network</td>
+                    <td>finance-reports-2025</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>arn:aws:iam::123456789012:user/finance-admin</td>
+                    <td>123456789012</td>
+                    <td>finance-admin</td>
+                    <td>false</td>
+                    <td>eu-west-1</td>
+                    <td>IAMUser</td>
+                    <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                    <td>s3.amazonaws.com</td>
+                    <td class="highlight-cell">quarterly/Q2-2025-financial-summary.xlsx</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:15:59.321Z</td>
+                    <td>User created new S3 bucket</td>
+                    <td class="highlight-cell">CreateBucket</td>
+                    <td>S3 bucket created from untrusted network</td>
+                    <td>temp-data-transfer-20250515</td>
+                    <td class="highlight-cell">45.227.253.98</td>
+                    <td>arn:aws:iam::123456789012:user/storage-admin</td>
+                    <td>123456789012</td>
+                    <td>storage-admin</td>
+                    <td>true</td>
+                    <td>us-west-2</td>
+                    <td>IAMUser</td>
+                    <td>aws-cli/2.13.10 Python/3.11.5</td>
+                    <td>s3.amazonaws.com</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:08:27.654Z</td>
+                    <td>User downloaded multiple objects from S3 bucket</td>
+                    <td class="highlight-cell">GetObject</td>
+                    <td>S3 object retrieved from untrusted network</td>
+                    <td>employee-data-archive</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td>arn:aws:iam::123456789012:role/hr-department</td>
+                    <td>123456789012</td>
+                    <td>hr-department</td>
+                    <td>false</td>
+                    <td>us-east-2</td>
+                    <td>AssumedRole</td>
+                    <td>boto3/1.28.15 Python/3.10.12</td>
+                    <td>s3.amazonaws.com</td>
+                    <td class="highlight-cell">2025/05/employees/salaries.csv</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies access to S3 buckets from IP addresses outside trusted network ranges. This could indicate unauthorized access to sensitive data, data exfiltration, or malicious actions against S3 resources.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>Operations from <code>SourceIpAddress</code> values that match untrusted IP ranges (defined by the <code>AWS_filterCloudTrailCIDR</code> function)</li>
+        <li>Critical S3 operations such as <code>DeleteBucket</code>, <code>CreateBucket</code>, <code>GetObject</code>, <code>PutObject</code>, and <code>DeleteObject</code></li>
+        <li>Some operations conducted without MFA authentication (note the <code>SessionMfaAuthenticated</code> field shows "false")</li>
+        <li>Access to potentially sensitive data (financial reports, customer exports, employee information)</li>
+        <li>Bucket or object deletions that could indicate destructive actions or attempts to cover tracks</li>
+        <li>Creation of temporary buckets that might be used for data staging before exfiltration</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Collection (TA0009)</strong><br>T1530 - Data from Cloud Storage</li>
+        <li><strong>Exfiltration (TA0010)</strong><br>T1537 - Transfer Data to Cloud Account</li>
+        <li><strong>Impact (TA0040)</strong><br>T1485 - Data Destruction</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1562 - Impair Defenses</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Validate whether the operations were authorized from these external IP addresses</li>
+        <li>Review the nature and sensitivity of data accessed or modified</li>
+        <li>For bucket or object deletions, assess the impact and restore from backups if necessary</li>
+        <li>For object uploads, scan the content for malicious files or unauthorized modifications</li>
+        <li>For newly created buckets, check their permissions and intended purpose</li>
+        <li>Consider temporary IP restrictions for affected buckets if unauthorized access is confirmed</li>
+        <li>Review IAM permissions to ensure only legitimate users can access the affected resources</li>
+        <li>Enable versioning and MFA Delete on critical buckets to prevent unauthorized deletions</li>
+        <li>Check CloudTrail logs for additional suspicious activity from the same source IPs or identities</li>
+    </ul>
+</div>

@@ -1,0 +1,138 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('snapshot-exfiltration-logs')">&times;</span>
+    <h2>AWS AMI/EBS/RDS Snapshot Exfiltration Detection</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | Region: All regions</div>
+        </div>
+        <div class="results-info">5 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>Summary</th>
+                    <th>EventName</th>
+                    <th>ActionType</th>
+                    <th>CreatedVolumeSnapshotId</th>
+                    <th>ModifiedDBSnapshotIdentifier</th>
+                    <th>ModifiedSnapshotAttributeType</th>
+                    <th>UserIdentityType</th>
+                    <th>UserIdentityArn</th>
+                    <th>SourceAccountId</th>
+                    <th>ModifiedSnapShot_to_SuspiciousAccount</th>
+                    <th>ModifiedSnapShot_remove_SuspiciousAccount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T10:15:27.331Z</td>
+                    <td>User shared EBS snapshot with external AWS account</td>
+                    <td class="highlight-cell">ModifySnapshotAttribute</td>
+                    <td>Add</td>
+                    <td>snap-0abc12345def67890</td>
+                    <td></td>
+                    <td>createVolumePermission</td>
+                    <td>AssumedRole</td>
+                    <td>arn:aws:iam::123456789012:role/DevOpsAdmin</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">987654321098</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T09:17:12.553Z</td>
+                    <td>User shared EBS snapshot with external AWS account then removed access</td>
+                    <td class="highlight-cell">ModifySnapshotAttribute</td>
+                    <td class="highlight-cell">Add and Remove</td>
+                    <td>snap-0def98765abc43210</td>
+                    <td></td>
+                    <td>createVolumePermission</td>
+                    <td>AssumedRole</td>
+                    <td>arn:aws:iam::123456789012:role/DevOpsAdmin</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">765432109876</td>
+                    <td class="highlight-cell">765432109876</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T07:45:38.129Z</td>
+                    <td>User shared RDS snapshot with external AWS account</td>
+                    <td class="highlight-cell">ModifyDBSnapshotAttribute</td>
+                    <td>Add</td>
+                    <td></td>
+                    <td>rds:database-prod-backup-2025-05-14</td>
+                    <td>restore</td>
+                    <td>IAMUser</td>
+                    <td>arn:aws:iam::123456789012:user/database-admin</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">654321098765</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T04:32:19.847Z</td>
+                    <td>External account created volume from shared snapshot</td>
+                    <td class="highlight-cell">SharedSnapshotVolumeCreated</td>
+                    <td>Add</td>
+                    <td>snap-0567890abcdef1234</td>
+                    <td></td>
+                    <td>createVolumePermission</td>
+                    <td>AssumedRole</td>
+                    <td>arn:aws:iam::987654321098:role/AdminRole</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">987654321098</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-14T22:18:05.762Z</td>
+                    <td>External account initiated copy of shared snapshot</td>
+                    <td class="highlight-cell">SharedSnapshotCopyInitiated</td>
+                    <td>Add</td>
+                    <td>snap-0fedcba9876543210</td>
+                    <td></td>
+                    <td>createVolumePermission</td>
+                    <td>AssumedRole</td>
+                    <td>arn:aws:iam::654321098765:role/StorageAdmin</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">654321098765</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies when EBS snapshots, RDS snapshots, or AMIs are shared with unauthorized or unknown AWS accounts, potentially indicating data exfiltration attempts. It establishes a 90-day baseline of known good accounts and alerts on sharing with accounts outside this baseline.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>ModifySnapshotAttribute</code> and <code>ModifyDBSnapshotAttribute</code> API calls modify snapshot access permissions</li>
+        <li>External account numbers appear in the <code>ModifiedSnapShot_to_SuspiciousAccount</code> field</li>
+        <li>The "Add and Remove" pattern is particularly suspicious as it indicates temporarily sharing data and then attempting to cover tracks</li>
+        <li>Events like <code>SharedSnapshotVolumeCreated</code> and <code>SharedSnapshotCopyInitiated</code> show when external accounts actually access shared snapshots</li>
+        <li>Multiple different external accounts receiving access to snapshots may indicate coordinated exfiltration</li>
+        <li>Database snapshots (RDS) often contain sensitive data and require special attention</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Exfiltration (TA0010)</strong><br>T1537 - Transfer Data to Cloud Account</li>
+        <li><strong>Collection (TA0009)</strong><br>T1530 - Data from Cloud Storage</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1578.002 - Modify Cloud Compute Infrastructure: Create Snapshot</li>
+        <li><strong>Initial Access/Persistence (TA0001/TA0003)</strong><br>T1078.004 - Cloud Accounts</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Verify if the snapshot sharing was authorized by contacting the snapshot owner</li>
+        <li>Check if the receiving AWS accounts are part of your organization or trusted partners</li>
+        <li>Immediately revoke access for any unauthorized sharing by modifying snapshot attributes</li>
+        <li>For "Add and Remove" patterns, investigate why access was temporarily granted and then removed</li>
+        <li>Review the contents of the shared snapshots to determine the sensitivity of exposed data</li>
+        <li>Implement preventative controls using Service Control Policies (SCPs) to restrict snapshot sharing</li>
+        <li>Consider implementing S3 bucket to store approved external account IDs for future reference</li>
+        <li>Examine other actions taken by the same IAM identities for additional suspicious activity</li>
+    </ul>
+</div>

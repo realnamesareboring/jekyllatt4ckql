@@ -1,0 +1,155 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('iam-cloud-user-creation-logs')">&times;</span>
+    <h2>AWS IAM Cloud User Account Creation</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 1 hour | Source: Untrusted Networks</div>
+        </div>
+        <div class="results-info">6 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>StartTimeUtc</th>
+                    <th>Summary</th>
+                    <th>EventName</th>
+                    <th>Description</th>
+                    <th>CreatorUserName</th>
+                    <th>NewlyCreatedUserName</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>SourceIpAddress</th>
+                    <th>AWSRegion</th>
+                    <th>NewlyCreatedUserPolicy</th>
+                    <th>RoleNames</th>
+                    <th>UserAgent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:55:12.743Z</td>
+                    <td>User creation with privileged policy</td>
+                    <td class="highlight-cell">CreateUser</td>
+                    <td>IAM user was created with administrative permissions</td>
+                    <td>admin</td>
+                    <td class="highlight-cell">🚨 temp-admin-user</td>
+                    <td>123456789012</td>
+                    <td>203.0.113.42</td>
+                    <td>us-east-1</td>
+                    <td class="highlight-cell">arn:aws:iam::aws:policy/AdministratorAccess</td>
+                    <td>CloudAdminRole</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:42:35.198Z</td>
+                    <td>User creation with basic access</td>
+                    <td>CreateUser</td>
+                    <td>IAM user was created with read-only permissions</td>
+                    <td>dev-manager</td>
+                    <td>developer-john</td>
+                    <td>123456789012</td>
+                    <td>198.51.100.23</td>
+                    <td>us-west-2</td>
+                    <td>arn:aws:iam::aws:policy/ReadOnlyAccess</td>
+                    <td>DeveloperRole</td>
+                    <td>console.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:38:03.621Z</td>
+                    <td>User creation with S3 access</td>
+                    <td>CreateUser</td>
+                    <td>IAM user was created with S3 bucket access</td>
+                    <td>storage-admin</td>
+                    <td>backup-service</td>
+                    <td>123456789012</td>
+                    <td>192.168.1.100</td>
+                    <td>us-east-2</td>
+                    <td>arn:aws:iam::aws:policy/AmazonS3FullAccess</td>
+                    <td>BackupServiceRole</td>
+                    <td>boto3/1.28.15 Python/3.10.12</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:25:47.912Z</td>
+                    <td>Suspicious user creation with privileged access from untrusted IP</td>
+                    <td class="highlight-cell">CreateUser</td>
+                    <td>IAM user was created with administrative permissions from untrusted IP</td>
+                    <td>admin</td>
+                    <td class="highlight-cell">🚨 svc-automation</td>
+                    <td>123456789012</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>eu-west-1</td>
+                    <td class="highlight-cell">arn:aws:iam::aws:policy/AdministratorAccess</td>
+                    <td>CloudAdminRole</td>
+                    <td>aws-cli/2.12.0 Python/3.9.16</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:17:22.305Z</td>
+                    <td>User creation with network admin access</td>
+                    <td>CreateUser</td>
+                    <td>IAM user was created with VPC management permissions</td>
+                    <td>network-manager</td>
+                    <td>network-automation</td>
+                    <td>234567890123</td>
+                    <td>192.168.10.23</td>
+                    <td>eu-central-1</td>
+                    <td>arn:aws:iam::aws:policy/AmazonVPCFullAccess</td>
+                    <td>NetworkAdminRole</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:08:59.784Z</td>
+                    <td>User creation with unusual name pattern</td>
+                    <td class="highlight-cell">CreateUser</td>
+                    <td>IAM user was created with EC2 access permissions</td>
+                    <td>ec2-admin</td>
+                    <td class="highlight-cell">🚨 xg4h29s</td>
+                    <td>123456789012</td>
+                    <td>10.0.12.45</td>
+                    <td>ap-southeast-1</td>
+                    <td>arn:aws:iam::aws:policy/AmazonEC2FullAccess</td>
+                    <td>EC2AdminRole</td>
+                    <td>aws-cli/2.13.10 Python/3.11.5</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies new IAM user creations and their associated policy attachments. It focuses on monitoring when users are created and immediately granted permissions, which could indicate privilege escalation attempts or unauthorized user provisioning.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>EventName</code> shows user creation events</li>
+        <li>The <code>NewlyCreatedUserName</code> shows the identity being created, with suspicious names flagged (🚨)</li>
+        <li>The <code>NewlyCreatedUserPolicy</code> shows what permissions were granted immediately after creation</li>
+        <li>High-privilege policies like "AdministratorAccess" are highlighted as potentially risky</li>
+        <li>The <code>CreatorUserName</code> and <code>UserAgent</code> help identify who performed the action and from what tool</li>
+        <li>The <code>SourceIpAddress</code> can be compared against known allowed IPs</li>
+        <li>Suspicious naming patterns (randomly generated names, temporary users) may indicate unauthorized activity</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Persistence (TA0003)</strong><br>T1136.003 - Create Account: Cloud Account</li>
+        <li><strong>Privilege Escalation (TA0004)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1136 - Create Account</li>
+        <li><strong>Discovery (TA0007)</strong><br>T1069.003 - Permission Groups Discovery: Cloud Groups</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <ul>
+        <li>Verify if the user creation was authorized and follows organizational naming conventions</li>
+        <li>Pay special attention to users created with administrative permissions</li>
+        <li>Investigate creations from untrusted or unusual IP addresses</li>
+        <li>Check for unusual naming patterns (random strings, temporary users) that may indicate unauthorized activity</li>
+        <li>Review the timeline between user creation and policy attachment to identify potential privilege escalation</li>
+        <li>Examine other actions performed by the same creator identity for additional suspicious activity</li>
+        <li>If unauthorized, immediately disable the newly created user and revoke any access keys</li>
+        <li>Consider implementing SCPs (Service Control Policies) to restrict IAM user creation</li>
+        <li>Implement JIT (Just-In-Time) access for administrative activities rather than persistent admin users</li>
+        <li>Use AWS CloudFormation or Terraform for infrastructure as code to manage IAM users properly</li>
+    </ul>
+</div>

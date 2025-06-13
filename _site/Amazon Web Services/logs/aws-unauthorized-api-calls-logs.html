@@ -1,0 +1,245 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('aws-unauthorized-api-calls-logs')">&times;</span>
+    <h2>AWS Security - Unauthorized API Calls</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Error types: AccessDenied, AuthFailure, Blocked | Source: Known Malicious IPs</div>
+        </div>
+        <div class="results-info">8 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>Summary</th>
+                    <th>Severity</th>
+                    <th>ErrorCode</th>
+                    <th>ErrorMessage</th>
+                    <th>EventName</th>
+                    <th>UserIdentityArn</th>
+                    <th>SessionIssuerUserName</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>UserIdentityPrincipalid</th>
+                    <th>UserAgent</th>
+                    <th>SourceIpAddress</th>
+                    <th>AWSRegion</th>
+                    <th>EventSource</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:52:22.651Z</td>
+                    <td>Unauthorized attempt to create IAM user</td>
+                    <td class="highlight-cell">High</td>
+                    <td class="highlight-cell">AccessDenied</td>
+                    <td>User: arn:aws:iam::123456789012:user/developer is not authorized to perform: iam:CreateUser on resource: arn:aws:iam::123456789012:user/backdoor-user</td>
+                    <td>CreateUser</td>
+                    <td>arn:aws:iam::123456789012:user/developer</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA1EXAMPLE123456789</td>
+                    <td>aws-cli/2.13.15 Python/3.11.6</td>
+                    <td class="highlight-cell">203.0.113.42</td>
+                    <td>us-east-1</td>
+                    <td>iam.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:48:15.789Z</td>
+                    <td>Failed authentication attempt</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">AuthFailure</td>
+                    <td>AWS was not able to validate the provided access credentials</td>
+                    <td>ConsoleLogin</td>
+                    <td></td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td></td>
+                    <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>us-west-2</td>
+                    <td>signin.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:42:08.456Z</td>
+                    <td>S3 bucket access blocked</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">Blocked</td>
+                    <td>Access Blocked by S3 Block Public Access settings</td>
+                    <td>GetObject</td>
+                    <td>arn:aws:iam::123456789012:user/s3-user</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA2EXAMPLE987654321</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td>us-east-2</td>
+                    <td>s3.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:35:27.321Z</td>
+                    <td>Unauthorized attempt to modify security group</td>
+                    <td class="highlight-cell">High</td>
+                    <td class="highlight-cell">AccessDenied</td>
+                    <td>User: arn:aws:iam::123456789012:user/network-user is not authorized to perform: ec2:AuthorizeSecurityGroupIngress on resource: arn:aws:ec2:us-east-1:123456789012:security-group/sg-0a1b2c3d4e5f6789</td>
+                    <td>AuthorizeSecurityGroupIngress</td>
+                    <td>arn:aws:iam::123456789012:user/network-user</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA3EXAMPLE135792468</td>
+                    <td>aws-cli/2.12.0 Python/3.9.16</td>
+                    <td class="highlight-cell">185.159.82.54</td>
+                    <td>us-east-1</td>
+                    <td>ec2.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:28:59.987Z</td>
+                    <td>Failed attempt to stop CloudTrail logging</td>
+                    <td class="highlight-cell">High</td>
+                    <td class="highlight-cell">AccessDenied</td>
+                    <td>User: arn:aws:iam::123456789012:user/audit-user is not authorized to perform: cloudtrail:StopLogging on resource: arn:aws:cloudtrail:us-east-1:123456789012:trail/management-events</td>
+                    <td>StopLogging</td>
+                    <td>arn:aws:iam::123456789012:user/audit-user</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA4EXAMPLE246813579</td>
+                    <td>console.amazonaws.com</td>
+                    <td class="highlight-cell">45.227.253.98</td>
+                    <td>us-east-1</td>
+                    <td>cloudtrail.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:22:36.123Z</td>
+                    <td>Failed attempt to assume privileged role</td>
+                    <td class="highlight-cell">High</td>
+                    <td class="highlight-cell">AccessDenied</td>
+                    <td>User: arn:aws:iam::123456789012:user/developer is not authorized to perform: sts:AssumeRole on resource: arn:aws:iam::123456789012:role/AdminRole</td>
+                    <td>AssumeRole</td>
+                    <td>arn:aws:iam::123456789012:user/developer</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA5EXAMPLE357924681</td>
+                    <td>aws-cli/2.13.10 Python/3.11.5</td>
+                    <td class="highlight-cell">198.51.100.23</td>
+                    <td>us-west-2</td>
+                    <td>sts.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:15:12.654Z</td>
+                    <td>Failed attempt to access secrets</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">AccessDenied</td>
+                    <td>User: arn:aws:iam::123456789012:user/app-user is not authorized to perform: secretsmanager:GetSecretValue on resource: arn:aws:secretsmanager:us-east-1:123456789012:secret:database-credentials</td>
+                    <td>GetSecretValue</td>
+                    <td>arn:aws:iam::123456789012:user/app-user</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA6EXAMPLE468135792</td>
+                    <td>aws-sdk-javascript/2.1178.0</td>
+                    <td class="highlight-cell">93.184.216.34</td>
+                    <td>us-east-1</td>
+                    <td>secretsmanager.amazonaws.com</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-05-15T14:08:45.789Z</td>
+                    <td>Failed attempt to access KMS key</td>
+                    <td class="highlight-cell">Medium</td>
+                    <td class="highlight-cell">AccessDenied</td>
+                    <td>User: arn:aws:iam::123456789012:user/data-engineer is not authorized to perform: kms:Decrypt on resource: arn:aws:kms:us-east-1:123456789012:key/1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p</td>
+                    <td>Decrypt</td>
+                    <td>arn:aws:iam::123456789012:user/data-engineer</td>
+                    <td></td>
+                    <td>123456789012</td>
+                    <td>AIDA7EXAMPLE579246813</td>
+                    <td>aws-sdk-java/1.12.472</td>
+                    <td class="highlight-cell">203.0.113.87</td>
+                    <td>us-east-1</td>
+                    <td>kms.amazonaws.com</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies access denied errors and authentication failures originating from suspicious IP addresses, particularly those known to be malicious based on threat intelligence. These events may indicate attempts to perform unauthorized actions or gain access to AWS resources by potentially malicious actors.</p>
+    
+    <p>Key indicators in the logs:</p>
+    <ul>
+        <li>The <code>ErrorCode</code> field shows the specific type of access denial:
+            <ul>
+                <li><code>AccessDenied</code> - The user has valid credentials but lacks permissions for the requested action</li>
+                <li><code>AuthFailure</code> - Authentication failed, potentially indicating brute force attempts</li>
+                <li><code>Blocked</code> - The request was blocked by security controls like S3 Block Public Access</li>
+            </ul>
+        </li>
+        <li>The <code>ErrorMessage</code> provides detailed information about why the access was denied</li>
+        <li>The <code>SourceIpAddress</code> indicates the origin of the request, which matches known malicious IPs</li>
+        <li>The <code>EventName</code> shows what action was being attempted when access was denied</li>
+        <li>The <code>UserIdentityArn</code> and <code>UserIdentityPrincipalid</code> help identify which identities are being used</li>
+        <li>The <code>Severity</code> indicates the potential impact of the attempted action</li>
+        <li>The <code>EventSource</code> shows which AWS service was targeted</li>
+    </ul>
+
+    <h3>Attack Pattern Analysis</h3>
+    <p>These logs reveal several concerning attack patterns:</p>
+    <ul>
+        <li><strong>Privilege Escalation Attempts</strong> - Attempts to create IAM users or assume privileged roles</li>
+        <li><strong>Defense Evasion</strong> - Attempts to stop CloudTrail logging to hide activities</li>
+        <li><strong>Credential Access</strong> - Attempts to access Secrets Manager and decrypt KMS-protected data</li>
+        <li><strong>Initial Access</strong> - Failed console login attempts indicating potential brute force</li>
+        <li><strong>Impact</strong> - Attempts to modify security groups to potentially allow malicious traffic</li>
+    </ul>
+
+    <h3>Mitre ATT&CK Tactics & Techniques</h3>
+    <ul>
+        <li><strong>Initial Access (TA0001)</strong><br>T1078.004 - Valid Accounts: Cloud Accounts</li>
+        <li><strong>Privilege Escalation (TA0004)</strong><br>T1068 - Exploitation for Privilege Escalation</li>
+        <li><strong>Defense Evasion (TA0005)</strong><br>T1562.008 - Impair Defenses: Disable or Modify Cloud Logs</li>
+        <li><strong>Credential Access (TA0006)</strong><br>T1552.005 - Unsecured Credentials: Cloud Instance Metadata API</li>
+        <li><strong>Discovery (TA0007)</strong><br>T1580 - Cloud Infrastructure Discovery</li>
+    </ul>
+
+    <h3>Recommended Response</h3>
+    <h4>Immediate Actions</h4>
+    <ul>
+        <li>Review the affected IAM users and roles for signs of compromise</li>
+        <li>Check if any successful API calls were made from the same IP addresses prior to failures</li>
+        <li>Correlate these events with GuardDuty findings or VPC Flow Logs</li>
+        <li>Analyze the pattern of denied requests to understand the attacker's objectives</li>
+        <li>Consider temporary IP-based restrictions for the affected services</li>
+    </ul>
+    
+    <h4>User-Specific Actions</h4>
+    <ul>
+        <li>For users with multiple denied requests:
+            <ul>
+                <li>Rotate access keys immediately</li>
+                <li>Enable or enforce multi-factor authentication</li>
+                <li>Review the user's recent successful API calls</li>
+                <li>Consider temporarily suspending the user until investigation completes</li>
+            </ul>
+        </li>
+        <li>For service roles or application users:
+            <ul>
+                <li>Review the application's behavior for signs of compromise</li>
+                <li>Check for overly permissive IAM policies</li>
+                <li>Implement least privilege access</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Preventative Measures</h4>
+    <ul>
+        <li>Implement AWS Organization SCPs to enforce strict guardrails</li>
+        <li>Use AWS IAM Access Analyzer to identify overly permissive policies</li>
+        <li>Enable AWS Config to track resource changes</li>
+        <li>Implement AWS WAF to block requests from known malicious IPs</li>
+        <li>Configure Amazon GuardDuty to detect suspicious API calls</li>
+        <li>Enable MFA for all IAM users, especially those with administrative access</li>
+        <li>Implement IP-based conditions for sensitive API operations</li>
+        <li>Consider implementing AWS Shield for protection against DDoS attacks</li>
+    </ul>
+</div>

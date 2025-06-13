@@ -1,0 +1,466 @@
+<div id="network-suspicious-changes-kqlexplained" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query identifies suspicious modifications to AWS network infrastructure including security groups, network ACLs, routes, and VPC configurations made from untrusted IP addresses or known malicious sources. It detects attempts to open unauthorized network access, disable security controls, or create backdoors in cloud network infrastructure.</p>
+    
+    <h4>Detection Logic</h4>
+    <p>This detection operates through a comprehensive network security monitoring approach:</p>
+    <ol>
+        <li>
+            <strong>Multi-Source Threat Intelligence:</strong>
+            <ul>
+                <li>Integrates <code>_GetWatchlist('badguyIPs')</code> for known malicious IP addresses</li>
+                <li>Uses <code>AWS_filterCloudTrailCIDR()</code> to identify untrusted network sources</li>
+                <li>Combines threat intelligence with network-based filtering</li>
+                <li>Provides comprehensive coverage of suspicious source addresses</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Critical Network Event Monitoring:</strong>
+            <ul>
+                <li>Tracks security group modifications: <code>CreateSecurityGroup</code>, <code>AuthorizeSecurityGroupIngress</code></li>
+                <li>Monitors network ACL changes: <code>CreateNetworkAclEntry</code>, <code>DeleteNetworkAcl</code></li>
+                <li>Observes routing modifications: <code>CreateRoute</code>, <code>ReplaceRoute</code></li>
+                <li>Watches VPC endpoint changes: <code>CreateVpcEndpoint</code>, <code>ModifyVpcEndpoint</code></li>
+                <li>Detects logging disruption: <code>DeleteFlowLogs</code></li>
+            </ul>
+        </li>
+        <li>
+            <strong>Service Account Filtering:</strong>
+            <ul>
+                <li>Excludes legitimate automation accounts (AWSConfig, CloudFormation, EKS)</li>
+                <li>Filters out known service operations to reduce false positives</li>
+                <li>Focuses on user-initiated changes with potential security impact</li>
+                <li>Maintains coverage while improving alert quality</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Configuration Change Analysis:</strong>
+            <ul>
+                <li>Performs deep JSON parsing to extract network configuration details</li>
+                <li>Identifies CIDR blocks, especially dangerous <code>0.0.0.0/0</code> ranges</li>
+                <li>Extracts port ranges and rule modifications</li>
+                <li>Analyzes security group and network ACL rule changes</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Context Enrichment and Severity Assessment:</strong>
+            <ul>
+                <li>Joins with summary data for event descriptions</li>
+                <li>Filters for medium-severity events to balance coverage and noise</li>
+                <li>Creates detailed summaries with technical specifications</li>
+                <li>Provides comprehensive context for investigation</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Key Detection Fields</h4>
+    <ul>
+        <li><strong>EventName:</strong> Specific network configuration change performed</li>
+        <li><strong>Severity:</strong> Risk level assessment (filtered to "Medium" severity)</li>
+        <li><strong>DetailSummary:</strong> Comprehensive description including technical details</li>
+        <li><strong>UserIdentityArn:</strong> Identity that performed the network change</li>
+        <li><strong>SourceIpAddress:</strong> IP address originating the change (untrusted/malicious)</li>
+        <li><strong>SecurityGroupId:</strong> Security group identifier being modified</li>
+        <li><strong>GroupID:</strong> Alternative group identifier for correlations</li>
+        <li><strong>ModifiedRuleID:</strong> Specific rule within security group being changed</li>
+        <li><strong>cidrBlock:</strong> Network range affected (especially 0.0.0.0/0 for "anywhere")</li>
+        <li><strong>PortRange:</strong> Port specifications for network access rules</li>
+        <li><strong>networkAclId:</strong> Network ACL being modified</li>
+        <li><strong>ruleAction:</strong> Allow/Deny action for network ACL rules</li>
+        <li><strong>networknicID:</strong> Network interface involved in changes</li>
+    </ul>
+    
+    <h4>Network Security Risk Categories</h4>
+    <p>Different types of network changes present varying security risks:</p>
+    <ul>
+        <li><strong>Security Group Modifications (Critical Risk):</strong>
+            <ul>
+                <li><code>AuthorizeSecurityGroupIngress</code> - Opening inbound access</li>
+                <li><code>ModifySecurityGroupRules</code> - Changing existing rule parameters</li>
+                <li>Particular concern: Rules allowing traffic from 0.0.0.0/0 (anywhere)</li>
+                <li>High-risk ports: 22 (SSH), 3389 (RDP), 80/443 (Web), 1433/3306 (Database)</li>
+            </ul>
+        </li>
+        <li><strong>Network ACL Changes (High Risk):</strong>
+            <ul>
+                <li><code>CreateNetworkAclEntry</code> - Adding new network-level rules</li>
+                <li><code>DeleteNetworkAcl</code> - Removing network protection layers</li>
+                <li>Risk factors: Allow rules for broad IP ranges</li>
+                <li>Subnet-level impact affecting multiple resources</li>
+            </ul>
+        </li>
+        <li><strong>Routing Modifications (Medium-High Risk):</strong>
+            <ul>
+                <li><code>CreateRoute</code> / <code>ReplaceRoute</code> - Changing traffic flow</li>
+                <li>Risk: Routes to 0.0.0.0/0 through unexpected gateways</li>
+                <li>Potential for traffic interception or redirection</li>
+                <li>Impact on network segmentation and isolation</li>
+            </ul>
+        </li>
+        <li><strong>VPC Endpoint Modifications (Medium Risk):</strong>
+            <ul>
+                <li><code>CreateVpcEndpoint</code> / <code>ModifyVpcEndpoint</code> - Service access changes</li>
+                <li>Risk: Unauthorized access to AWS services</li>
+                <li>Potential data exfiltration through service endpoints</li>
+                <li>Policy modifications enabling broader access</li>
+            </ul>
+        </li>
+        <li><strong>Network Interface Changes (Medium Risk):</strong>
+            <ul>
+                <li><code>DeleteNetworkInterface</code> - Removing network connectivity</li>
+                <li>Potential service disruption or security bypass</li>
+                <li>Impact on logging and monitoring capabilities</li>
+                <li>Availability and integrity concerns</li>
+            </ul>
+        </li>
+        <li><strong>Logging and Monitoring Disruption (High Risk):</strong>
+            <ul>
+                <li><code>DeleteFlowLogs</code> - Eliminating network traffic visibility</li>
+                <li>Defense evasion technique</li>
+                <li>Preparation for subsequent malicious activities</li>
+                <li>Compliance and audit trail destruction</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Attack Scenarios and Threat Vectors</h4>
+    <p>This detection identifies various sophisticated attack methodologies:</p>
+    <ul>
+        <li><strong>Network Backdoor Creation:</strong>
+            <ul>
+                <li>Opening SSH/RDP access from anywhere (0.0.0.0/0)</li>
+                <li>Creating overly permissive security group rules</li>
+                <li>Establishing persistent remote access channels</li>
+                <li>Bypassing network segmentation controls</li>
+            </ul>
+        </li>
+        <li><strong>Defense Evasion and Visibility Reduction:</strong>
+            <ul>
+                <li>Disabling VPC Flow Logs to hide network activity</li>
+                <li>Modifying network ACLs to allow covert communications</li>
+                <li>Creating routes to bypass security monitoring</li>
+                <li>Establishing unmonitored communication channels</li>
+            </ul>
+        </li>
+        <li><strong>Lateral Movement Facilitation:</strong>
+            <ul>
+                <li>Opening internal network communications</li>
+                <li>Creating cross-subnet access pathways</li>
+                <li>Establishing service-to-service communications</li>
+                <li>Enabling broader network reconnaissance</li>
+            </ul>
+        </li>
+        <li><strong>Data Exfiltration Preparation:</strong>
+            <ul>
+                <li>Opening outbound channels to external servers</li>
+                <li>Creating VPC endpoints for unauthorized service access</li>
+                <li>Establishing high-bandwidth communication pathways</li>
+                <li>Bypassing data loss prevention controls</li>
+            </ul>
+        </li>
+        <li><strong>Infrastructure Disruption:</strong>
+            <ul>
+                <li>Deleting critical network interfaces</li>
+                <li>Modifying routing to create denial of service</li>
+                <li>Eliminating network protections for sabotage</li>
+                <li>Creating network misconfigurations for instability</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Critical Network Patterns</h4>
+    <p>Specific configuration patterns that indicate high risk:</p>
+    <ul>
+        <li><strong>Universal Access Rules (0.0.0.0/0):</strong>
+            <ul>
+                <li>Any inbound rule allowing traffic from the entire internet</li>
+                <li>Outbound rules to any destination (potential exfiltration)</li>
+                <li>Network ACL entries with broad access permissions</li>
+                <li>Routes directing traffic to/from anywhere</li>
+            </ul>
+        </li>
+        <li><strong>Dangerous Port Combinations:</strong>
+            <ul>
+                <li>SSH (22) + RDP (3389) open to internet</li>
+                <li>Database ports (1433, 3306, 5432) with public access</li>
+                <li>Management interfaces (80, 443, 8080) unrestricted</li>
+                <li>Non-standard ports potentially bypassing security</li>
+            </ul>
+        </li>
+        <li><strong>Network Segmentation Bypass:</strong>
+            <ul>
+                <li>Rules allowing cross-subnet communications</li>
+                <li>VPC peering modifications enabling broader access</li>
+                <li>Gateway configurations redirecting traffic flow</li>
+                <li>ACL rules overriding security group restrictions</li>
+            </ul>
+        </li>
+        <li><strong>Monitoring Evasion:</strong>
+            <ul>
+                <li>Flow log deletion before other malicious activities</li>
+                <li>Creating unlogged communication pathways</li>
+                <li>VPC endpoint policies bypassing central monitoring</li>
+                <li>Network interface modifications affecting visibility</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Immediate Response Protocol</h4>
+    <p>When suspicious network changes are detected, implement this response sequence:</p>
+    <ol>
+        <li><strong>Rapid Assessment (0-3 minutes):</strong>
+            <ul>
+                <li>Identify the specific network change and its scope</li>
+                <li>Assess if change impacts critical infrastructure or data</li>
+                <li>Verify if source IP is known malicious or simply untrusted</li>
+                <li>Determine immediate security impact of the modification</li>
+            </ul>
+        </li>
+        <li><strong>Authorization Verification (3-10 minutes):</strong>
+            <ul>
+                <li>Check if change was authorized through change management</li>
+                <li>Validate business justification for network modification</li>
+                <li>Confirm identity has appropriate permissions for the change</li>
+                <li>Review approval workflows and documentation</li>
+            </ul>
+        </li>
+        <li><strong>Immediate Containment (10-20 minutes):</strong>
+            <ul>
+                <li>For unauthorized changes: Immediately revert modifications</li>
+                <li>Block source IP if from known malicious infrastructure</li>
+                <li>Implement temporary restrictive security group rules</li>
+                <li>Preserve evidence of original configuration</li>
+            </ul>
+        </li>
+        <li><strong>Impact Analysis (20-60 minutes):</strong>
+            <ul>
+                <li>Assess what resources are affected by network changes</li>
+                <li>Check for any actual exploitation of new access rules</li>
+                <li>Review network traffic logs for suspicious patterns</li>
+                <li>Evaluate potential data exposure or service impact</li>
+            </ul>
+        </li>
+        <li><strong>Comprehensive Investigation (1-4 hours):</strong>
+            <ul>
+                <li>Analyze all recent activities by the same identity</li>
+                <li>Check for patterns of progressive privilege escalation</li>
+                <li>Review other modifications across AWS services</li>
+                <li>Coordinate with security team for broader threat hunting</li>
+            </ul>
+        </li>
+        <li><strong>Remediation and Hardening (4-24 hours):</strong>
+            <ul>
+                <li>Implement proper network security configurations</li>
+                <li>Establish ongoing monitoring for the affected resources</li>
+                <li>Review and enhance change management processes</li>
+                <li>Update security policies based on lessons learned</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h4>Technical Implementation Analysis</h4>
+    <p>Key technical aspects of this detection:</p>
+    <ul>
+        <li><strong>Complex JSON Parsing:</strong>
+            <ul>
+                <li>Extracts nested configuration data from CloudTrail events</li>
+                <li>Handles various request parameter structures</li>
+                <li>Parses security group rules and network ACL entries</li>
+                <li>Maintains data integrity across complex transformations</li>
+            </ul>
+        </li>
+        <li><strong>Pattern Recognition:</strong>
+            <ul>
+                <li>Identifies dangerous CIDR blocks (especially 0.0.0.0/0)</li>
+                <li>Recognizes high-risk port combinations</li>
+                <li>Detects overly permissive access patterns</li>
+                <li>Correlates multiple related network changes</li>
+            </ul>
+        </li>
+        <li><strong>Contextual Enhancement:</strong>
+            <ul>
+                <li>Combines rule details with summary descriptions</li>
+                <li>Provides comprehensive technical context</li>
+                <li>Maintains clear audit trails for investigation</li>
+                <li>Enables rapid analyst understanding</li>
+            </ul>
+        </li>
+        <li><strong>Performance Optimization:</strong>
+            <ul>
+                <li>Early filtering reduces processing overhead</li>
+                <li>Focused event types improve query efficiency</li>
+                <li>Severity filtering balances coverage with alert volume</li>
+                <li>Intelligent deduplication prevents alert fatigue</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Advanced Detection Enhancements</h4>
+    <p>Consider these improvements for enhanced detection capabilities:</p>
+    <ul>
+        <li><strong>Behavioral Analysis:</strong>
+            <ul>
+                <li>Establish baselines for normal network change patterns</li>
+                <li>Detect anomalous modification frequencies or timing</li>
+                <li>Identify users who rarely make network changes</li>
+                <li>Monitor for bulk changes suggesting automation</li>
+            </ul>
+        </li>
+        <li><strong>Risk Scoring Enhancement:</strong>
+            <ul>
+                <li>Weight changes based on resource criticality</li>
+                <li>Score based on source IP reputation and location</li>
+                <li>Consider user privilege level and normal behavior</li>
+                <li>Integrate threat intelligence context scoring</li>
+            </ul>
+        </li>
+        <li><strong>Correlation with Other Events:</strong>
+            <ul>
+                <li>Link network changes with subsequent resource access</li>
+                <li>Correlate with authentication and authorization events</li>
+                <li>Detect patterns across multiple AWS services</li>
+                <li>Identify coordinated attack sequences</li>
+            </ul>
+        </li>
+        <li><strong>Automated Response Integration:</strong>
+            <ul>
+                <li>Automatic rollback of unauthorized changes</li>
+                <li>Dynamic firewall rule updates for known threats</li>
+                <li>Integration with security orchestration platforms</li>
+                <li>Automated evidence preservation workflows</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Detection Tuning Guidelines</h4>
+    <p>Optimize this detection for your environment:</p>
+    <ul>
+        <li><strong>Source IP Management:</strong>
+            <ul>
+                <li>Regularly update malicious IP intelligence feeds</li>
+                <li>Fine-tune untrusted IP definitions for organization</li>
+                <li>Consider VPN and remote work access patterns</li>
+                <li>Implement geographic filtering where appropriate</li>
+            </ul>
+        </li>
+        <li><strong>Event Type Refinement:</strong>
+            <ul>
+                <li>Add organization-specific critical network events</li>
+                <li>Exclude routine operational changes if appropriate</li>
+                <li>Focus on events affecting sensitive environments</li>
+                <li>Balance coverage with investigation capacity</li>
+            </ul>
+        </li>
+        <li><strong>Service Account Management:</strong>
+            <ul>
+                <li>Maintain current list of legitimate automation accounts</li>
+                <li>Monitor service account permissions and activities</li>
+                <li>Implement separate monitoring for service changes</li>
+                <li>Regular review of excluded accounts and services</li>
+            </ul>
+        </li>
+        <li><strong>Severity and Alert Tuning:</strong>
+            <ul>
+                <li>Adjust severity thresholds based on business impact</li>
+                <li>Implement priority escalation for critical resources</li>
+                <li>Balance alert volume with response capabilities</li>
+                <li>Provide clear context for different severity levels</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Integration with AWS Security Services</h4>
+    <p>This detection complements various AWS security capabilities:</p>
+    <ul>
+        <li><strong>AWS Config:</strong>
+            <ul>
+                <li>Configuration compliance monitoring</li>
+                <li>Automatic remediation of policy violations</li>
+                <li>Configuration history and change tracking</li>
+                <li>Integration with AWS Systems Manager</li>
+            </ul>
+        </li>
+        <li><strong>AWS Security Hub:</strong>
+            <ul>
+                <li>Centralized security findings management</li>
+                <li>Standards compliance monitoring</li>
+                <li>Custom insight creation for network changes</li>
+                <li>Integration with third-party security tools</li>
+            </ul>
+        </li>
+        <li><strong>AWS GuardDuty:</strong>
+            <ul>
+                <li>Behavioral anomaly detection</li>
+                <li>Threat intelligence integration</li>
+                <li>DNS and network analysis</li>
+                <li>Machine learning-based threat detection</li>
+            </ul>
+        </li>
+        <li><strong>VPC Flow Logs:</strong>
+            <ul>
+                <li>Network traffic analysis and monitoring</li>
+                <li>Correlation with security group changes</li>
+                <li>Detection of actual traffic exploitation</li>
+                <li>Forensic analysis capabilities</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Compliance and Governance</h4>
+    <p>This detection supports various compliance frameworks:</p>
+    <ul>
+        <li><strong>Security Frameworks:</strong>
+            <ul>
+                <li>NIST Cybersecurity Framework network security controls</li>
+                <li>ISO 27001 network access control requirements</li>
+                <li>CIS Controls for network monitoring and protection</li>
+                <li>COBIT governance and risk management practices</li>
+            </ul>
+        </li>
+        <li><strong>Industry Regulations:</strong>
+            <ul>
+                <li>PCI-DSS network segmentation and access controls</li>
+                <li>HIPAA administrative and technical safeguards</li>
+                <li>SOX IT controls and change management</li>
+                <li>FedRAMP network security requirements</li>
+            </ul>
+        </li>
+        <li><strong>Change Management:</strong>
+            <ul>
+                <li>ITIL service management processes</li>
+                <li>Infrastructure as Code (IaC) governance</li>
+                <li>Segregation of duties enforcement</li>
+                <li>Audit trail and accountability requirements</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h4>Key Performance Indicators</h4>
+    <p>Monitor these metrics for detection effectiveness:</p>
+    <ul>
+        <li><strong>Security Metrics:</strong>
+            <ul>
+                <li>Number of unauthorized network changes prevented</li>
+                <li>Reduction in overly permissive security group rules</li>
+                <li>Time to detection for network policy violations</li>
+                <li>Percentage of network changes from trusted sources</li>
+            </ul>
+        </li>
+        <li><strong>Operational Metrics:</strong>
+            <ul>
+                <li>False positive rate for legitimate network changes</li>
+                <li>Time to investigate and resolve network alerts</li>
+                <li>Change management process compliance rate</li>
+                <li>Network configuration drift detection accuracy</li>
+            </ul>
+        </li>
+        <li><strong>Risk Metrics:</strong>
+            <ul>
+                <li>Network attack surface reduction over time</li>
+                <li>Compliance with network security policies</li>
+                <li>Incident prevention through early detection</li>
+                <li>Business impact of prevented network exposures</li>
+            </ul>
+        </li>
+    </ul>
+</div>

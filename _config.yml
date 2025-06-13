@@ -1,3 +1,5 @@
+# Updated _config.yml - Fix for underscore directories
+
 title: "ATT4CKQL"
 description: "Enhanced KQL Queries for Microsoft Sentinel based on MITRE ATT&CK Techniques"
 baseurl: "" 
@@ -6,13 +8,11 @@ url: "https://realnamesareboring.github.io/ATT4CKQL/"
 markdown: kramdown
 highlighter: rouge
 
+# Keep existing collections for platforms only
 collections:
-  queries:
-    output: true
-  logs:
-    output: true
   platforms:
     output: true
+    permalink: /platforms/:name/
 
 defaults:
   - scope:
@@ -24,6 +24,24 @@ defaults:
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+
+# UPDATED: Include renamed directories (without underscores)
+include:
+  - "Amazon Web Services"
+  - "Amazon Web Services/logs"
+  - "Amazon Web Services/explained"  
+  - "Amazon Web Services/Queries"
+  - "Azure"  
+  - "Azure/logs"
+  - "Azure/explained"
+  - "Azure/Queries"
+  - "GCP"
+  - "GCP/logs"
+  - "GCP/explained"
+  - "GCP/Queries"
+  - "Active Directory"
+  - "Microsoft 365"
+  - "Entra ID"
 
 exclude:
   - Gemfile

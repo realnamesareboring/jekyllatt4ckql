@@ -1,0 +1,84 @@
+<div class="modal-content">
+    <span class="close-btn" onclick="closeModal('imdsv1-logs')">&times;</span>
+    <h2>AWS IMDSv1 Vulnerability Detection</h2>
+    
+    <div class="log-header">
+        <div>
+            <div class="log-title">Query Results</div>
+            <div class="query-info">Time range: Last 24 hours | Region: All regions</div>
+        </div>
+        <div class="results-info">3 results</div>
+    </div>
+
+    <div class="log-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>TimeGenerated</th>
+                    <th>EventName</th>
+                    <th>InstanceType</th>
+                    <th>InstanceId</th>
+                    <th>PrivateIP</th>
+                    <th>IMDSV1</th>
+                    <th>UserIdentityArn</th>
+                    <th>SourceIpAddress</th>
+                    <th>UserIdentityType</th>
+                    <th>UserIdentityAccountId</th>
+                    <th>AWSRegion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="log-timestamp">2025-03-05T14:23:45.123Z</td>
+                    <td>RunInstances</td>
+                    <td>t3.medium</td>
+                    <td>i-0abc12345def67890</td>
+                    <td>10.0.12.34</td>
+                    <td class="highlight-cell">optional</td>
+                    <td>arn:aws:iam::123456789012:role/DevOpsEngineer</td>
+                    <td>203.0.113.42</td>
+                    <td>AssumedRole</td>
+                    <td>123456789012</td>
+                    <td>us-east-1</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-03-05T13:12:33.452Z</td>
+                    <td>RunInstances</td>
+                    <td>m5.large</td>
+                    <td>i-0def98765abc43210</td>
+                    <td>10.0.45.67</td>
+                    <td class="highlight-cell">optional</td>
+                    <td>arn:aws:iam::123456789012:role/DataScientist</td>
+                    <td>198.51.100.23</td>
+                    <td>AssumedRole</td>
+                    <td>123456789012</td>
+                    <td>us-west-2</td>
+                </tr>
+                <tr>
+                    <td class="log-timestamp">2025-03-04T22:05:18.789Z</td>
+                    <td>RunInstances</td>
+                    <td>t3.xlarge</td>
+                    <td>i-0567890abcdef1234</td>
+                    <td>10.0.78.90</td>
+                    <td class="highlight-cell">optional</td>
+                    <td>arn:aws:iam::123456789012:role/DeveloperAccess</td>
+                    <td>198.51.100.78</td>
+                    <td>AssumedRole</td>
+                    <td>123456789012</td>
+                    <td>eu-west-1</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Detection Logic Explanation</h3>
+    <p>This detection identifies EC2 instances where the IMDSv1 service is configured as "optional" rather than "required". When IMDSv1 is set to "optional", the EC2 instance allows access to the metadata service without requiring more secure token-based authentication, creating a security risk.</p>
+    
+    <p>Key indicator in the logs:</p>
+    <ul>
+        <li>The <code>IMDSV1</code> field shows "<strong>optional</strong>" instead of "required"</li>
+        <li>The query filters specifically for the EC2 <code>RunInstances</code> event</li>
+        <li>Only non-service accounts are included by filtering out known service principals</li>
+    </ul>
+</div>
+</div>

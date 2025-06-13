@@ -1,0 +1,11 @@
+<div id="imdsv1-query-explanation" class="query-explanation">
+    <h3>Query Explanation</h3>
+    <p>This KQL query detects EC2 instances that were created with IMDSv1 set to optional (rather than requiring more secure IMDSv2). The detection works by:</p>
+    <ul>
+        <li>Filtering AWS CloudTrail for <code>RunInstances</code> events in the last 30 days</li>
+        <li>Examining the <code>metadataOptions.httpTokens</code> field in the request parameters</li>
+        <li>Identifying instances where this value is set to <code>optional</code>, which allows IMDSv1 usage</li>
+        <li>Joining with the summary table to provide additional context</li>
+    </ul>
+    <p>IMDSv1 is vulnerable to SSRF attacks that can lead to credential theft. AWS recommends requiring IMDSv2 for all instances.</p>
+</div>
