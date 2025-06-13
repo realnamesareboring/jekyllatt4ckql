@@ -27,6 +27,7 @@ title: "AWS Detection Rules with MITRE ATT&CK Mapping"
 <!-- Modal containers -->
 <div id="modal-containers">
     <!-- EC2 Related Modals -->
+    <div id="imdsv1-logstest" class="modal"></div> 
     <div id="aws-imdsv1-kql" class="modal"></div>
     <div id="ec2-imdsv1-logs" class="modal"></div>
     <div id="ec2-suspicious-deployment-logs" class="modal"></div>
