@@ -54,7 +54,7 @@ header:
     </thead>
     <tbody>
       <tr>
-        <td><a href="/platforms/aws/" class="source-link" data-source="aws">Amazon Web Services (AWS)</a></td>
+        <td><a href="{{ '/platforms/aws/' | relative_url }}" class="source-link" data-source="aws">Amazon Web Services (AWS)</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -62,7 +62,7 @@ header:
         <td>2025-03-07</td>
       </tr>
       <tr>
-        <td><a href="/platforms/azure/" class="source-link" data-source="azure">Azure</a></td>
+        <td><a href="{{ '/platforms/azure/' | relative_url }}" class="source-link" data-source="azure">Azure</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -70,7 +70,7 @@ header:
         <td>2025-03-01</td>
       </tr>
       <tr>
-        <td><a href="/platforms/active-directory/" class="source-link" data-source="active-directory">Active Directory</a></td>
+        <td><a href="{{ '/platforms/active-directory/' | relative_url }}" class="source-link" data-source="active-directory">Active Directory</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -78,7 +78,7 @@ header:
         <td>2025-03-15</td>
       </tr>
       <tr>
-        <td><a href="/platforms/gcp/" class="source-link" data-source="gcp">Google Cloud Platform (GCP)</a></td>
+        <td><a href="{{ '/platforms/gcp/' | relative_url }}" class="source-link" data-source="gcp">Google Cloud Platform (GCP)</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -86,7 +86,7 @@ header:
         <td>2025-02-18</td>
       </tr>
       <tr>
-        <td><a href="/platforms/entraid/" class="source-link" data-source="entraid">Entra ID (formerly Azure AD)</a></td>
+        <td><a href="{{ '/platforms/entraid/' | relative_url }}" class="source-link" data-source="entraid">Entra ID (formerly Azure AD)</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -94,7 +94,7 @@ header:
         <td>2025-02-25</td>
       </tr>
       <tr>
-        <td><a href="/platforms/office365/" class="source-link" data-source="office365">Microsoft 365</a></td>
+        <td><a href="{{ '/platforms/office365/' | relative_url }}" class="source-link" data-source="office365">Microsoft 365</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -102,7 +102,7 @@ header:
         <td>2025-02-22</td>
       </tr>
       <tr>
-        <td><a href="/platforms/defender/" class="source-link" data-source="defender">Microsoft Defender</a></td>
+        <td><a href="{{ '/platforms/defender/' | relative_url }}" class="source-link" data-source="defender">Microsoft Defender</a></td>
         <td class="query-count"><span class="loading">Loading...</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
         <td><span class="tag tag-yes">Yes</span></td>
@@ -115,32 +115,15 @@ header:
 
 <div class="section" id="best-practices">
   <h2>4. Best Practices</h2>
-  <p>For optimal use of the ATT4CKQL queries, consider the following best practices:</p>
-  
-  <h3>Query Optimization</h3>
   <ul>
-    <li><strong>Time Ranges</strong>: Adjust time ranges based on your retention policies and performance requirements</li>
-    <li><strong>Resource Utilization</strong>: Be mindful of query complexity and resource usage, especially for queries running frequently</li>
-    <li><strong>Performance Testing</strong>: Test queries during off-peak hours before implementing them in production</li>
-  </ul>
-  
-  <h3>Detection Engineering</h3>
-  <ul>
-    <li><strong>Tuning</strong>: Tune detection thresholds to minimize false positives while maintaining detection efficacy</li>
-    <li><strong>Baseline Establishment</strong>: Establish environment baselines before implementing detection rules</li>
-    <li><strong>False Positive Reduction</strong>: Implement allow-listing for known good behavior that might trigger alerts</li>
-  </ul>
-  
-  <h3>Operational Considerations</h3>
-  <ul>
-    <li><strong>Alert Prioritization</strong>: Implement a severity rating system for alerts to prioritize investigation</li>
-    <li><strong>Documentation</strong>: Document any modifications made to the original queries</li>
-    <li><strong>Periodic Review</strong>: Regularly review and update queries to account for new threat tactics and techniques</li>
-    <li><strong>Version Control</strong>: Maintain version control of your implemented queries to track changes over time</li>
+    <li><strong>Test queries in development environment first</strong> - Always validate queries against sample data before deploying to production</li>
+    <li><strong>Customize thresholds and parameters</strong> - Adjust detection thresholds based on your environment's baseline</li>
+    <li><strong>Review false positives regularly</strong> - Fine-tune queries to reduce noise while maintaining detection efficacy</li>
+    <li><strong>Implement proper alerting</strong> - Set up appropriate notification channels and escalation procedures</li>
+    <li><strong>Document customizations</strong> - Keep track of any modifications made to the base queries</li>
   </ul>
 </div>
 
 <footer>
-  <p>ATT4CKQL - Enhanced KQL Queries for Microsoft Sentinel Based on MITRE ATT&CK</p>
-  <p>This project is not affiliated with or endorsed by Microsoft or MITRE.</p>
+  <p>&copy; 2025 ATT4CKQL Project. Enhanced KQL queries for Microsoft Sentinel.</p>
 </footer>
