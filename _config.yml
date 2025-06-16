@@ -2,7 +2,7 @@
 
 title: "ATT4CKQL"
 description: "Enhanced KQL Queries for Microsoft Sentinel based on MITRE ATT&CK Techniques"
-baseurl: "/ATT4CKQL"  # ← FIXED: Add the repository name
+baseurl: "/jekyllatt4ckql"  # ← FIXED: Add the repository name
 url: "https://realnamesareboring.github.io"  # ← FIXED: Remove /ATT4CKQL/ from here
 
 markdown: kramdown
