@@ -1,9 +1,9 @@
-# Updated _config.yml - Fix for underscore directories
+# Updated _config.yml - Fix for GitHub Pages deployment
 
 title: "ATT4CKQL"
 description: "Enhanced KQL Queries for Microsoft Sentinel based on MITRE ATT&CK Techniques"
-baseurl: "" 
-url: "https://realnamesareboring.github.io/ATT4CKQL/"
+baseurl: "/ATT4CKQL"  # ← FIXED: Add the repository name
+url: "https://realnamesareboring.github.io"  # ← FIXED: Remove /ATT4CKQL/ from here
 
 markdown: kramdown
 highlighter: rouge
