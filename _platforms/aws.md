@@ -65,6 +65,6 @@ permalink: /platforms/aws/
     <div id="security-cloudtrail-tamper-kql" class="modal"></div>
     <div id="aws-enhanced-guardduty-logs" class="modal"></div>
     <div id="security-enhanced-guardduty-kql" class="modal"></div>
-    <div id="aws-unauthorized-api-calls" class="modal"></div>
+    <div id="aws-unauthorized-api-calls-logs" class="modal"></div>
     <div id="security-unauthorized-api-kql" class="modal"></div>
 </div>
