@@ -1,6 +1,7 @@
 ---
-layout: aws
+layout: platform
 title: "AWS Detection Rules with MITRE ATT&CK Mapping"
+permalink: /platforms/aws/
 ---
 
 <h1>AWS Detection Rules with MITRE ATT&CK Mapping</h1>
@@ -64,6 +65,6 @@ title: "AWS Detection Rules with MITRE ATT&CK Mapping"
     <div id="security-cloudtrail-tamper-kql" class="modal"></div>
     <div id="aws-enhanced-guardduty-logs" class="modal"></div>
     <div id="security-enhanced-guardduty-kql" class="modal"></div>
-    <div id="aws-unauthorized-api-calls-logs" class="modal"></div>
+    <div id="aws-unauthorized-api-calls" class="modal"></div>
     <div id="security-unauthorized-api-kql" class="modal"></div>
 </div>
