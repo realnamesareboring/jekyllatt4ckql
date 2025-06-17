@@ -2,10 +2,11 @@
 <html>
 <head>
     <title>{{ site.title }}</title>
-    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+    <!-- CONSOLIDATED CSS -->
+    <link rel="stylesheet" href="{{ '/assets/css/att4ckql.css' | relative_url }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    
     {% if page.show_theme_chooser %}
     <div class="theme-chooser-overlay" id="theme-chooser">
         <div class="theme-chooser-content">
@@ -23,20 +24,14 @@
 
     <script>
         function showMain(theme) {
-            // Hide theme chooser
             document.getElementById('theme-chooser').style.display = 'none';
-            
-            // Show main content properly
             const mainContent = document.getElementById('main-content');
             mainContent.style.display = 'block';
             mainContent.style.opacity = '1';
             mainContent.classList.add('visible');
             
-            // Apply theme
             if (theme === 'attacker') {
                 document.body.classList.add('theme-attacker');
-                document.body.style.background = '#1c1c1c';
-                document.body.style.color = '#f0f0f0';
             } else {
                 document.body.classList.remove('theme-attacker');
             }

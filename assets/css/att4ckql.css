@@ -1,0 +1,1528 @@
+/*!
+ * ATT4CKQL Consolidated Stylesheet v2.0
+ * Enhanced KQL Queries for Microsoft Sentinel
+ * Consolidated from style.css + aws-style.css
+ * Created: 2025
+ */
+
+/* ========================================
+   ROOT VARIABLES & CONFIGURATION
+   ======================================== */
+   :root {
+    /* Azure Theme (Defender) - Primary Colors */
+    --azure-primary: #0078d4;
+    --azure-primary-dark: #106ebe;
+    --azure-secondary: #005a9e;
+    --azure-bg: #faf9f8;
+    --azure-surface: #ffffff;
+    --azure-border: #edebe9;
+    --azure-border-light: #f3f2f1;
+    --azure-text: #323130;
+    --azure-text-secondary: #605e5c;
+    --azure-text-light: #8a8886;
+    --azure-hover: #f3f2f1;
+    --azure-selected: #deecf9;
+    --azure-error: #d13438;
+    --azure-warning: #ff8c00;
+    --azure-success: #107c10;
+    --azure-info: #0078d4;
+    
+    /* Legacy variables for compatibility */
+    --primary-color: var(--azure-primary);
+    --primary-gradient-start: var(--azure-primary);
+    --primary-gradient-end: #004e8c;
+    --highlight-color: #e6f7e6;
+    --highlight-color-mid: #b3e6b3;
+    --tag-yes-bg: #e6f7e6;
+    --tag-yes-color: var(--azure-success);
+    --tag-no-bg: #fde7e9;
+    --tag-no-color: var(--azure-error);
+    --table-header-bg: #f8f9fa;
+    --table-hover-bg: #f3f2f1;
+    --github-bg: #24292e;
+    --github-hover-bg: #1a1e22;
+    
+    /* Layout Variables */
+    --border-radius: 8px;
+    --border-radius-small: 4px;
+    --border-radius-large: 12px;
+    --transition: all 0.3s ease;
+    --transition-fast: all 0.2s ease;
+    --shadow-light: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-medium: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-heavy: 0 8px 24px rgba(0,0,0,0.15);
+    
+    /* Typography */
+    --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+    --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* ========================================
+   THEME SWITCHING SYSTEM
+   ======================================== */
+body.theme-attacker,
+.theme-attacker {
+    /* Override all variables for attacker theme */
+    --primary-color: #d40000;
+    --primary-gradient-start: #d40000;
+    --primary-gradient-end: #8c0000;
+    --highlight-color: #ffe6e6;
+    --highlight-color-mid: #ffb3b3;
+    --tag-yes-bg: #ffe6e6;
+    --tag-yes-color: #7c1010;
+    --tag-no-bg: #e7fdfd;
+    --tag-no-color: #13d4d4;
+    --table-header-bg: #fff0f0;
+    --table-hover-bg: #fff5f5;
+    --github-bg: #2e2424;
+    --github-hover-bg: #221a1a;
+    
+    /* Azure variable overrides */
+    --azure-primary: #d40000;
+    --azure-primary-dark: #8c0000;
+    --azure-secondary: #a30000;
+    --azure-bg: #1a1a1a;
+    --azure-surface: #2d2d2d;
+    --azure-border: #444444;
+    --azure-border-light: #555555;
+    --azure-text: #f0f0f0;
+    --azure-text-secondary: #cccccc;
+    --azure-text-light: #999999;
+    --azure-hover: #404040;
+    --azure-selected: rgba(212, 0, 0, 0.1);
+    
+    /* Apply theme colors to body */
+    background-color: var(--azure-bg) !important;
+    color: var(--azure-text) !important;
+}
+
+/* ========================================
+   BASE STYLES & RESET
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--azure-text);
+    background-color: var(--azure-bg);
+    transition: var(--transition);
+    font-size: 14px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ========================================
+   THEME CHOOSER SYSTEM
+   ======================================== */
+.theme-chooser-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.theme-chooser-content {
+    background-color: #f8f8f8;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-heavy);
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+}
+
+.theme-chooser-content h2 {
+    font-size: 2.2em;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.theme-chooser-content p {
+    font-size: 1.1em;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+.theme-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+    gap: 20px;
+}
+
+.theme-button {
+    padding: 15px 40px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 180px;
+    flex: 1;
+}
+
+.defender-button {
+    background-color: #0078d4;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+}
+
+.defender-button:hover {
+    background-color: #005a9e;
+    transform: translateY(-2px);
+}
+
+.attacker-button {
+    background-color: #d40000;
+    color: white;
+    box-shadow: 0 4px 12px rgba(212, 0, 0, 0.3);
+}
+
+.attacker-button:hover {
+    background-color: #a30000;
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   LAYOUT COMPONENTS
+   ======================================== */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.main-content.visible {
+    opacity: 1;
+}
+
+header {
+    background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+    color: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-medium);
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+h2 {
+    color: var(--azure-primary);
+    border-bottom: 2px solid var(--azure-primary);
+    padding-bottom: 8px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    color: var(--azure-primary);
+    font-size: 1.1em;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+.section {
+    background-color: var(--azure-surface);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--azure-border);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ========================================
+   TABLE STYLING
+   ======================================== */
+.table-container {
+    background: var(--azure-surface);
+    border: 1px solid var(--azure-border);
+    border-radius: var(--border-radius-small);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    margin: 20px 0;
+}
+
+.table-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--azure-border);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--azure-text);
+}
+
+.results-count {
+    font-size: 13px;
+    color: var(--azure-text-secondary);
+    background: var(--azure-selected);
+    padding: 4px 12px;
+    border-radius: var(--border-radius-large);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 13px;
+    background: var(--azure-surface);
+}
+
+th {
+    background-color: var(--table-header-bg);
+    color: var(--azure-text);
+    text-align: left;
+    padding: 12px 15px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--azure-border);
+    border-right: 1px solid var(--azure-border-light);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+th:last-child {
+    border-right: none;
+}
+
+th:hover {
+    background: #f3f2f1;
+    cursor: pointer;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--azure-border-light);
+    border-right: 1px solid var(--azure-border-light);
+    vertical-align: top;
+    font-size: 13px;
+}
+
+td:last-child {
+    border-right: none;
+}
+
+tr {
+    transition: var(--transition-fast);
+}
+
+tr:hover {
+    background-color: var(--table-hover-bg);
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 120, 212, 0.1);
+}
+
+tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+body.theme-attacker tr:nth-child(even) {
+    background-color: #363636;
+}
+
+/* ========================================
+   DETECTION RULES TABLE STYLING
+   ======================================== */
+.detection-row {
+    transition: var(--transition-fast);
+    border-left: 3px solid transparent;
+}
+
+.detection-row:hover {
+    background-color: var(--azure-hover);
+    border-left-color: var(--azure-primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.detection-name-cell {
+    min-width: 280px;
+    padding: 16px !important;
+}
+
+.detection-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.detection-title strong {
+    color: var(--azure-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.detection-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detection-timestamp {
+    font-size: 11px;
+    color: var(--azure-text-light);
+    font-family: var(--font-mono);
+}
+
+.detection-count {
+    font-size: 11px;
+    color: var(--azure-primary);
+    font-weight: 500;
+}
+
+/* Severity indicators */
+.severity-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.severity-indicator.severity-high {
+    background-color: var(--azure-error);
+    box-shadow: 0 0 0 2px rgba(209, 52, 56, 0.2);
+}
+
+.severity-indicator.severity-medium {
+    background-color: var(--azure-warning);
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+}
+
+.severity-indicator.severity-low {
+    background-color: var(--azure-info);
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.severity-high {
+    color: var(--azure-error);
+    font-weight: 600;
+    background: #fef2f2;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-large);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.severity-medium {
+    color: var(--azure-warning);
+    font-weight: 600;
+    background: #fff3cd;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-large);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.severity-low {
+    color: var(--azure-info);
+    font-weight: 600;
+    background: #f0f6ff;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-large);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+/* ========================================
+   MITRE ATT&CK STYLING
+   ======================================== */
+.mitre-tactic {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--azure-error);
+    font-size: 14px;
+}
+
+.mitre-technique {
+    margin-left: 16px;
+    display: block;
+    color: var(--azure-text-secondary);
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+.mitre-additional-row {
+    background: inherit;
+}
+
+.mitre-tactic-cell {
+    padding: 8px 16px !important;
+    border-top: none !important;
+}
+
+/* ========================================
+   MODAL SYSTEM
+   ======================================== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background-color: var(--azure-surface);
+    margin: 1% auto;
+    padding: 0;
+    border-radius: var(--border-radius);
+    width: 95%;
+    max-width: 1200px;
+    max-height: 95vh;
+    overflow: hidden;
+    box-shadow: var(--shadow-heavy);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--azure-border);
+    position: relative;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--azure-primary), var(--azure-primary-dark));
+    color: white;
+    padding: 16px 60px 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    border-bottom: 1px solid var(--azure-border);
+    gap: 16px;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    z-index: 10;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-small);
+    transition: var(--transition);
+}
+
+.close-btn:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: var(--azure-text-secondary);
+}
+
+.modal-loading::before {
+    content: "⏳";
+    display: block;
+    font-size: 32px;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-actions .copy-btn,
+.modal-actions .explain-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: var(--border-radius-small);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.modal-actions .copy-btn {
+    background-color: var(--azure-primary);
+    color: white;
+}
+
+.modal-actions .copy-btn:hover {
+    background-color: var(--azure-primary-dark);
+    transform: translateY(-1px);
+}
+
+.modal-actions .explain-btn {
+    background-color: var(--azure-selected);
+    color: var(--azure-primary);
+    border: 1px solid var(--azure-primary);
+}
+
+.modal-actions .explain-btn:hover {
+    background-color: var(--azure-primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   QUERY STYLING & CODE DISPLAY
+   ======================================== */
+.query-container {
+    background-color: #1e1e1e;
+    border-radius: var(--border-radius-small);
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: var(--shadow-medium);
+}
+
+body.theme-attacker .query-container {
+    background-color: #0d1117;
+}
+
+.shell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #2d2d30 0%, #1e1e1e 100%);
+    padding: 8px 16px;
+    border-bottom: 1px solid #444;
+}
+
+.shell-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.shell-control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.shell-control.close {
+    background-color: #ff5f57;
+}
+
+.shell-control.minimize {
+    background-color: #ffbd2e;
+}
+
+.shell-control.maximize {
+    background-color: #28ca42;
+}
+
+.shell-title {
+    color: #e1e1e1;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: center;
+    flex: 1;
+    margin: 0 20px;
+}
+
+.shell-content {
+    background-color: #1e1e1e;
+    padding: 16px;
+    overflow-x: auto;
+    min-height: 200px;
+}
+
+body.theme-attacker .shell-content {
+    background-color: #0d1117;
+}
+
+.kql-query {
+    margin: 0;
+    color: #d4d4d4;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: transparent;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    display: block;
+}
+
+.kql-query code {
+    background: transparent;
+    color: #d4d4d4;
+    padding: 0;
+    font-family: inherit;
+    display: block;
+}
+
+body.theme-attacker .kql-query,
+body.theme-attacker .kql-query code {
+    color: #c9d1d9;
+}
+
+/* KQL Syntax Highlighting */
+.kql-comment {
+    color: #008000;
+}
+
+body.theme-attacker .kql-comment {
+    color: #6A9955;
+}
+
+.kql-operator {
+    color: #0000ff;
+}
+
+body.theme-attacker .kql-operator {
+    color: #569cd6;
+}
+
+.kql-function {
+    color: #795e26;
+}
+
+body.theme-attacker .kql-function {
+    color: #dcdcaa;
+}
+
+.kql-string {
+    color: #a31515;
+}
+
+body.theme-attacker .kql-string {
+    color: #ce9178;
+}
+
+.query-code {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+body.theme-attacker .query-code {
+    background-color: #333;
+}
+
+.code-block {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    margin: 0;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ========================================
+   LOG DISPLAY STYLING
+   ======================================== */
+.log-container {
+    margin: 20px 0;
+    overflow: hidden;
+    width: 100%;
+    background-color: var(--azure-surface);
+    border-radius: var(--border-radius-small);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--azure-border);
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    background: var(--azure-surface);
+    border-bottom: 1px solid var(--azure-border);
+    padding: 16px 24px;
+}
+
+.log-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--azure-text);
+}
+
+.query-info {
+    font-size: 13px;
+    color: var(--azure-text-secondary);
+    margin-top: 4px;
+}
+
+.results-info {
+    padding: 6px 12px;
+    background-color: var(--azure-selected);
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--azure-primary);
+    border: 1px solid rgba(0, 120, 212, 0.2);
+}
+
+.log-timestamp {
+    color: var(--azure-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+body.theme-attacker .log-timestamp {
+    background: #444;
+}
+
+.action-type {
+    font-weight: 600;
+}
+
+/* Table wrapper for horizontal scrolling */
+.table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid var(--azure-border);
+    border-radius: var(--border-radius-small);
+}
+
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: var(--border-radius-small);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* ========================================
+   BUTTON STYLING
+   ======================================== */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--azure-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--azure-primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+}
+
+.copy-btn {
+    padding: 6px 12px;
+    background-color: var(--azure-primary);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    transition: var(--transition);
+}
+
+.copy-btn:hover {
+    background-color: var(--azure-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.explain-btn {
+    padding: 6px 12px;
+    background: var(--azure-selected);
+    color: var(--azure-primary);
+    border: 1px solid var(--azure-primary);
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    transition: var(--transition);
+}
+
+.explain-btn:hover {
+    background: var(--azure-primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.view-logs-btn,
+.view-query-btn,
+.azure-btn {
+    background: linear-gradient(135deg, var(--azure-primary) 0%, var(--azure-primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: var(--transition-fast);
+    margin: 2px;
+    box-shadow: 0 2px 4px rgba(0, 120, 212, 0.2);
+}
+
+.view-logs-btn:hover,
+.view-query-btn:hover,
+.azure-btn:hover {
+    background: linear-gradient(135deg, var(--azure-primary-dark) 0%, var(--azure-secondary) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 120, 212, 0.3);
+}
+
+.sample-btn {
+    background: var(--azure-info);
+}
+
+/* ========================================
+   LINKS & NAVIGATION
+   ======================================== */
+.source-link {
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.source-link:hover {
+    text-decoration: underline;
+    color: var(--azure-primary-dark);
+    font-weight: 600;
+}
+
+.attack-path-link {
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.attack-path-link:hover {
+    text-decoration: underline;
+    color: var(--azure-primary-dark);
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--primary-gradient-end);
+}
+
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--github-bg);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius-small);
+    font-weight: 500;
+    margin-top: 20px;
+    transition: var(--transition);
+}
+
+.github-link:hover {
+    background-color: var(--github-hover-bg);
+}
+
+/* ========================================
+   TAGS & INDICATORS
+   ======================================== */
+.tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: var(--border-radius-small);
+    font-size: 0.8em;
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+.tag-yes {
+    background-color: var(--tag-yes-bg);
+    color: var(--tag-yes-color);
+}
+
+.tag-no {
+    background-color: var(--tag-no-bg);
+    color: var(--tag-no-color);
+}
+
+.azure-tab {
+    background-color: var(--table-header-bg);
+    border-bottom: 3px solid var(--primary-color);
+    padding: 8px 16px;
+    display: inline-block;
+    margin-right: 2px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* ========================================
+   LOADING STATES & ANIMATIONS
+   ======================================== */
+.loading {
+    font-style: italic;
+    color: #666;
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.query-count {
+    transition: background-color 0.5s ease;
+    font-weight: bold;
+}
+
+.updated {
+    background-color: var(--highlight-color);
+    animation: highlight 2s ease-in-out;
+}
+
+.query-count.updated {
+    background-color: var(--azure-selected);
+    color: var(--azure-primary);
+    font-weight: 600;
+    border-radius: var(--border-radius-small);
+    padding: 2px 6px;
+}
+
+/* ========================================
+   THEME TOGGLE BUTTON
+   ======================================== */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: rotate(180deg) scale(1.1);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* ========================================
+   EXPLANATION SECTIONS
+   ======================================== */
+.explanation,
+.query-explanation {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--azure-border);
+}
+
+.explanation .explanation {
+    padding: 16px;
+    background-color: var(--azure-surface);
+    border-radius: var(--border-radius-small);
+    border-left: 4px solid var(--azure-primary);
+}
+
+.explanation h3 {
+    color: var(--azure-primary);
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.explanation h4 {
+    color: var(--azure-text);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 16px 0 8px 0;
+}
+
+.explanation p,
+.explanation li {
+    color: var(--azure-text-secondary);
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+.explanation ul {
+    color: var(--azure-text-secondary);
+    padding-left: 20px;
+}
+
+.explanation li {
+    margin: 4px 0;
+    line-height: 1.4;
+}
+
+.explanation code {
+    background: rgba(0, 120, 212, 0.1);
+    color: var(--azure-primary);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+body.theme-attacker .explanation code {
+    background: rgba(212, 0, 0, 0.1);
+    color: var(--azure-primary);
+}
+
+/* ========================================
+   TEXT SELECTION & ACCESSIBILITY
+   ======================================== */
+.shell-content *,
+.kql-query *,
+.modal-content * {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+.shell-content::selection,
+.kql-query::selection {
+    background-color: rgba(0, 120, 212, 0.3);
+    color: inherit;
+}
+
+/* Force content to respect modal boundaries */
+.modal-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.modal-content .explanation,
+.modal-content .query-container,
+.modal-content .log-container {
+    margin-bottom: 20px;
+}
+
+/* Ensure modal body scrolls properly */
+.modal-body::-webkit-scrollbar {
+    width: 12px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+
+.icon {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--azure-text-secondary);
+    font-size: 0.9em;
+}
+
+/* ========================================
+   ANIMATIONS & KEYFRAMES
+   ======================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes highlight {
+    0% { background-color: var(--highlight-color); }
+    50% { background-color: var(--highlight-color-mid); }
+    100% { background-color: transparent; }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+        font-size: 13px;
+    }
+    
+    header {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    .theme-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .theme-button {
+        min-width: auto;
+        width: 100%;
+        margin: 0;
+    }
+    
+    .section {
+        padding: 20px;
+    }
+    
+    .modal-content {
+        width: 98%;
+        margin: 1% auto;
+        max-height: 95vh;
+    }
+    
+    .modal-header {
+        padding: 12px 50px 12px 16px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+    
+    .modal-title {
+        font-size: 14px !important;
+        width: 100% !important;
+    }
+    
+    .modal-actions {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+    }
+    
+    .close-btn {
+        top: 12px !important;
+        right: 16px !important;
+    }
+    
+    .modal-actions .copy-btn,
+    .modal-actions .explain-btn {
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+        flex: 1 !important;
+        justify-content: center !important;
+        max-width: 120px !important;
+    }
+    
+    .log-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .log-table {
+        font-size: 11px;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 6px 8px;
+    }
+    
+    .query-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .shell-title {
+        font-size: 12px !important;
+        margin: 0 10px !important;
+    }
+    
+    .kql-query {
+        font-size: 12px !important;
+    }
+    
+    table {
+        font-size: 11px;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+    }
+    
+    .detection-name-cell {
+        min-width: 200px;
+        padding: 12px !important;
+    }
+    
+    .detection-title strong {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-chooser-content {
+        width: 95%;
+        padding: 30px 20px;
+    }
+    
+    .theme-chooser-content h2 {
+        font-size: 1.8em;
+    }
+    
+    .modal-title {
+        font-size: 13px !important;
+        line-height: 1.3 !important;
+    }
+    
+    .modal-actions .copy-btn,
+    .modal-actions .explain-btn {
+        font-size: 10px !important;
+        padding: 4px 8px !important;
+    }
+    
+    .shell-title {
+        display: none; /* Hide on very small screens */
+    }
+    
+    .table-container {
+        margin: 10px 0;
+    }
+    
+    .section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    .theme-toggle,
+    .theme-chooser-overlay,
+    .modal {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 15mm !important;
+    }
+    
+    .section {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+    }
+    
+    .modal-content {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    .theme-button {
+        display: none !important;
+    }
+    
+    header {
+        background: #f0f0f0 !important;
+        color: black !important;
+    }
+}
+
+/* ========================================
+   LEGACY COMPATIBILITY
+   ======================================== */
+/* Ensure backward compatibility with existing HTML classes */
+.azure-primary { color: var(--azure-primary) !important; }
+.azure-bg { background-color: var(--azure-bg) !important; }
+.azure-text { color: var(--azure-text) !important; }
+.azure-border { border-color: var(--azure-border) !important; }
+.azure-surface { background-color: var(--azure-surface) !important; }
+
+/* End of ATT4CKQL Consolidated CSS */

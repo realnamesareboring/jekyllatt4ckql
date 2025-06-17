@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title }} - {{ site.title }}</title>
-    <link rel="stylesheet" href="{{ '/assets/css/aws-style.css' | relative_url }}">
-    <!-- Make baseurl available to JavaScript -->
-    <script>
-        window.siteBaseUrl = "{{ site.baseurl }}";
-    </script>
+    <!-- CONSOLIDATED CSS -->
+    <link rel="stylesheet" href="{{ '/assets/css/att4ckql.css' | relative_url }}">
+    <script>window.siteBaseUrl = "{{ site.baseurl }}";</script>
 </head>
 <body>
     <a href="{{ '/' | relative_url }}" class="nav-link">← Back to Home</a>
@@ -17,10 +15,9 @@
         {{ content }}
     </main>
 
-    <!-- Updated script paths -->
+    <!-- Keep existing JavaScript for now -->
     <script src="{{ '/assets/js/aws-script.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/table.js' | relative_url }}"></script>
-    
     <button class="theme-toggle" id="theme-toggle" title="Switch theme">🌙</button>
 </body>
 </html>
