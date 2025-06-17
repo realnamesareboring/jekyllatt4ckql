@@ -25,12 +25,11 @@ permalink: /platforms/aws/
     </tbody>
 </table>
 
-<!-- Modal containers -->
+<!-- Modal containers - COMPLETE SET -->
 <div id="modal-containers">
     <!-- EC2 Related Modals -->
     <div id="imdsv1-logstest" class="modal"></div> 
     <div id="aws-imdsv1-kql" class="modal"></div>
-    <div id="ec2-imdsv1-logs" class="modal"></div>
     <div id="ec2-suspicious-deployment-logs" class="modal"></div>
     <div id="ec2-suspicious-deployment-kql" class="modal"></div>
     <div id="ec2-password-data-retrieved-logs" class="modal"></div>

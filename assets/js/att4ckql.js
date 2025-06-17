@@ -1,8 +1,8 @@
 /*!
- * ATT4CKQL Core JavaScript v2.2 - CORRECTED WORKING VERSION
+ * ATT4CKQL Core JavaScript v2.3 - EXACT MATCH TO ORIGINAL
  * Enhanced KQL Queries for Microsoft Sentinel
- * Consolidated from main.js + aws-script.js + table.js + platform-tables.js
- * FIXES: Count script, modal buttons, formatting, close buttons
+ * Consolidated from main.js + aws-script.js + table.js (EXACT STRUCTURE)
+ * FIXES: Uses original table.js detection rules data and modal IDs
  * Created: 2025
  */
 
@@ -10,7 +10,7 @@
 // NAMESPACE & CONFIGURATION
 // =====================================
 window.ATT4CKQL = window.ATT4CKQL || {
-    version: '2.2.0',
+    version: '2.3.0',
     config: {
         baseUrl: window.siteBaseUrl || '',
         apiEndpoint: 'https://api.github.com/repos/realnamesareboring/jekyllatt4ckql',
@@ -72,7 +72,7 @@ window.ATT4CKQL = window.ATT4CKQL || {
         }
     },
     
-    // Query count storage (FIXED - includes proper counts from main.js)
+    // Query count storage (FIXED - from main.js)
     queryCounts: {
         'active-directory': 42,
         'aws': 15, // Updated to reflect actual AWS detection rules
@@ -85,269 +85,297 @@ window.ATT4CKQL = window.ATT4CKQL || {
 };
 
 // =====================================
-// DETECTION RULES DATA (COMPLETE LIST FROM TABLE.JS)
+// DETECTION RULES DATA (EXACT FROM ORIGINAL table.js)
 // =====================================
-ATT4CKQL.DetectionRulesData = {
-    'aws': [
-        {
-            name: "EC2 Instance Created with IMDSv1",
-            description: "Identifies EC2 instances launched with IMDSv1 set to optional, creating a credential theft risk",
-            severity: "high",
-            lastDetected: "2025-05-15T14:23:45.123Z",
-            detectionCount: 3,
-            mitreTactics: [
-                { tactic: "Initial Access (TA0001)", technique: "T1078.004 - Cloud Accounts" },
-                { tactic: "Credential Access (TA0006)", technique: "T1552.005 - Cloud Instance Metadata API" },
-                { tactic: "Privilege Escalation (TA0004)", technique: "T1078.004 - Cloud Accounts" },
-                { tactic: "Defense Evasion (TA0005)", technique: "T1078.004 - Cloud Accounts" }
-            ],
-            dataSource: "AWS EC2",
-            queryFile: "ATT4CKQL - AWS - EC2 - Instance Created with IMDSv1.kql",
-            queryModalId: "aws-imdsv1-kql",
-            attackPath: "https://github.com/RhinoSecurityLabs/pacu/wiki/Module-Details#ec2__metadata_services",
-            attackPathText: "Pacu IMDS v1 Attack",
-            sampleLogId: "imdsv1-logstest" 
-        },
-        {
-            name: "EC2 Suspicious Deployment Detected",
-            description: "Identifies unusual EC2 instance deployments that may indicate cryptomining or other malicious activities",
-            severity: "medium",
-            lastDetected: "2025-05-15T04:17:32.654Z",
-            detectionCount: 4,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1578.002 - Modify Cloud Compute Infrastructure: Create Cloud Instance" },
-                { tactic: "Execution (TA0002)", technique: "T1204.003 - User Execution: Malicious Image" }
-            ],
-            dataSource: "AWS EC2",
-            queryFile: "ATT4CKQL - AWS - EC2 - Suspicious Deployment Detected.kql",
-            queryModalId: "ec2-suspicious-deployment-kql",
-            attackPath: "https://stratus-red-team.cloud/attack-techniques/AWS/aws.execution.ec2-launch-unusual-instances/",
-            attackPathText: "stratus-red-team: Launch Unusual EC2 instances",
-            sampleLogId: "ec2-suspicious-deployment-logs"
-        },
-        {
-            name: "EC2 Password Data Retrieved",
-            description: "Detects when Windows password data is retrieved from EC2 instances, which may indicate compromise",
-            severity: "medium",
-            lastDetected: "2025-05-14T16:45:12.321Z",
-            detectionCount: 2,
-            mitreTactics: [
-                { tactic: "Credential Access (TA0006)", technique: "T1552.005 - Unsecured Credentials: Cloud Instance Metadata API" }
-            ],
-            dataSource: "AWS EC2",
-            queryFile: "ATT4CKQL - AWS - EC2 - Password Data Retrieved.kql",
-            queryModalId: "ec2-password-data-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1552/005/",
-            attackPathText: "MITRE ATT&CK T1552.005",
-            sampleLogId: "ec2-password-data-logs"
-        },
-        {
-            name: "GuardDuty Threat Detected",
-            description: "Amazon GuardDuty has detected a threat indicating potential malicious activity",
-            severity: "high",
-            lastDetected: "2025-05-15T09:32:17.543Z",
-            detectionCount: 6,
-            mitreTactics: [
-                { tactic: "Initial Access (TA0001)", technique: "T1190 - Exploit Public-Facing Application" },
-                { tactic: "Persistence (TA0003)", technique: "T1098 - Account Manipulation" }
-            ],
-            dataSource: "AWS GuardDuty",
-            queryFile: "ATT4CKQL - AWS - GuardDuty - Threat Detected.kql",
-            queryModalId: "guardduty-threat-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1190/",
-            attackPathText: "MITRE ATT&CK T1190",
-            sampleLogId: "guardduty-threat-logs"
-        },
-        {
-            name: "IAM Password Policy Disabled",
-            description: "Detects when IAM password policy is disabled or weakened, reducing account security",
-            severity: "medium",
-            lastDetected: "2025-05-13T11:15:28.876Z",
-            detectionCount: 1,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1562.007 - Impair Defenses: Disable or Modify Cloud Firewall" }
-            ],
-            dataSource: "AWS IAM",
-            queryFile: "ATT4CKQL - AWS - IAM - Password Policy Disabled.kql",
-            queryModalId: "iam-password-policy-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1562/007/",
-            attackPathText: "MITRE ATT&CK T1562.007",
-            sampleLogId: "iam-password-policy-logs"
-        },
-        {
-            name: "IAM Root Activity Detected",
-            description: "Identifies root account usage which should be rare and monitored closely",
-            severity: "high",
-            lastDetected: "2025-05-12T08:22:41.234Z",
-            detectionCount: 1,
-            mitreTactics: [
-                { tactic: "Privilege Escalation (TA0004)", technique: "T1078.004 - Valid Accounts: Cloud Accounts" }
-            ],
-            dataSource: "AWS IAM",
-            queryFile: "ATT4CKQL - AWS - IAM - Root Activity Detected.kql",
-            queryModalId: "iam-root-activity-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1078/004/",
-            attackPathText: "MITRE ATT&CK T1078.004",
-            sampleLogId: "iam-root-activity-logs"
-        },
-        {
-            name: "S3 Bucket Policy Changed",
-            description: "Detects changes to S3 bucket policies that could lead to data exposure",
-            severity: "medium",
-            lastDetected: "2025-05-14T13:44:55.789Z",
-            detectionCount: 3,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1578.004 - Modify Cloud Compute Infrastructure: Revert Cloud Instance" }
-            ],
-            dataSource: "AWS S3",
-            queryFile: "ATT4CKQL - AWS - S3 - Bucket Policy Changed.kql",
-            queryModalId: "s3-bucket-policy-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1578/004/",
-            attackPathText: "MITRE ATT&CK T1578.004",
-            sampleLogId: "s3-bucket-policy-logs"
-        },
-        {
-            name: "VPC Flow Logs Disabled",
-            description: "Identifies when VPC Flow Logs are disabled, potentially blinding network monitoring",
-            severity: "medium",
-            lastDetected: "2025-05-11T19:33:12.456Z",
-            detectionCount: 2,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1562.008 - Impair Defenses: Disable Cloud Logs" }
-            ],
-            dataSource: "AWS VPC",
-            queryFile: "ATT4CKQL - AWS - VPC - Flow Logs Disabled.kql",
-            queryModalId: "vpc-flow-logs-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1562/008/",
-            attackPathText: "MITRE ATT&CK T1562.008",
-            sampleLogId: "vpc-flow-logs-disabled-logs"
-        },
-        {
-            name: "CloudTrail Stopped",
-            description: "Detects when AWS CloudTrail logging is stopped, potentially hiding malicious activity",
-            severity: "high",
-            lastDetected: "2025-05-10T22:18:33.987Z",
-            detectionCount: 1,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1562.008 - Impair Defenses: Disable Cloud Logs" }
-            ],
-            dataSource: "AWS CloudTrail",
-            queryFile: "ATT4CKQL - AWS - CloudTrail - Stopped.kql",
-            queryModalId: "cloudtrail-stopped-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1562/008/",
-            attackPathText: "MITRE ATT&CK T1562.008",
-            sampleLogId: "cloudtrail-stopped-logs"
-        },
-        {
-            name: "Lambda Function Invoked from Suspicious IP",
-            description: "Identifies Lambda function invocations from potentially malicious source IP addresses",
-            severity: "medium",
-            lastDetected: "2025-05-14T07:39:21.456Z",
-            detectionCount: 5,
-            mitreTactics: [
-                { tactic: "Execution (TA0002)", technique: "T1204.003 - User Execution: Malicious Image" },
-                { tactic: "Initial Access (TA0001)", technique: "T1190 - Exploit Public-Facing Application" }
-            ],
-            dataSource: "AWS Lambda",
-            queryFile: "ATT4CKQL - AWS - Lambda - Suspicious IP Invocation.kql",
-            queryModalId: "lambda-suspicious-ip-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1204/003/",
-            attackPathText: "MITRE ATT&CK T1204.003",
-            sampleLogId: "lambda-suspicious-ip-logs"
-        },
-        {
-            name: "RDS Database Snapshot Shared Publicly",
-            description: "Detects when RDS database snapshots are shared publicly, potentially exposing sensitive data",
-            severity: "high",
-            lastDetected: "2025-05-13T15:27:44.123Z",
-            detectionCount: 2,
-            mitreTactics: [
-                { tactic: "Collection (TA0009)", technique: "T1530 - Data from Cloud Storage Object" }
-            ],
-            dataSource: "AWS RDS",
-            queryFile: "ATT4CKQL - AWS - RDS - Public Snapshot Shared.kql",
-            queryModalId: "rds-public-snapshot-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1530/",
-            attackPathText: "MITRE ATT&CK T1530",
-            sampleLogId: "rds-public-snapshot-logs"
-        },
-        {
-            name: "Unusual API Calls from New Location",
-            description: "Identifies API calls from geographic locations not previously seen for the account",
-            severity: "medium",
-            lastDetected: "2025-05-15T11:42:17.789Z",
-            detectionCount: 7,
-            mitreTactics: [
-                { tactic: "Initial Access (TA0001)", technique: "T1078.004 - Valid Accounts: Cloud Accounts" },
-                { tactic: "Defense Evasion (TA0005)", technique: "T1078.004 - Valid Accounts: Cloud Accounts" }
-            ],
-            dataSource: "AWS CloudTrail",
-            queryFile: "ATT4CKQL - AWS - CloudTrail - New Location API Calls.kql",
-            queryModalId: "unusual-location-api-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1078/004/",
-            attackPathText: "MITRE ATT&CK T1078.004",
-            sampleLogId: "unusual-location-api-logs"
-        },
-        {
-            name: "Security Group Rules Modified",
-            description: "Detects modifications to security group rules that could allow unauthorized access",
-            severity: "medium",
-            lastDetected: "2025-05-14T19:33:55.234Z",
-            detectionCount: 4,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1562.007 - Impair Defenses: Disable or Modify Cloud Firewall" },
-                { tactic: "Persistence (TA0003)", technique: "T1098 - Account Manipulation" }
-            ],
-            dataSource: "AWS EC2",
-            queryFile: "ATT4CKQL - AWS - EC2 - Security Group Modified.kql",
-            queryModalId: "security-group-modified-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1562/007/",
-            attackPathText: "MITRE ATT&CK T1562.007",
-            sampleLogId: "security-group-modified-logs"
-        },
-        {
-            name: "AWS Config Service Disabled",
-            description: "Identifies when AWS Config service is disabled, potentially hiding configuration changes",
-            severity: "medium",
-            lastDetected: "2025-05-12T14:22:11.567Z",
-            detectionCount: 1,
-            mitreTactics: [
-                { tactic: "Defense Evasion (TA0005)", technique: "T1562.008 - Impair Defenses: Disable Cloud Logs" }
-            ],
-            dataSource: "AWS Config",
-            queryFile: "ATT4CKQL - AWS - Config - Service Disabled.kql",
-            queryModalId: "config-disabled-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1562/008/",
-            attackPathText: "MITRE ATT&CK T1562.008",
-            sampleLogId: "config-disabled-logs"
-        },
-        {
-            name: "Excessive Failed Login Attempts",
-            description: "Detects multiple failed login attempts that could indicate brute force attacks",
-            severity: "medium",
-            lastDetected: "2025-05-15T16:45:33.891Z",
-            detectionCount: 12,
-            mitreTactics: [
-                { tactic: "Credential Access (TA0006)", technique: "T1110 - Brute Force" }
-            ],
-            dataSource: "AWS CloudTrail",
-            queryFile: "ATT4CKQL - AWS - CloudTrail - Excessive Failed Logins.kql",
-            queryModalId: "excessive-failed-logins-kql",
-            attackPath: "https://attack.mitre.org/techniques/T1110/",
-            attackPathText: "MITRE ATT&CK T1110",
-            sampleLogId: "excessive-failed-logins-logs"
-        }
-    ],
-    'azure': [],
-    'gcp': [],
-    'entraid': [],
-    'office365': [],
-    'active-directory': [],
-    'defender': []
-};
+
+// Define all detection rules with their metadata (enhanced for Azure styling)
+const detectionRules = [
+    // EC2 IMDSv1 Vulnerability Detection
+    {
+        name: "EC2 Instance Created with IMDSv1",
+        description: "Identifies EC2 instances launched with IMDSv1 set to optional, creating a credential theft risk",
+        severity: "high",
+        lastDetected: "2025-05-15T14:23:45.123Z",
+        detectionCount: 3,
+        mitreTactics: [
+            { tactic: "Initial Access (TA0001)", technique: "T1078.004 - Cloud Accounts" },
+            { tactic: "Credential Access (TA0006)", technique: "T1552.005 - Cloud Instance Metadata API" },
+            { tactic: "Privilege Escalation (TA0004)", technique: "T1078.004 - Cloud Accounts" },
+            { tactic: "Defense Evasion (TA0005)", technique: "T1078.004 - Cloud Accounts" }
+        ],
+        dataSource: "AWS EC2",
+        queryFile: "ATT4CKQL - AWS - EC2 - Instance Created with IMDSv1.kql",
+        queryModalId: "aws-imdsv1-kql",
+        attackPath: "https://github.com/RhinoSecurityLabs/pacu/wiki/Module-Details#ec2__metadata_services",
+        attackPathText: "Pacu IMDS v1 Attack",
+        sampleLogId: "imdsv1-logstest" 
+    },
+    
+    // EC2 Suspicious Deployment Detection
+    {
+        name: "EC2 Suspicious Deployment Detected",
+        description: "Identifies unusual EC2 instance deployments that may indicate cryptomining or other malicious activities",
+        severity: "medium",
+        lastDetected: "2025-05-15T04:17:32.654Z",
+        detectionCount: 4,
+        mitreTactics: [
+            { tactic: "Defense Evasion (TA0005)", technique: "T1578.002 - Modify Cloud Compute Infrastructure: Create Cloud Instance" },
+            { tactic: "Execution (TA0002)", technique: "T1204.003 - User Execution: Malicious Image" }
+        ],
+        dataSource: "AWS EC2",
+        queryFile: "ATT4CKQL - AWS - EC2 - Suspicious Deployment Detected.kql",
+        queryModalId: "ec2-suspicious-deployment-kql",
+        attackPath: "https://stratus-red-team.cloud/attack-techniques/AWS/aws.execution.ec2-launch-unusual-instances/",
+        attackPathText: "stratus-red-team: Launch Unusual EC2 instances",
+        sampleLogId: "ec2-suspicious-deployment-logs"
+    },
+    
+    // EC2 Password Data Retrieved
+    {
+        name: "EC2 Password Data Retrieved",
+        description: "Detects when Windows password data is retrieved from EC2 instances, which may indicate compromise",
+        severity: "medium",
+        lastDetected: "2025-05-14T16:45:12.321Z",
+        detectionCount: 2,
+        mitreTactics: [
+            { tactic: "Credential Access (TA0006)", technique: "T1552.005 - Unsecured Credentials: Cloud Instance Metadata API" }
+        ],
+        dataSource: "AWS EC2",
+        queryFile: "ATT4CKQL - AWS - EC2 - Password Data Retrieved.kql",
+        queryModalId: "ec2-password-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1552/005/",
+        attackPathText: "MITRE ATT&CK T1552.005",
+        sampleLogId: "ec2-password-data-retrieved-logs"
+    },
+    
+    // Snapshot Exfiltration Detection
+    {
+        name: "Snapshot Exfiltration Detection",
+        description: "Detects potential data exfiltration through EBS snapshot sharing or copying to external accounts",
+        severity: "high",
+        lastDetected: "2025-05-14T22:18:33.987Z",
+        detectionCount: 1,
+        mitreTactics: [
+            { tactic: "Collection (TA0009)", technique: "T1530 - Data from Cloud Storage Object" }
+        ],
+        dataSource: "AWS EC2",
+        queryFile: "ATT4CKQL - AWS - EC2 - Snapshot Exfiltration Detection.kql",
+        queryModalId: "snapshot-exfil-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1530/",
+        attackPathText: "Data from Cloud Storage Object",
+        sampleLogId: "snapshot-exfiltration-logs"
+    },
+    
+    // S3 Bucket Modification Detection
+    {
+        name: "S3 Bucket Modification Detection",
+        description: "Identifies suspicious modifications to S3 bucket configurations that could lead to data exposure",
+        severity: "high",
+        lastDetected: "2025-05-15T08:42:17.789Z",
+        detectionCount: 6,
+        mitreTactics: [
+            { tactic: "Collection (TA0009)", technique: "T1530 - Data from Cloud Storage Object" },
+            { tactic: "Exfiltration (TA0010)", technique: "T1537 - Transfer Data to Cloud Account" }
+        ],
+        dataSource: "AWS S3",
+        queryFile: "ATT4CKQL - AWS - S3 - Bucket Modification Detection.kql",
+        queryModalId: "s3-modification-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1530/",
+        attackPathText: "Data from Cloud Storage Object",
+        sampleLogId: "s3-bucket-modification-logs"
+    },
+    
+    // S3 Buckets Accessed from Untrusted Networks
+    {
+        name: "S3 Buckets Accessed from Untrusted Networks",
+        description: "Detects S3 bucket access from IP addresses outside of trusted corporate networks",
+        severity: "medium",
+        lastDetected: "2025-05-15T11:33:44.234Z",
+        detectionCount: 12,
+        mitreTactics: [
+            { tactic: "Initial Access (TA0001)", technique: "T1190 - Exploit Public-Facing Application" },
+            { tactic: "Collection (TA0009)", technique: "T1530 - Data from Cloud Storage Object" }
+        ],
+        dataSource: "AWS S3",
+        queryFile: "ATT4CKQL - AWS - S3 - Buckets Accessed from Untrusted Networks.kql",
+        queryModalId: "s3-untrusted-access-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1190/",
+        attackPathText: "Exploit Public-Facing Application",
+        sampleLogId: "s3-buckets-untrusted-network-logs"
+    },
+    
+    // IAM Access Keys Created or Deleted
+    {
+        name: "IAM Access Keys Created or Deleted",
+        description: "Monitors for suspicious creation or deletion of IAM access keys that could indicate account compromise",
+        severity: "medium",
+        lastDetected: "2025-05-14T19:27:55.123Z",
+        detectionCount: 8,
+        mitreTactics: [
+            { tactic: "Persistence (TA0003)", technique: "T1098.001 - Account Manipulation: Additional Cloud Credentials" }
+        ],
+        dataSource: "AWS IAM",
+        queryFile: "ATT4CKQL - AWS - IAM - Access Keys Created or Deleted.kql",
+        queryModalId: "iam-keys-created-deleted-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1098/001/",
+        attackPathText: "Account Manipulation: Additional Cloud Credentials",
+        sampleLogId: "iam-access-keys-created-deleted-logs"
+    },
+    
+    // IAM Cloud User Creation
+    {
+        name: "IAM Cloud User Creation",
+        description: "Detects the creation of new IAM users, which could indicate unauthorized access or privilege escalation attempts",
+        severity: "medium",
+        lastDetected: "2025-05-13T13:45:22.456Z",
+        detectionCount: 5,
+        mitreTactics: [
+            { tactic: "Persistence (TA0003)", technique: "T1136.003 - Create Account: Cloud Account" }
+        ],
+        dataSource: "AWS IAM",
+        queryFile: "ATT4CKQL - AWS - IAM - Cloud User Creation.kql",
+        queryModalId: "iam-user-creation-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1136/003/",
+        attackPathText: "Create Account: Cloud Account",
+        sampleLogId: "iam-cloud-user-creation-logs"
+    },
+    
+    // IAM Console Login without MFA
+    {
+        name: "IAM Console Login without MFA",
+        description: "Identifies console logins to AWS accounts that bypass multi-factor authentication requirements",
+        severity: "high",
+        lastDetected: "2025-05-15T09:18:33.678Z",
+        detectionCount: 4,
+        mitreTactics: [
+            { tactic: "Initial Access (TA0001)", technique: "T1078.004 - Valid Accounts: Cloud Accounts" },
+            { tactic: "Defense Evasion (TA0005)", technique: "T1562.006 - Impair Defenses: Indicator Blocking" }
+        ],
+        dataSource: "AWS IAM",
+        queryFile: "ATT4CKQL - AWS - IAM - Console Login without MFA.kql",
+        queryModalId: "iam-login-no-mfa-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1078/004/",
+        attackPathText: "Valid Accounts: Cloud Accounts",
+        sampleLogId: "iam-console-login-no-mfa-logs"
+    },
+    
+    // Network Malicious IP Connections
+    {
+        name: "Network - Malicious IP Connections to AWS Resources",
+        description: "Detects connections to AWS resources from known malicious IP addresses or suspicious geographic locations",
+        severity: "high",
+        lastDetected: "2025-05-15T14:33:22.651Z",
+        detectionCount: 3,
+        mitreTactics: [
+            { tactic: "Command and Control (TA0011)", technique: "T1071.001 - Application Layer Protocol: Web Protocols" },
+            { tactic: "Exfiltration (TA0010)", technique: "T1048 - Exfiltration Over Alternative Protocol" }
+        ],
+        dataSource: "AWS VPC Flow Logs",
+        queryFile: "ATT4CKQL - AWS - Network - Malicious IP Connections to AWS Resources.kql",
+        queryModalId: "network-malicious-ips-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1048/",
+        attackPathText: "Exfiltration Over Alternative Protocol",
+        sampleLogId: "aws-malicious-ip-connections-logs"
+    },
+    
+    // Network Suspicious Changes
+    {
+        name: "Network - Suspicious Changes to AWS Network Resources",
+        description: "Detects unexpected modifications to VPC, security groups, or network ACLs that could indicate network-based attacks",
+        severity: "medium",
+        lastDetected: "2025-05-15T14:45:22.651Z",
+        detectionCount: 8,
+        mitreTactics: [
+            { tactic: "Initial Access (TA0001)", technique: "T1659 - Content Injection" },
+            { tactic: "Initial Access (TA0001)", technique: "T1190 - Exploit Public-Facing Application" },
+            { tactic: "Initial Access (TA0001)", technique: "T1133 - External Remote Services" }
+        ],
+        dataSource: "AWS CloudTrail",
+        queryFile: "ATT4CKQL - AWS - Network - Suspicious Changes to AWS Network Resources.kql",
+        queryModalId: "network-suspicious-changes-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1190/",
+        attackPathText: "Exploit Public-Facing Application",
+        sampleLogId: "aws-network-suspicious-changes-logs"
+    },
+    
+    // Operations Changes to AWS Configurations
+    {
+        name: "Operations - Changes to AWS Configurations",
+        description: "Identifies potentially high-risk changes to AWS account configurations and security settings",
+        severity: "high",
+        lastDetected: "2025-05-15T14:55:22.651Z",
+        detectionCount: 8,
+        mitreTactics: [
+            { tactic: "Defense Evasion (TA0005)", technique: "T1578.005 - Modify Cloud Compute Infrastructure: Modify Cloud Compute Configurations" }
+        ],
+        dataSource: "AWS CloudTrail",
+        queryFile: "ATT4CKQL - AWS - Operations - Changes to AWS Configurations.kql",
+        queryModalId: "operations-config-changes-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1578/005/",
+        attackPathText: "Modify Cloud Compute Infrastructure: Modify Cloud Compute Configurations",
+        sampleLogId: "aws-config-changes-logs"
+    },
+    
+    // Security CloudTrail Tamper Detection
+    {
+        name: "Security - CloudTrail tamper detection",
+        description: "Detects attempts to disable, delete, or modify CloudTrail logs to evade detection",
+        severity: "high",
+        lastDetected: "2025-05-15T14:55:32.651Z",
+        detectionCount: 7,
+        mitreTactics: [
+            { tactic: "Defense Evasion (TA0005)", technique: "T1562.008 - Impair Defenses: Disable Cloud Logs" }
+        ],
+        dataSource: "AWS CloudTrail",
+        queryFile: "ATT4CKQL - AWS - Security - CloudTrail tamper detection.kql",
+        queryModalId: "security-cloudtrail-tamper-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1562/008/",
+        attackPathText: "Impair Defenses: Disable Cloud Logs",
+        sampleLogId: "aws-cloudtrail-tamper-logs"
+    },
+    
+    // Security Enhanced GuardDuty
+    {
+        name: "Security - Enhanced GuardDuty",
+        description: "Correlates and enhances GuardDuty findings with additional context for improved threat detection",
+        severity: "high",
+        lastDetected: "2025-05-15T15:05:42.651Z",
+        detectionCount: 11,
+        mitreTactics: [
+            { tactic: "Initial Access (TA0001)", technique: "T1190 - Exploit Public-Facing Application" },
+            { tactic: "Persistence (TA0003)", technique: "T1098 - Account Manipulation" },
+            { tactic: "Command and Control (TA0011)", technique: "T1071.001 - Application Layer Protocol: Web Protocols" }
+        ],
+        dataSource: "AWS GuardDuty",
+        queryFile: "ATT4CKQL - AWS - Security - Enhanced GuardDuty.kql",
+        queryModalId: "security-enhanced-guardduty-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1190/",
+        attackPathText: "Exploit Public-Facing Application",
+        sampleLogId: "aws-enhanced-guardduty-logs"
+    },
+    
+    // Security Unauthorized API Calls
+    {
+        name: "Security - Unauthorized API Calls",
+        description: "Identifies API calls made with insufficient permissions or from unexpected sources indicating potential compromise",
+        severity: "medium",
+        lastDetected: "2025-05-15T15:15:52.651Z",
+        detectionCount: 14,
+        mitreTactics: [
+            { tactic: "Discovery (TA0007)", technique: "T1580 - Cloud Infrastructure Discovery" },
+            { tactic: "Initial Access (TA0001)", technique: "T1078.004 - Valid Accounts: Cloud Accounts" }
+        ],
+        dataSource: "AWS CloudTrail",
+        queryFile: "ATT4CKQL - AWS - Security - Unauthorized API Calls.kql",
+        queryModalId: "security-unauthorized-api-kql",
+        attackPath: "https://attack.mitre.org/techniques/T1580/",
+        attackPathText: "Cloud Infrastructure Discovery",
+        sampleLogId: "aws-unauthorized-api-calls-logs"
+    }
+];
 
 // =====================================
-// CORE UTILITY FUNCTIONS (ENHANCED)
+// CORE UTILITY FUNCTIONS (FROM AWS-SCRIPT.JS)
 // =====================================
 ATT4CKQL.utils = {
     log: function(message, level = 'info') {
@@ -381,26 +409,11 @@ ATT4CKQL.utils = {
             }
         }
         return null;
-    },
-    
-    buildGitHubUrl: function(platform, type, fileName) {
-        const platformConfig = ATT4CKQL.platforms[platform];
-        if (!platformConfig) return null;
-        
-        let basePath;
-        switch(type) {
-            case 'query': basePath = platformConfig.queryPath; break;
-            case 'logs': basePath = platformConfig.logsPath; break;
-            case 'explained': basePath = platformConfig.explainedPath; break;
-            default: return null;
-        }
-        
-        return `${ATT4CKQL.config.apiEndpoint}/contents${basePath}${fileName}`;
     }
 };
 
 // =====================================
-// QUERY COUNTER MODULE (FIXED from main.js)
+// QUERY COUNTER MODULE (FROM MAIN.JS - EXACT)
 // =====================================
 ATT4CKQL.QueryCounter = {
     init: function() {
@@ -448,207 +461,7 @@ ATT4CKQL.QueryCounter = {
 };
 
 // =====================================
-// PLATFORM TABLES MANAGER (FIXED)
-// =====================================
-ATT4CKQL.PlatformTables = {
-    currentPlatform: null,
-    detectionRules: [],
-    
-    // Initialize the platform tables system
-    init: function(platform) {
-        this.currentPlatform = platform || this.detectPlatform();
-        
-        if (!this.currentPlatform) {
-            ATT4CKQL.utils.log('PlatformTables: No platform detected', 'error');
-            return;
-        }
-        
-        this.detectionRules = ATT4CKQL.DetectionRulesData[this.currentPlatform] || [];
-        
-        ATT4CKQL.utils.log(`PlatformTables: Initializing for platform: ${this.currentPlatform}`);
-        ATT4CKQL.utils.log(`PlatformTables: Loaded ${this.detectionRules.length} detection rules`);
-        
-        // Initialize table rendering
-        this.renderDetectionRules();
-        
-        // Initialize responsive features
-        this.initializeResponsiveFeatures();
-        
-        // Update page title and counts
-        this.updatePageInfo();
-    },
-    
-    // Auto-detect platform from URL
-    detectPlatform: function() {
-        const path = window.location.pathname;
-        for (const platform of Object.keys(ATT4CKQL.platforms)) {
-            if (path.includes(`/platforms/${platform}/`) || path.includes(`/${platform}/`)) {
-                return platform;
-            }
-        }
-        return null;
-    },
-    
-    // Main table rendering function (FIXED)
-    renderDetectionRules: function() {
-        const tableBody = document.getElementById('detection-rules-table-body');
-        
-        if (!tableBody) {
-            ATT4CKQL.utils.log('PlatformTables: Table body element not found', 'error');
-            return;
-        }
-        
-        // Clear existing content
-        tableBody.innerHTML = '';
-        
-        if (this.detectionRules.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="no-data">
-                        No detection rules available for ${ATT4CKQL.platforms[this.currentPlatform]?.name || this.currentPlatform}
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        // Render each detection rule
-        this.detectionRules.forEach(rule => {
-            const rowspan = Math.max(1, rule.mitreTactics.length);
-            const firstRow = this.createDetectionRow(rule, rowspan);
-            tableBody.appendChild(firstRow);
-            
-            // Add additional rows for multiple MITRE tactics
-            if (rule.mitreTactics.length > 1) {
-                for (let i = 1; i < rule.mitreTactics.length; i++) {
-                    const additionalRow = this.createMitreRow(rule.mitreTactics[i]);
-                    tableBody.appendChild(additionalRow);
-                }
-            }
-        });
-        
-        // Update results count
-        this.updateResultsCount(this.detectionRules.length);
-        
-        ATT4CKQL.utils.log(`PlatformTables: Rendered ${this.detectionRules.length} detection rules for ${this.currentPlatform}`);
-    },
-    
-    // Create the main detection rule row (FIXED)
-    createDetectionRow: function(rule, rowspan) {
-        const row = document.createElement('tr');
-        row.className = 'detection-row';
-        
-        // Build the row HTML with platform-agnostic function calls
-        row.innerHTML = `
-            <td rowspan="${rowspan}" class="detection-name-cell">
-                <div class="detection-title">
-                    <span class="severity-indicator severity-${rule.severity}"></span>
-                    <strong>${ATT4CKQL.utils.escapeHtml(rule.name)}</strong>
-                </div>
-                <div class="detection-meta">
-                    <span class="detection-timestamp">Last: ${this.formatTimestamp(rule.lastDetected)}</span>
-                    <span class="detection-count">${rule.detectionCount} results</span>
-                </div>
-            </td>
-            <td rowspan="${rowspan}" class="description-cell">
-                ${ATT4CKQL.utils.escapeHtml(rule.description)}
-            </td>
-            <td class="mitre-tactic-cell">
-                <div class="mitre-tactic">${ATT4CKQL.utils.escapeHtml(rule.mitreTactics[0].tactic)}</div>
-                <div class="mitre-technique">${ATT4CKQL.utils.escapeHtml(rule.mitreTactics[0].technique)}</div>
-            </td>
-            <td rowspan="${rowspan}" class="data-source-cell">${ATT4CKQL.utils.escapeHtml(rule.dataSource)}</td>
-            <td rowspan="${rowspan}" class="action-cell">
-                <button class="view-query-btn" onclick="openQueryModal('${rule.queryModalId}', '${rule.queryFile}')">
-                    📄 View Query
-                </button>
-            </td>
-            <td rowspan="${rowspan}" class="action-cell">
-                <a href="${rule.attackPath}" target="_blank" class="attack-path-link">
-                    ${ATT4CKQL.utils.escapeHtml(rule.attackPathText)}
-                </a>
-            </td>
-            <td rowspan="${rowspan}" class="action-cell">
-                <button class="view-logs-btn sample-btn" onclick="openExternalModal('${rule.sampleLogId}', 'logs')">
-                    📊 Sample Logs
-                </button>
-            </td>
-        `;
-        
-        return row;
-    },
-    
-    // Create additional MITRE tactic rows
-    createMitreRow: function(mitreTactic) {
-        const row = document.createElement('tr');
-        row.className = 'mitre-additional-row';
-        
-        row.innerHTML = `
-            <td class="mitre-tactic-cell">
-                <div class="mitre-tactic">${ATT4CKQL.utils.escapeHtml(mitreTactic.tactic)}</div>
-                <div class="mitre-technique">${ATT4CKQL.utils.escapeHtml(mitreTactic.technique)}</div>
-            </td>
-        `;
-        
-        return row;
-    },
-    
-    // Format timestamp for display
-    formatTimestamp: function(timestamp) {
-        const date = new Date(timestamp);
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZoneName: 'short'
-        });
-    },
-    
-    // Update results count display
-    updateResultsCount: function(count) {
-        const resultCountElement = document.getElementById('results-count');
-        if (resultCountElement) {
-            resultCountElement.textContent = `${count} result${count !== 1 ? 's' : ''}`;
-        }
-        
-        // Update page title if needed
-        const platformName = ATT4CKQL.platforms[this.currentPlatform]?.name || this.currentPlatform;
-        const pageTitle = document.querySelector('h1');
-        if (pageTitle && !pageTitle.textContent.includes(count)) {
-            pageTitle.textContent = `${platformName} Detection Rules - ${count} Rules Available`;
-        }
-    },
-    
-    // Initialize responsive features
-    initializeResponsiveFeatures: function() {
-        // Handle responsive tables
-        const tables = document.querySelectorAll('table');
-        tables.forEach(table => {
-            if (table.scrollWidth > table.clientWidth) {
-                table.classList.add('table-scrollable');
-            }
-        });
-        
-        // Add platform color accent
-        const platformConfig = ATT4CKQL.platforms[this.currentPlatform];
-        if (platformConfig && platformConfig.color) {
-            document.documentElement.style.setProperty('--platform-accent', platformConfig.color);
-        }
-    },
-    
-    // Update page information
-    updatePageInfo: function() {
-        const platformConfig = ATT4CKQL.platforms[this.currentPlatform];
-        if (platformConfig) {
-            document.title = `${platformConfig.name} Detection Rules - ATT4CKQL`;
-        }
-    }
-};
-
-// =====================================
-// THEME MANAGEMENT (ENHANCED)
+// THEME MANAGEMENT (FROM MAIN.JS - EXACT)
 // =====================================
 ATT4CKQL.ThemeManager = {
     currentTheme: 'defender',
@@ -706,180 +519,204 @@ ATT4CKQL.ThemeManager = {
 };
 
 // =====================================
-// MODAL MANAGEMENT (FIXED FROM AWS-SCRIPT.JS)
+// DETECTION RULES RENDERING (FROM TABLE.JS - EXACT)
 // =====================================
-ATT4CKQL.ModalManager = {
-    activeModal: null,
-    
-    init: function() {
-        this.bindGlobalEvents();
-        ATT4CKQL.utils.log('Modal manager initialized');
-    },
-    
-    open: function(modalId, content = null) {
-        const modalElement = document.getElementById(modalId);
-        if (!modalElement) {
-            ATT4CKQL.utils.log(`Modal ${modalId} not found`, 'error');
-            return;
-        }
-        
-        this.activeModal = modalId;
-        modalElement.style.display = 'block';
-        
-        if (content) {
-            modalElement.innerHTML = content;
-        }
-        
-        ATT4CKQL.utils.log(`Modal ${modalId} opened`);
-    },
-    
-    close: function(modalId = null) {
-        const targetModalId = modalId || this.activeModal;
-        
-        if (targetModalId) {
-            const modalElement = document.getElementById(targetModalId);
-            if (modalElement) {
-                modalElement.style.display = 'none';
-                this.activeModal = null;
-                ATT4CKQL.utils.log(`Modal ${targetModalId} closed`);
-            }
-        }
-    },
-    
-    bindGlobalEvents: function() {
-        // ESC key closes modals
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.activeModal) {
-                this.close(this.activeModal);
-            }
-        });
-        
-        // Click outside closes modals
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                this.close();
-            }
-        });
-    }
-};
 
-// =====================================
-// QUERY MODAL FUNCTIONALITY (FIXED FROM AWS-SCRIPT.JS)
-// =====================================
-ATT4CKQL.QueryModal = {
-    async fetchExplanationContent(modalId) {
-        try {
-            let explanationId = modalId;
-            
-            // If modalId starts with 'aws-', remove it
-            if (modalId.startsWith('aws-')) {
-                explanationId = modalId.substring(4);
-            }
-            
-            // If explanationId ends with '-kql', remove it
-            if (explanationId.endsWith('-kql')) {
-                explanationId = explanationId.substring(0, explanationId.length - 4);
-            }
-            
-            const explanationPath = ATT4CKQL.utils.getBasePath(`/Amazon Web Services/explained/${explanationId}-kqlexplained.html`);
-            const response = await fetch(explanationPath);
-            
-            if (!response.ok) {
-                return '<div id="explanation-section"><h3>Explanation</h3><p>Explanation content not available.</p></div>';
-            }
-            
-            const content = await response.text();
-            return `<div id="explanation-section" class="query-explanation">${content}</div>`;
-        } catch (error) {
-            return '<div id="explanation-section"><h3>Explanation</h3><p>Failed to load explanation.</p></div>';
-        }
-    },
+/**
+ * Create MITRE tactics display fragment
+ */
+function createMitreTacticsFragment(mitreTactics) {
+    const fragment = document.createDocumentFragment();
     
-    async processQueryContent(modalId, queryContent, fileName) {
-        const modalElement = document.getElementById(modalId);
+    mitreTactics.forEach((item, index) => {
+        const tacticElement = document.createElement('div');
+        tacticElement.className = 'mitre-tactic';
+        tacticElement.textContent = item.tactic;
         
-        // Store the query content for copying
-        window[`${modalId}_content`] = queryContent;
+        fragment.appendChild(tacticElement);
         
-        // Fetch the explanation content
-        const explanationContent = await this.fetchExplanationContent(modalId);
+        const techniqueElement = document.createElement('div');
+        techniqueElement.className = 'mitre-technique';
+        techniqueElement.textContent = item.technique;
+        fragment.appendChild(techniqueElement);
         
-        // Create properly styled modal with shell console look
-        modalElement.innerHTML = `
-            <div class="modal-content">
-                <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
-                <div class="modal-header">
-                    <div class="modal-title">${fileName.replace('.kql', ' - Detection Query')}</div>
-                    <div class="modal-actions">
-                        <button onclick="copyQueryToClipboard('${modalId}')" class="copy-btn">📋 Copy Query</button>
-                        <button onclick="scrollToExplanation('${modalId}')" class="explain-btn">📖 Explain</button>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <div class="query-container">
-                        <div class="shell-header">
-                            <div class="shell-controls">
-                                <span class="shell-control close"></span>
-                                <span class="shell-control minimize"></span>
-                                <span class="shell-control maximize"></span>
-                            </div>
-                            <div class="shell-title">${fileName}</div>
-                        </div>
-                        <div class="shell-content">
-                            <pre class="kql-query"><code>${ATT4CKQL.utils.escapeHtml(queryContent)}</code></pre>
-                        </div>
-                    </div>
-                    ${explanationContent}
-                </div>
+        // Add spacing if not the last item
+        if (index < mitreTactics.length - 1) {
+            const spacer = document.createElement('div');
+            spacer.style.marginBottom = '8px';
+            fragment.appendChild(spacer);
+        }
+    });
+    
+    return fragment;
+}
+
+/**
+ * Format timestamp for Azure-style display
+ */
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+    });
+}
+
+/**
+ * Renders the detection rules table with Azure styling (FROM TABLE.JS - EXACT)
+ */
+function renderDetectionRules() {
+    const tableBody = document.getElementById('detection-rules-table-body');
+    
+    if (!tableBody) {
+        console.error('Table body element not found');
+        return;
+    }
+    
+    // Clear any existing content
+    tableBody.innerHTML = '';
+    
+    detectionRules.forEach(rule => {
+        // Calculate rowspan based on number of MITRE tactics (minimum 1)
+        const rowspan = Math.max(1, rule.mitreTactics.length);
+        
+        // First row with main detection information
+        const firstRow = document.createElement('tr');
+        firstRow.className = 'detection-row';
+        
+        // Detection Name (with rowspan and enhanced styling)
+        const nameCell = document.createElement('td');
+        nameCell.setAttribute('rowspan', rowspan);
+        nameCell.className = 'detection-name-cell';
+        
+        const nameContainer = document.createElement('div');
+        nameContainer.innerHTML = `
+            <div class="detection-title">
+                <span class="severity-indicator severity-${rule.severity}"></span>
+                <strong>${rule.name}</strong>
+            </div>
+            <div class="detection-meta">
+                <span class="detection-timestamp">Last: ${formatTimestamp(rule.lastDetected)}</span>
+                <span class="detection-count">${rule.detectionCount} results</span>
             </div>
         `;
-    }
-};
-
-// =====================================
-// RESPONSIVE UTILITIES
-// =====================================
-ATT4CKQL.ResponsiveUtils = {
-    init: function() {
-        this.handleResponsiveTables();
-        ATT4CKQL.utils.log('Responsive utilities initialized');
-    },
-    
-    handleResponsiveTables: function() {
-        const tables = document.querySelectorAll('table');
-        tables.forEach(table => {
-            if (table.scrollWidth > table.clientWidth) {
-                table.classList.add('table-scrollable');
+        nameCell.appendChild(nameContainer);
+        firstRow.appendChild(nameCell);
+        
+        // Description (with rowspan)
+        const descriptionCell = document.createElement('td');
+        descriptionCell.setAttribute('rowspan', rowspan);
+        descriptionCell.className = 'description-cell';
+        descriptionCell.textContent = rule.description;
+        firstRow.appendChild(descriptionCell);
+        
+        // First MITRE Tactic/Technique
+        const firstTacticCell = document.createElement('td');
+        firstTacticCell.className = 'mitre-tactic-cell';
+        
+        const firstTacticElement = document.createElement('div');
+        firstTacticElement.className = 'mitre-tactic';
+        firstTacticElement.textContent = rule.mitreTactics[0].tactic;
+        firstTacticCell.appendChild(firstTacticElement);
+        
+        const firstTechniqueElement = document.createElement('div');
+        firstTechniqueElement.className = 'mitre-technique';
+        firstTechniqueElement.textContent = rule.mitreTactics[0].technique;
+        firstTacticCell.appendChild(firstTechniqueElement);
+        
+        firstRow.appendChild(firstTacticCell);
+        
+        // Data Source (with rowspan)
+        const dataSourceCell = document.createElement('td');
+        dataSourceCell.setAttribute('rowspan', rowspan);
+        dataSourceCell.className = 'data-source-cell';
+        dataSourceCell.textContent = rule.dataSource;
+        firstRow.appendChild(dataSourceCell);
+        
+        // Query Link (with rowspan and enhanced button)
+        const queryLinkCell = document.createElement('td');
+        queryLinkCell.setAttribute('rowspan', rowspan);
+        queryLinkCell.className = 'action-cell';
+        const queryButton = document.createElement('button');
+        queryButton.className = 'view-query-btn';
+        queryButton.innerHTML = `📄 View Query`;
+        queryButton.setAttribute('onclick', `openQueryModal('${rule.queryModalId}', '${rule.queryFile}')`);
+        queryLinkCell.appendChild(queryButton);
+        firstRow.appendChild(queryLinkCell);
+        
+        // Attack Path Reference (with rowspan and enhanced link)
+        const attackPathCell = document.createElement('td');
+        attackPathCell.setAttribute('rowspan', rowspan);
+        attackPathCell.className = 'action-cell';
+        const attackPathLink = document.createElement('a');
+        attackPathLink.href = rule.attackPath;
+        attackPathLink.textContent = rule.attackPathText;
+        attackPathLink.target = '_blank';
+        attackPathLink.className = 'attack-path-link';
+        attackPathCell.appendChild(attackPathLink);
+        firstRow.appendChild(attackPathCell);
+        
+        // Sample Logs (with rowspan and enhanced button)
+        const sampleLogsCell = document.createElement('td');
+        sampleLogsCell.setAttribute('rowspan', rowspan);
+        sampleLogsCell.className = 'action-cell';
+        const sampleLogsButton = document.createElement('button');
+        sampleLogsButton.className = 'view-logs-btn sample-btn';
+        sampleLogsButton.innerHTML = `📊 Sample Logs`;
+        sampleLogsButton.setAttribute('onclick', `openExternalModal('${rule.sampleLogId}', 'logs')`);
+        sampleLogsCell.appendChild(sampleLogsButton);
+        firstRow.appendChild(sampleLogsCell);
+        
+        // Add the first row to the table body
+        tableBody.appendChild(firstRow);
+        
+        // Add additional rows for remaining MITRE tactics (if any)
+        if (rule.mitreTactics && rule.mitreTactics.length > 1) {
+            for (let i = 1; i < rule.mitreTactics.length; i++) {
+                const additionalRow = document.createElement('tr');
+                additionalRow.className = 'mitre-additional-row';
+                
+                const tacticCell = document.createElement('td');
+                tacticCell.className = 'mitre-tactic-cell';
+                
+                const tacticElement = document.createElement('div');
+                tacticElement.className = 'mitre-tactic';
+                tacticElement.textContent = rule.mitreTactics[i].tactic;
+                tacticCell.appendChild(tacticElement);
+                
+                const techniqueElement = document.createElement('div');
+                techniqueElement.className = 'mitre-technique';
+                techniqueElement.textContent = rule.mitreTactics[i].technique;
+                tacticCell.appendChild(techniqueElement);
+                
+                additionalRow.appendChild(tacticCell);
+                tableBody.appendChild(additionalRow);
             }
-        });
+        }
+    });
+    
+    // Update results count
+    updateResultsCount(detectionRules.length);
+    
+    console.log(`Detection rules table rendered with ${detectionRules.length} rules in Azure style.`);
+}
+
+/**
+ * Update results count display
+ */
+function updateResultsCount(count) {
+    const resultCountElement = document.getElementById('results-count');
+    if (resultCountElement) {
+        resultCountElement.textContent = `${count} result${count !== 1 ? 's' : ''}`;
     }
-};
+}
 
 // =====================================
-// CORE APPLICATION INITIALIZATION
-// =====================================
-ATT4CKQL.init = function() {
-    this.utils.log('Initializing ATT4CKQL v' + this.version);
-    
-    // Initialize core components
-    this.ThemeManager.init();
-    this.QueryCounter.init();
-    this.ModalManager.init();
-    
-    // Platform-specific initialization
-    const platform = this.utils.getCurrentPlatform();
-    if (platform && document.getElementById('detection-rules-table-body')) {
-        // Initialize platform tables if we're on a platform page
-        setTimeout(() => {
-            this.PlatformTables.init(platform);
-        }, 100);
-    }
-    
-    this.utils.log('ATT4CKQL initialization complete');
-};
-
-// =====================================
-// GLOBAL FUNCTIONS (BACKWARD COMPATIBILITY)
+// MODAL FUNCTIONS (FROM AWS-SCRIPT.JS - EXACT)
 // =====================================
 
 // Helper function to get the correct path with baseurl
@@ -892,7 +729,7 @@ function escapeHtml(unsafe) {
     return ATT4CKQL.utils.escapeHtml(unsafe);
 }
 
-// Function to load modal content from Jekyll-served files (FROM AWS-SCRIPT.JS)
+// Function to load modal content from Jekyll-served files (FROM AWS-SCRIPT.JS - EXACT)
 async function loadExternalModalContent(modalId, modalType) {
     const modalElement = document.getElementById(modalId);
     
@@ -975,7 +812,77 @@ async function loadExternalModalContent(modalId, modalType) {
     }
 }
 
-// Function to fetch KQL query from Jekyll-served files (FROM AWS-SCRIPT.JS)
+// Function to fetch explanation content from local Jekyll files (FROM AWS-SCRIPT.JS - EXACT)
+async function fetchExplanationContent(modalId) {
+    try {
+        let explanationId = modalId;
+        
+        // If modalId starts with 'aws-', remove it
+        if (modalId.startsWith('aws-')) {
+            explanationId = modalId.substring(4);
+        }
+        
+        // If explanationId ends with '-kql', remove it
+        if (explanationId.endsWith('-kql')) {
+            explanationId = explanationId.substring(0, explanationId.length - 4);
+        }
+        
+        const explanationPath = getBasePath(`/Amazon Web Services/explained/${explanationId}-kqlexplained.html`);
+        const response = await fetch(explanationPath);
+        
+        if (!response.ok) {
+            return '<div id="explanation-section"><h3>Explanation</h3><p>Explanation content not available.</p></div>';
+        }
+        
+        const content = await response.text();
+        return `<div id="explanation-section" class="query-explanation">${content}</div>`;
+    } catch (error) {
+        return '<div id="explanation-section"><h3>Explanation</h3><p>Failed to load explanation.</p></div>';
+    }
+}
+
+// Function to process and display query content with explanation (FROM AWS-SCRIPT.JS - EXACT)
+async function processQueryContent(modalId, queryContent, fileName) {
+    const modalElement = document.getElementById(modalId);
+    
+    // Store the query content for copying
+    window[`${modalId}_content`] = queryContent;
+    
+    // Fetch the explanation content
+    const explanationContent = await fetchExplanationContent(modalId);
+    
+    // Create properly styled modal with shell console look
+    modalElement.innerHTML = `
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('${modalId}')">&times;</span>
+            <div class="modal-header">
+                <div class="modal-title">${fileName.replace('.kql', ' - Detection Query')}</div>
+                <div class="modal-actions">
+                    <button onclick="copyQueryToClipboard('${modalId}')" class="copy-btn">📋 Copy Query</button>
+                    <button onclick="scrollToExplanation('${modalId}')" class="explain-btn">📖 Explain</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="query-container">
+                    <div class="shell-header">
+                        <div class="shell-controls">
+                            <span class="shell-control close"></span>
+                            <span class="shell-control minimize"></span>
+                            <span class="shell-control maximize"></span>
+                        </div>
+                        <div class="shell-title">${fileName}</div>
+                    </div>
+                    <div class="shell-content">
+                        <pre class="kql-query"><code>${escapeHtml(queryContent)}</code></pre>
+                    </div>
+                </div>
+                ${explanationContent}
+            </div>
+        </div>
+    `;
+}
+
+// Function to fetch KQL query from Jekyll-served files (FROM AWS-SCRIPT.JS - EXACT)
 async function fetchQueryWithShellDisplay(modalId, githubPath) {
     const modalElement = document.getElementById(modalId);
     const fileName = githubPath.split('/').pop();
@@ -992,7 +899,7 @@ async function fetchQueryWithShellDisplay(modalId, githubPath) {
         const cleanedQuery = queryContent.replace(/^---[\s\S]*?---\s*/m, '').trim();
         
         // Process the content and display with explanation
-        await ATT4CKQL.QueryModal.processQueryContent(modalId, cleanedQuery, fileName);
+        await processQueryContent(modalId, cleanedQuery, fileName);
         
     } catch (error) {
         console.error('Error fetching query:', error);
@@ -1012,7 +919,7 @@ async function fetchQueryWithShellDisplay(modalId, githubPath) {
     }
 }
 
-// Function to copy query to clipboard (FROM AWS-SCRIPT.JS)
+// Function to copy query to clipboard (FROM AWS-SCRIPT.JS - EXACT)
 function copyQueryToClipboard(modalId) {
     const content = window[`${modalId}_content`];
     if (!content) {
@@ -1038,7 +945,7 @@ function copyQueryToClipboard(modalId) {
     });
 }
 
-// Function to scroll to explanation section (FROM AWS-SCRIPT.JS)
+// Function to scroll to explanation section (FROM AWS-SCRIPT.JS - EXACT)
 function scrollToExplanation(modalId) {
     const modalElement = document.getElementById(modalId);
     const explanationElement = modalElement.querySelector('#explanation-section') || 
@@ -1102,30 +1009,63 @@ function showMain(theme) {
     ATT4CKQL.ThemeManager.hideThemeChooser();
 }
 
-// Function to render detection rules (from table.js)
-function renderDetectionRules() {
-    if (ATT4CKQL.PlatformTables.currentPlatform) {
-        ATT4CKQL.PlatformTables.renderDetectionRules();
-    }
-}
-
-// Function to update results count (from table.js)
-function updateResultsCount(count) {
-    ATT4CKQL.PlatformTables.updateResultsCount(count);
-}
-
-// Function to format timestamp (from table.js)
-function formatTimestamp(timestamp) {
-    return ATT4CKQL.PlatformTables.formatTimestamp(timestamp);
-}
-
-// Function to initialize detection table (from table.js)
+// Function to initialize detection table
 function initializeDetectionTable() {
     const platform = ATT4CKQL.utils.getCurrentPlatform();
     if (platform) {
-        ATT4CKQL.PlatformTables.init(platform);
+        console.log('Initializing detection table for platform:', platform);
+        setTimeout(() => {
+            renderDetectionRules();
+        }, 100);
     }
 }
+
+// =====================================
+// RESPONSIVE UTILITIES
+// =====================================
+ATT4CKQL.ResponsiveUtils = {
+    init: function() {
+        this.handleResponsiveTables();
+        this.initializeModalClickOutside();
+        ATT4CKQL.utils.log('Responsive utilities initialized');
+    },
+    
+    handleResponsiveTables: function() {
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+            if (table.scrollWidth > table.clientWidth) {
+                table.classList.add('table-scrollable');
+            }
+        });
+    },
+    
+    initializeModalClickOutside: function() {
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal(event.target.id);
+            }
+        });
+    }
+};
+
+// =====================================
+// CORE APPLICATION INITIALIZATION
+// =====================================
+ATT4CKQL.init = function() {
+    this.utils.log('Initializing ATT4CKQL v' + this.version);
+    
+    // Initialize core components
+    this.ThemeManager.init();
+    this.QueryCounter.init();
+    
+    // Platform-specific initialization
+    const platform = this.utils.getCurrentPlatform();
+    if (platform) {
+        ATT4CKQL.utils.log(`Detected platform: ${platform}`);
+    }
+    
+    this.utils.log('ATT4CKQL initialization complete');
+};
 
 // =====================================
 // APPLICATION INITIALIZATION
@@ -1143,16 +1083,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize responsive utilities
     ATT4CKQL.ResponsiveUtils.init();
     
-    // Platform-specific initialization
-    const platform = ATT4CKQL.utils.getCurrentPlatform();
-    if (platform) {
-        ATT4CKQL.utils.log(`Detected platform: ${platform}`);
-    }
-    
     // Initialize detection table if on platform page
     setTimeout(() => {
         if (document.getElementById('detection-rules-table-body')) {
-            initializeDetectionTable();
+            console.log('Initializing Azure-style detection rules table...');
+            renderDetectionRules();
         }
     }, 100);
 });

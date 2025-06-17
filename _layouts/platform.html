@@ -15,8 +15,12 @@
         {{ content }}
     </main>
 
-    <!-- CORRECTED CONSOLIDATED JAVASCRIPT -->
-    <script src="{{ '/assets/js/att4ckql.js' | relative_url }}"></script>
+    <!-- CORE FUNCTIONALITY: Theme + Modal + Query Count Management -->
+    <script src="{{ '/assets/js/att4ckql-core.js' | relative_url }}"></script>
+    
+    <!-- TABLE MANAGEMENT: Detection Rules Table Rendering -->
+    <script src="{{ '/assets/js/table.js' | relative_url }}"></script>
+    
     <button class="theme-toggle" id="theme-toggle" title="Switch theme">🌙</button>
 </body>
 </html>
