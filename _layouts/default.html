@@ -22,22 +22,8 @@
         {{ content }}
     </div>
 
-    <script>
-        function showMain(theme) {
-            document.getElementById('theme-chooser').style.display = 'none';
-            const mainContent = document.getElementById('main-content');
-            mainContent.style.display = 'block';
-            mainContent.style.opacity = '1';
-            mainContent.classList.add('visible');
-            
-            if (theme === 'attacker') {
-                document.body.classList.add('theme-attacker');
-            } else {
-                document.body.classList.remove('theme-attacker');
-            }
-        }
-    </script>
-    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+    <!-- CONSOLIDATED JAVASCRIPT - UPDATED -->
+    <script src="{{ '/assets/js/att4ckql.js' | relative_url }}"></script>
     <button class="theme-toggle" id="theme-toggle" title="Switch theme">🌙</button>
 </body>
 </html>
