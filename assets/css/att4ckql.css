@@ -1,7 +1,7 @@
 /*!
- * ATT4CKQL Consolidated Stylesheet v2.0
+ * ATT4CKQL Consolidated Stylesheet v2.1 - CORRECTED
  * Enhanced KQL Queries for Microsoft Sentinel
- * Consolidated from style.css + aws-style.css
+ * FIXED: Text formatting, spacing, and alignment issues
  * Created: 2025
  */
 
@@ -97,24 +97,74 @@ body.theme-attacker,
 }
 
 /* ========================================
-   BASE STYLES & RESET
+   BASE STYLES & RESET - FIXED
    ======================================== */
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
+    /* REMOVED aggressive reset that broke text formatting */
 }
 
 body {
-    font-family: var(--font-family);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
     line-height: 1.6;
     color: var(--azure-text);
     background-color: var(--azure-bg);
-    transition: var(--transition);
+    transition: all 0.5s ease;
     font-size: 14px;
-    max-width: 1400px;
+    max-width: 1200px; /* FIXED: Restored to working 1200px */
     margin: 0 auto;
     padding: 20px;
+}
+
+/* ========================================
+   PROPER TEXT ELEMENT SPACING - RESTORED
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+    color: var(--azure-text);
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.67em;
+}
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 0.83em;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+}
+
+ul, ol {
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+}
+
+li {
+    margin-bottom: 0.25em;
+    line-height: 1.5;
+}
+
+blockquote {
+    margin: 1em 2em;
+    padding-left: 1em;
+    border-left: 4px solid var(--azure-primary);
+    color: var(--azure-text-secondary);
+}
+
+pre {
+    margin: 1em 0;
 }
 
 /* ========================================
@@ -136,8 +186,8 @@ body {
 
 .theme-chooser-content {
     background-color: #f8f8f8;
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-heavy);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     padding: 40px;
     max-width: 600px;
     width: 90%;
@@ -168,9 +218,9 @@ body {
     font-size: 1.2em;
     font-weight: bold;
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     min-width: 180px;
     flex: 1;
 }
@@ -201,7 +251,7 @@ body {
    LAYOUT COMPONENTS
    ======================================== */
 .main-content {
-    max-width: 1400px;
+    max-width: 1200px; /* FIXED: Consistent with body */
     margin: 0 auto;
     opacity: 0;
     transition: opacity 0.8s ease;
@@ -211,281 +261,338 @@ body {
     opacity: 1;
 }
 
+.container {
+    max-width: 1200px; /* FIXED: Consistent sizing */
+    margin: 0 auto;
+}
+
 header {
-    background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+    background: linear-gradient(135deg, #0078d4 0%, #004e8c 100%);
     color: white;
-    padding: 30px;
-    border-radius: var(--border-radius);
     text-align: center;
+    padding: 30px 20px;
     margin-bottom: 30px;
-    box-shadow: var(--shadow-medium);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-    margin: 0;
+header h1 {
+    margin: 0 0 10px 0;
     font-size: 2.5em;
-    font-weight: 600;
+    font-weight: 300;
 }
 
-h2 {
-    color: var(--azure-primary);
-    border-bottom: 2px solid var(--azure-primary);
-    padding-bottom: 8px;
-    margin-top: 40px;
-    margin-bottom: 20px;
-}
-
-h3 {
-    color: var(--azure-primary);
+header p {
+    margin: 0;
     font-size: 1.1em;
-    margin-top: 24px;
-    margin-bottom: 12px;
-}
-
-.subtitle {
-    font-size: 1.2em;
     opacity: 0.9;
-    margin-top: 10px;
 }
 
+/* ========================================
+   SECTION STYLING - FIXED
+   ======================================== */
 .section {
     background-color: var(--azure-surface);
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     padding: 25px;
     margin-bottom: 30px;
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--azure-border);
     animation: fadeInUp 0.6s ease-out;
 }
 
+.section h2 {
+    color: var(--azure-primary);
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.section h3 {
+    color: var(--azure-primary);
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+}
+
+.section ol {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.section ol li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.section ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.section ul li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.section strong {
+    color: var(--azure-text);
+    font-weight: 600;
+}
+
 /* ========================================
-   TABLE STYLING
+   THEME TOGGLE BUTTON
    ======================================== */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--azure-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: rotate(180deg);
+    background: var(--azure-primary-dark);
+}
+
+/* ========================================
+   TABLE STYLING - FIXED
+   ======================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+    background: var(--azure-surface);
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--azure-border);
+    vertical-align: top;
+}
+
+th {
+    background-color: var(--azure-bg);
+    font-weight: 600;
+    color: var(--azure-text);
+    font-size: 14px;
+}
+
+tr:hover {
+    background-color: var(--azure-hover);
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
 .table-container {
     background: var(--azure-surface);
     border: 1px solid var(--azure-border);
-    border-radius: var(--border-radius-small);
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     margin: 20px 0;
 }
 
 .table-header {
-    background: #f8f9fa;
+    background: var(--azure-bg);
     border-bottom: 1px solid var(--azure-border);
-    padding: 16px 20px;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .table-title {
-    font-size: 16px;
     font-weight: 600;
     color: var(--azure-text);
+    font-size: 16px;
 }
 
-.results-count {
-    font-size: 13px;
-    color: var(--azure-text-secondary);
-    background: var(--azure-selected);
-    padding: 4px 12px;
-    border-radius: var(--border-radius-large);
-}
-
-table {
+/* ========================================
+   DETECTION RULES TABLE - FIXED
+   ======================================== */
+.detection-rules-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 0;
-    font-size: 13px;
     background: var(--azure-surface);
 }
 
-th {
-    background-color: var(--table-header-bg);
-    color: var(--azure-text);
-    text-align: left;
-    padding: 12px 15px;
-    font-weight: 600;
-    border-bottom: 1px solid var(--azure-border);
-    border-right: 1px solid var(--azure-border-light);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-th:last-child {
-    border-right: none;
-}
-
-th:hover {
-    background: #f3f2f1;
-    cursor: pointer;
-}
-
-td {
-    padding: 12px 15px;
+.detection-rules-table th,
+.detection-rules-table td {
+    padding: 12px 16px;
     border-bottom: 1px solid var(--azure-border-light);
-    border-right: 1px solid var(--azure-border-light);
     vertical-align: top;
-    font-size: 13px;
 }
 
-td:last-child {
-    border-right: none;
-}
-
-tr {
-    transition: var(--transition-fast);
-}
-
-tr:hover {
-    background-color: var(--table-hover-bg);
-    transform: translateX(2px);
-    box-shadow: 0 2px 4px rgba(0, 120, 212, 0.1);
-}
-
-tr:nth-child(even) {
-    background-color: #fafafa;
-}
-
-body.theme-attacker tr:nth-child(even) {
-    background-color: #363636;
-}
-
-/* ========================================
-   DETECTION RULES TABLE STYLING
-   ======================================== */
-.detection-row {
-    transition: var(--transition-fast);
-    border-left: 3px solid transparent;
-}
-
-.detection-row:hover {
-    background-color: var(--azure-hover);
-    border-left-color: var(--azure-primary);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.detection-rules-table th {
+    background: var(--azure-bg);
+    font-weight: 600;
+    color: var(--azure-text);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .detection-name-cell {
-    min-width: 280px;
-    padding: 16px !important;
+    min-width: 250px;
+    max-width: 300px;
+    padding: 16px;
 }
 
 .detection-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-
-.detection-title strong {
+    font-weight: 600;
     color: var(--azure-text);
-    font-size: 14px;
-    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.3;
 }
 
-.detection-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.detection-timestamp {
-    font-size: 11px;
-    color: var(--azure-text-light);
-    font-family: var(--font-mono);
-}
-
-.detection-count {
-    font-size: 11px;
-    color: var(--azure-primary);
-    font-weight: 500;
-}
-
-/* Severity indicators */
-.severity-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.severity-indicator.severity-high {
-    background-color: var(--azure-error);
-    box-shadow: 0 0 0 2px rgba(209, 52, 56, 0.2);
-}
-
-.severity-indicator.severity-medium {
-    background-color: var(--azure-warning);
-    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
-}
-
-.severity-indicator.severity-low {
-    background-color: var(--azure-info);
-    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
-}
-
-.severity-high {
-    color: var(--azure-error);
-    font-weight: 600;
-    background: #fef2f2;
-    padding: 4px 8px;
-    border-radius: var(--border-radius-large);
-    font-size: 11px;
-    text-transform: uppercase;
-}
-
-.severity-medium {
-    color: var(--azure-warning);
-    font-weight: 600;
-    background: #fff3cd;
-    padding: 4px 8px;
-    border-radius: var(--border-radius-large);
-    font-size: 11px;
-    text-transform: uppercase;
-}
-
-.severity-low {
-    color: var(--azure-info);
-    font-weight: 600;
-    background: #f0f6ff;
-    padding: 4px 8px;
-    border-radius: var(--border-radius-large);
-    font-size: 11px;
-    text-transform: uppercase;
-}
-
-/* ========================================
-   MITRE ATT&CK STYLING
-   ======================================== */
-.mitre-tactic {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: var(--azure-error);
-    font-size: 14px;
-}
-
-.mitre-technique {
-    margin-left: 16px;
-    display: block;
+.detection-description {
     color: var(--azure-text-secondary);
-    font-size: 12px;
-    font-family: var(--font-mono);
-}
-
-.mitre-additional-row {
-    background: inherit;
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
 }
 
 .mitre-tactic-cell {
-    padding: 8px 16px !important;
-    border-top: none !important;
+    min-width: 200px;
+    max-width: 250px;
+    padding: 12px;
+}
+
+.mitre-tactic {
+    background: var(--azure-selected);
+    color: var(--azure-primary);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+
+.mitre-technique {
+    font-size: 12px;
+    color: var(--azure-text-secondary);
+    line-height: 1.3;
+    margin-top: 2px;
+}
+
+.action-cell {
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+    white-space: nowrap;
 }
 
 /* ========================================
-   MODAL SYSTEM
+   BUTTON STYLING - FIXED
+   ======================================== */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--azure-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--azure-primary-dark);
+    transform: translateY(-1px);
+}
+
+.view-query-btn, .view-logs-btn, .sample-btn {
+    padding: 6px 10px;
+    margin: 2px;
+    border: none;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.view-query-btn {
+    background: var(--azure-primary);
+    color: white;
+}
+
+.view-query-btn:hover {
+    background: var(--azure-primary-dark);
+    transform: translateY(-1px);
+}
+
+.view-logs-btn {
+    background: var(--azure-selected);
+    color: var(--azure-primary);
+    border: 1px solid var(--azure-primary);
+}
+
+.view-logs-btn:hover {
+    background: var(--azure-primary);
+    color: white;
+}
+
+.sample-btn {
+    background: #f8f9fa;
+    color: var(--azure-text);
+    border: 1px solid var(--azure-border);
+}
+
+.sample-btn:hover {
+    background: var(--azure-hover);
+}
+
+/* ========================================
+   TAG STYLING
+   ======================================== */
+.tag {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tag-yes {
+    background: var(--tag-yes-bg);
+    color: var(--tag-yes-color);
+}
+
+.tag-no {
+    background: var(--tag-no-bg);
+    color: var(--tag-no-color);
+}
+
+/* ========================================
+   MODAL SYSTEM - FIXED
    ======================================== */
 .modal {
     display: none;
@@ -495,42 +602,47 @@ body.theme-attacker tr:nth-child(even) {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(2px);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
 }
 
 .modal-content {
+    position: relative;
     background-color: var(--azure-surface);
-    margin: 1% auto;
+    margin: 5% auto;
     padding: 0;
-    border-radius: var(--border-radius);
-    width: 95%;
-    max-width: 1200px;
-    max-height: 95vh;
+    border: 1px solid var(--azure-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
     overflow: hidden;
-    box-shadow: var(--shadow-heavy);
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--azure-border);
-    position: relative;
+}
+
+body.theme-attacker .modal-content {
+    background-color: var(--azure-surface);
+    color: var(--azure-text);
 }
 
 .modal-header {
-    background: linear-gradient(135deg, var(--azure-primary), var(--azure-primary-dark));
-    color: white;
+    background: var(--azure-surface);
+    border-bottom: 1px solid var(--azure-border);
     padding: 16px 60px 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
     position: relative;
-    border-bottom: 1px solid var(--azure-border);
     gap: 16px;
 }
 
 .modal-title {
     font-size: 18px;
     font-weight: 600;
+    color: var(--azure-text);
     flex: 1;
     min-width: 0;
     overflow: hidden;
@@ -543,47 +655,48 @@ body.theme-attacker tr:nth-child(even) {
     top: 16px;
     right: 24px;
     z-index: 10;
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--azure-border);
     font-size: 24px;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.8);
-    width: 24px;
-    height: 24px;
+    color: var(--azure-text-light);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--border-radius-small);
-    transition: var(--transition);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .close-btn:hover {
+    background: var(--azure-error);
     color: white;
-    background-color: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+body.theme-attacker .close-btn {
+    background: rgba(45, 45, 45, 0.9);
+    border-color: var(--azure-border);
+    color: var(--azure-text-light);
+}
+
+body.theme-attacker .close-btn:hover {
+    background: var(--azure-error);
+    color: white;
 }
 
 .modal-body {
     padding: 24px;
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1;
+    min-height: 0;
+    max-height: calc(95vh - 100px);
 }
 
-.modal-loading {
-    text-align: center;
-    padding: 50px;
-    font-size: 18px;
-    color: var(--azure-text-secondary);
-}
-
-.modal-loading::before {
-    content: "⏳";
-    display: block;
-    font-size: 32px;
-    margin-bottom: 16px;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-/* Modal Actions */
 .modal-actions {
     display: flex;
     gap: 8px;
@@ -595,11 +708,11 @@ body.theme-attacker tr:nth-child(even) {
 .modal-actions .explain-btn {
     padding: 6px 12px;
     border: none;
-    border-radius: var(--border-radius-small);
+    border-radius: 4px;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-fast);
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -634,10 +747,10 @@ body.theme-attacker tr:nth-child(even) {
    ======================================== */
 .query-container {
     background-color: #1e1e1e;
-    border-radius: var(--border-radius-small);
+    border-radius: 4px;
     overflow: hidden;
     margin: 20px 0;
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 body.theme-attacker .query-container {
@@ -700,7 +813,7 @@ body.theme-attacker .shell-content {
 .kql-query {
     margin: 0;
     color: #d4d4d4;
-    font-family: var(--font-mono);
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 13px;
     line-height: 1.5;
     background: transparent;
@@ -720,6 +833,21 @@ body.theme-attacker .shell-content {
 body.theme-attacker .kql-query,
 body.theme-attacker .kql-query code {
     color: #c9d1d9;
+}
+
+.query-code {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+body.theme-attacker .query-code {
+    background-color: #333;
 }
 
 /* KQL Syntax Highlighting */
@@ -755,46 +883,16 @@ body.theme-attacker .kql-string {
     color: #ce9178;
 }
 
-.query-code {
-    background-color: #f5f5f5;
-    padding: 15px;
-    border-radius: 5px;
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: 14px;
-    line-height: 1.5;
-    white-space: pre;
-}
-
-body.theme-attacker .query-code {
-    background-color: #333;
-}
-
-.code-block {
-    background-color: #1e1e1e;
-    color: #d4d4d4;
-    padding: 15px;
-    margin: 0;
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: 14px;
-    line-height: 1.5;
-    white-space: pre;
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
-}
-
 /* ========================================
-   LOG DISPLAY STYLING
+   LOG DISPLAY STYLING - FIXED
    ======================================== */
 .log-container {
     margin: 20px 0;
     overflow: hidden;
     width: 100%;
     background-color: var(--azure-surface);
-    border-radius: var(--border-radius-small);
-    box-shadow: var(--shadow-light);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--azure-border);
 }
 
@@ -832,7 +930,7 @@ body.theme-attacker .query-code {
 
 .log-timestamp {
     color: var(--azure-text-secondary);
-    font-family: var(--font-mono);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 12px;
     background: #f8f9fa;
     padding: 2px 6px;
@@ -848,13 +946,70 @@ body.theme-attacker .log-timestamp {
     font-weight: 600;
 }
 
+/* Azure Log Analytics Style */
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 800px;
+}
+
+.log-table th {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-bottom: 1px solid var(--azure-border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.log-table .highlight-cell {
+    background-color: #fef2f2;
+    color: var(--azure-error);
+    font-weight: 600;
+}
+
+.log-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--azure-border-light);
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+body.theme-attacker .log-table td {
+    border: 1px solid var(--azure-border);
+}
+
+.log-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+body.theme-attacker .log-table tr:nth-child(even) {
+    background-color: #363636;
+}
+
+.log-table tr:hover {
+    background-color: var(--azure-hover);
+}
+
+.highlight-cell {
+    background-color: #fef2f2;
+    color: var(--azure-error);
+    font-weight: 600;
+}
+
 /* Table wrapper for horizontal scrolling */
 .table-wrapper {
     max-height: 400px;
     overflow-y: auto;
     overflow-x: auto;
     border: 1px solid var(--azure-border);
-    border-radius: var(--border-radius-small);
+    border-radius: 4px;
 }
 
 .table-wrapper::-webkit-scrollbar {
@@ -868,7 +1023,7 @@ body.theme-attacker .log-timestamp {
 
 .table-wrapper::-webkit-scrollbar-thumb {
     background: #c1c1c1;
-    border-radius: var(--border-radius-small);
+    border-radius: 4px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
@@ -876,269 +1031,14 @@ body.theme-attacker .log-timestamp {
 }
 
 /* ========================================
-   BUTTON STYLING
+   EXPLANATION STYLING - FIXED
    ======================================== */
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 14px;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-}
-
-.btn-primary {
-    background: var(--azure-primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: var(--azure-primary-dark);
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #545b62;
-}
-
-.copy-btn {
-    padding: 6px 12px;
-    background-color: var(--azure-primary);
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 12px;
-    transition: var(--transition);
-}
-
-.copy-btn:hover {
-    background-color: var(--azure-primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.explain-btn {
-    padding: 6px 12px;
-    background: var(--azure-selected);
-    color: var(--azure-primary);
-    border: 1px solid var(--azure-primary);
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 12px;
-    transition: var(--transition);
-}
-
-.explain-btn:hover {
-    background: var(--azure-primary);
-    color: white;
-    transform: translateY(-1px);
-}
-
-.view-logs-btn,
-.view-query-btn,
-.azure-btn {
-    background: linear-gradient(135deg, var(--azure-primary) 0%, var(--azure-primary-dark) 100%);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    transition: var(--transition-fast);
-    margin: 2px;
-    box-shadow: 0 2px 4px rgba(0, 120, 212, 0.2);
-}
-
-.view-logs-btn:hover,
-.view-query-btn:hover,
-.azure-btn:hover {
-    background: linear-gradient(135deg, var(--azure-primary-dark) 0%, var(--azure-secondary) 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 120, 212, 0.3);
-}
-
-.sample-btn {
-    background: var(--azure-info);
-}
-
-/* ========================================
-   LINKS & NAVIGATION
-   ======================================== */
-.source-link {
-    color: var(--azure-primary);
-    text-decoration: none;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.source-link:hover {
-    text-decoration: underline;
-    color: var(--azure-primary-dark);
-    font-weight: 600;
-}
-
-.attack-path-link {
-    color: var(--azure-primary);
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.attack-path-link:hover {
-    text-decoration: underline;
-    color: var(--azure-primary-dark);
-}
-
-.nav-link {
-    display: inline-flex;
-    align-items: center;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 20px;
-    transition: var(--transition);
-}
-
-.nav-link:hover {
-    color: var(--primary-gradient-end);
-}
-
-.github-link {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: var(--github-bg);
-    color: white;
-    text-decoration: none;
-    border-radius: var(--border-radius-small);
-    font-weight: 500;
-    margin-top: 20px;
-    transition: var(--transition);
-}
-
-.github-link:hover {
-    background-color: var(--github-hover-bg);
-}
-
-/* ========================================
-   TAGS & INDICATORS
-   ======================================== */
-.tag {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: var(--border-radius-small);
-    font-size: 0.8em;
-    margin-right: 5px;
-    font-weight: 500;
-}
-
-.tag-yes {
-    background-color: var(--tag-yes-bg);
-    color: var(--tag-yes-color);
-}
-
-.tag-no {
-    background-color: var(--tag-no-bg);
-    color: var(--tag-no-color);
-}
-
-.azure-tab {
-    background-color: var(--table-header-bg);
-    border-bottom: 3px solid var(--primary-color);
-    padding: 8px 16px;
-    display: inline-block;
-    margin-right: 2px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-/* ========================================
-   LOADING STATES & ANIMATIONS
-   ======================================== */
-.loading {
-    font-style: italic;
-    color: #666;
-    display: inline-block;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-.query-count {
-    transition: background-color 0.5s ease;
-    font-weight: bold;
-}
-
-.updated {
-    background-color: var(--highlight-color);
-    animation: highlight 2s ease-in-out;
-}
-
-.query-count.updated {
-    background-color: var(--azure-selected);
-    color: var(--azure-primary);
-    font-weight: 600;
-    border-radius: var(--border-radius-small);
-    padding: 2px 6px;
-}
-
-/* ========================================
-   THEME TOGGLE BUTTON
-   ======================================== */
-.theme-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-    z-index: 1000;
-}
-
-.theme-toggle:hover {
-    transform: rotate(180deg) scale(1.1);
-    box-shadow: var(--shadow-heavy);
-}
-
-/* ========================================
-   EXPLANATION SECTIONS
-   ======================================== */
-.explanation,
-.query-explanation {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--azure-border);
-}
-
-.explanation .explanation {
+.explanation {
+    background: var(--azure-surface);
     padding: 16px;
-    background-color: var(--azure-surface);
-    border-radius: var(--border-radius-small);
+    border-radius: 6px;
     border-left: 4px solid var(--azure-primary);
+    margin-bottom: 20px;
 }
 
 .explanation h3 {
@@ -1165,6 +1065,7 @@ body.theme-attacker .log-timestamp {
 .explanation ul {
     color: var(--azure-text-secondary);
     padding-left: 20px;
+    margin-bottom: 1em;
 }
 
 .explanation li {
@@ -1177,13 +1078,94 @@ body.theme-attacker .log-timestamp {
     color: var(--azure-primary);
     padding: 2px 4px;
     border-radius: 3px;
-    font-family: var(--font-mono);
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.9em;
 }
 
 body.theme-attacker .explanation code {
     background: rgba(212, 0, 0, 0.1);
     color: var(--azure-primary);
+}
+
+/* ========================================
+   GITHUB LINK STYLING
+   ======================================== */
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--github-bg);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
+.github-link:hover {
+    background: var(--github-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+/* ========================================
+   LOADING & ANIMATION STATES
+   ======================================== */
+.loading {
+    font-style: italic;
+    color: var(--azure-text-light);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.query-count {
+    transition: background-color 0.5s ease;
+    font-weight: bold;
+}
+
+.updated {
+    background-color: var(--highlight-color);
+    animation: highlight 2s ease-in-out;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 40px;
+    color: var(--azure-text-light);
+    font-style: italic;
+}
+
+.modal-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--azure-text-light);
+    font-style: italic;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+.modal-body::-webkit-scrollbar {
+    width: 12px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 /* ========================================
@@ -1216,66 +1198,50 @@ body.theme-attacker .explanation code {
     margin-bottom: 20px;
 }
 
-/* Ensure modal body scrolls properly */
-.modal-body::-webkit-scrollbar {
-    width: 12px;
-}
-
-.modal-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 6px;
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 6px;
-    border: 2px solid #f1f1f1;
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* ========================================
-   UTILITY CLASSES
-   ======================================== */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-
-.p-1 { padding: 0.25rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 1rem; }
-.p-4 { padding: 1.5rem; }
-
-.d-none { display: none !important; }
-.d-block { display: block !important; }
-.d-flex { display: flex !important; }
-.d-inline-flex { display: inline-flex !important; }
-
-.icon {
-    margin-right: 5px;
-    vertical-align: middle;
-}
-
 /* ========================================
    FOOTER
    ======================================== */
 footer {
     text-align: center;
     margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--azure-border);
     color: var(--azure-text-secondary);
     font-size: 0.9em;
+}
+
+/* ========================================
+   INTERACTIVE ENHANCEMENTS
+   ======================================== */
+tr:hover .source-link {
+    color: var(--azure-primary-dark);
+    font-weight: 600;
+}
+
+.query-count.updated {
+    background-color: var(--azure-selected);
+    color: var(--azure-primary);
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+#results-count {
+    color: var(--azure-text-secondary);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.source-link {
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.source-link:hover {
+    color: var(--azure-primary-dark);
+    text-decoration: underline;
 }
 
 /* ========================================
@@ -1318,7 +1284,7 @@ footer {
 }
 
 /* ========================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - FIXED
    ======================================== */
 @media (max-width: 768px) {
     body {
@@ -1328,6 +1294,7 @@ footer {
     
     header {
         padding: 20px;
+        margin-bottom: 20px;
     }
     
     h1 {
@@ -1347,6 +1314,24 @@ footer {
     
     .section {
         padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    table {
+        font-size: 11px;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+    }
+    
+    .detection-name-cell {
+        min-width: 200px;
+        padding: 12px !important;
+    }
+    
+    .detection-title strong {
+        font-size: 13px;
     }
     
     .modal-content {
@@ -1422,23 +1407,6 @@ footer {
     .kql-query {
         font-size: 12px !important;
     }
-    
-    table {
-        font-size: 11px;
-    }
-    
-    th, td {
-        padding: 8px 10px;
-    }
-    
-    .detection-name-cell {
-        min-width: 200px;
-        padding: 12px !important;
-    }
-    
-    .detection-title strong {
-        font-size: 13px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -1475,6 +1443,18 @@ footer {
         margin-bottom: 20px;
     }
 }
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
 
 /* ========================================
    PRINT STYLES
@@ -1516,8 +1496,21 @@ footer {
 }
 
 /* ========================================
-   LEGACY COMPATIBILITY
+   LEGACY COMPATIBILITY & CONTENT SPACING FIX
    ======================================== */
+/* Ensure proper content spacing in all containers */
+div.section > *, 
+div.modal-body > *,
+div.explanation > * {
+    margin-bottom: 1em;
+}
+
+div.section > *:last-child,
+div.modal-body > *:last-child,
+div.explanation > *:last-child {
+    margin-bottom: 0;
+}
+
 /* Ensure backward compatibility with existing HTML classes */
 .azure-primary { color: var(--azure-primary) !important; }
 .azure-bg { background-color: var(--azure-bg) !important; }
@@ -1525,4 +1518,845 @@ footer {
 .azure-border { border-color: var(--azure-border) !important; }
 .azure-surface { background-color: var(--azure-surface) !important; }
 
-/* End of ATT4CKQL Consolidated CSS */
+/* End of ATT4CKQL Consolidated CSS - CORRECTED v2.1 */
+/* MINIMAL MODAL TEXT FIX - Add to end of corrected CSS */
+.modal-body p {
+    margin-bottom: 1em;
+}
+
+.modal-body ul, .modal-body ol {
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+}
+
+.modal-body li {
+    margin-bottom: 0.25em;
+}
+
+/* ========================================
+   REFINED PLATFORM TABLE FIX - PROPER FONT WEIGHTS
+   Matches the original working format from Image 2
+   ======================================== */
+
+/* ========================================
+   PLATFORM PAGE TABLE - CORRECT STYLING
+   ======================================== */
+
+/* Main platform page table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--azure-surface);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin: 20px 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Table headers - match original */
+table th {
+    background: var(--table-header-bg);
+    border-bottom: 1px solid var(--azure-border);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--azure-text);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Table cells - lighter styling */
+table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--azure-border-light);
+    vertical-align: top;
+    color: var(--azure-text);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Table rows */
+table tr:hover {
+    background-color: var(--azure-hover);
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
+/* Detection name cell - CRITICAL: Light font weight like Image 2 */
+.detection-name-cell {
+    min-width: 250px;
+    max-width: 300px;
+    padding: 16px;
+}
+
+.detection-title {
+    font-weight: 400; /* CHANGED: Light weight instead of 600 */
+    color: var(--azure-text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+    font-size: 14px;
+}
+
+.detection-title strong {
+    font-weight: 500; /* CHANGED: Medium weight instead of bold */
+    color: var(--azure-text);
+}
+
+/* Detection meta info - smaller and lighter */
+.detection-meta {
+    font-size: 12px;
+    color: var(--azure-text-secondary);
+    margin-top: 4px;
+}
+
+.detection-timestamp {
+    color: var(--azure-text-secondary);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.detection-count {
+    color: var(--azure-primary);
+    font-weight: 500; /* CHANGED: Medium weight */
+    margin-left: 8px;
+}
+
+/* Description cell - normal text weight */
+.description-cell {
+    max-width: 300px;
+    line-height: 1.4;
+    color: var(--azure-text-secondary);
+    font-size: 13px;
+    font-weight: normal; /* CHANGED: Ensure normal weight */
+}
+
+/* MITRE tactics cell */
+.mitre-tactic-cell {
+    min-width: 200px;
+    max-width: 250px;
+    padding: 12px;
+}
+
+.mitre-tactic {
+    background: var(--azure-selected);
+    color: var(--azure-primary);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.mitre-technique {
+    font-size: 12px;
+    color: var(--azure-text-secondary);
+    line-height: 1.3;
+    margin-top: 2px;
+    font-weight: normal;
+}
+
+/* Data source cell */
+.data-source-cell {
+    font-weight: 500; /* CHANGED: Medium weight */
+    color: var(--azure-text);
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+/* Action cells */
+.action-cell {
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+    white-space: nowrap;
+}
+
+/* Button styling - match original look from Image 2 */
+.view-query-btn, .view-logs-btn, .sample-btn {
+    padding: 8px 16px; /* CHANGED: Bigger padding like original */
+    margin: 2px;
+    border: none;
+    border-radius: 4px; /* CHANGED: Slightly larger radius */
+    font-size: 12px; /* CHANGED: Slightly larger font */
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-block;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.view-query-btn {
+    background: var(--azure-primary);
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 120, 212, 0.3);
+}
+
+.view-query-btn:hover {
+    background: var(--azure-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 120, 212, 0.4);
+}
+
+.view-logs-btn, .sample-btn {
+    background: var(--azure-surface);
+    color: var(--azure-primary);
+    border: 1px solid var(--azure-primary);
+    box-shadow: 0 1px 3px rgba(0, 120, 212, 0.2);
+}
+
+.view-logs-btn:hover, .sample-btn:hover {
+    background: var(--azure-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 120, 212, 0.3);
+}
+
+/* Attack path links */
+.attack-path-link {
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.attack-path-link:hover {
+    text-decoration: underline;
+    color: var(--azure-primary-dark);
+}
+
+/* Severity indicators */
+.severity-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.severity-high {
+    background-color: var(--azure-error);
+}
+
+.severity-medium {
+    background-color: var(--azure-warning);
+}
+
+.severity-low {
+    background-color: var(--azure-success);
+}
+
+/* Loading and no-data states */
+.loading-indicator, .no-data {
+    text-align: center;
+    padding: 40px;
+    color: var(--azure-text-light);
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* Navigation link styling */
+.nav-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+    color: var(--azure-primary-dark);
+}
+
+/* Page title */
+h1 {
+    color: var(--azure-primary);
+    margin-bottom: 1em;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Results count */
+#results-count {
+    color: var(--azure-text-secondary);
+    font-size: 14px;
+    margin-bottom: 16px;
+    font-weight: normal;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN FOR PLATFORM TABLES
+   ======================================== */
+
+@media (max-width: 768px) {
+    table th, table td {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .detection-name-cell {
+        min-width: 200px;
+        padding: 12px;
+    }
+    
+    .detection-title {
+        font-size: 13px;
+    }
+    
+    .mitre-tactic-cell {
+        min-width: 150px;
+    }
+    
+    .view-query-btn, .view-logs-btn, .sample-btn {
+        font-size: 11px;
+        padding: 6px 12px;
+    }
+}
+
+/* ========================================
+   THEME SUPPORT FOR PLATFORM TABLES
+   ======================================== */
+
+body.theme-attacker table {
+    background: var(--azure-surface);
+}
+
+body.theme-attacker table th {
+    background: var(--table-header-bg);
+    color: var(--azure-text);
+}
+
+body.theme-attacker table td {
+    color: var(--azure-text);
+    border-color: var(--azure-border);
+}
+
+body.theme-attacker .detection-title,
+body.theme-attacker .detection-title strong {
+    color: var(--azure-text);
+}
+
+body.theme-attacker .mitre-tactic {
+    background: var(--azure-selected);
+    color: var(--azure-primary);
+}
+
+body.theme-attacker .view-query-btn {
+    background: var(--azure-primary);
+}
+
+body.theme-attacker .view-logs-btn, 
+body.theme-attacker .sample-btn {
+    background: var(--azure-surface);
+    color: var(--azure-primary);
+    border-color: var(--azure-primary);
+}
+
+/* ========================================
+   MODAL BLUE HEADER & SIZE FIX
+   Restores the blue header styling from Image 2
+   ======================================== */
+
+/* ========================================
+   MODAL SIZE & LAYOUT FIXES
+   ======================================== */
+
+/* Make modals wider to accommodate longer titles */
+.modal-content {
+    position: relative;
+    background-color: var(--azure-surface);
+    margin: 3% auto; /* CHANGED: Less top margin for better positioning */
+    padding: 0;
+    border: 1px solid var(--azure-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-width: 1000px; /* CHANGED: Wider from 800px to 1000px */
+    width: 95%; /* CHANGED: Wider percentage */
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================================
+   BLUE HEADER STYLING - RESTORED
+   ======================================== */
+
+/* Modal header with blue background like Image 2 */
+.modal-header {
+    background: linear-gradient(135deg, var(--azure-primary), var(--azure-primary-dark)) !important;
+    border-bottom: none !important; /* Remove border for clean look */
+    padding: 16px 60px 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    gap: 16px;
+    border-radius: 8px 8px 0 0; /* Rounded top corners */
+}
+
+/* Modal title - white text on blue background */
+.modal-title {
+    font-size: 16px !important; /* CHANGED: Slightly smaller for longer titles */
+    font-weight: 600;
+    color: white !important; /* CHANGED: White text on blue background */
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+}
+
+/* Modal actions - buttons on blue header */
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-actions .copy-btn,
+.modal-actions .explain-btn {
+    padding: 8px 16px; /* CHANGED: Better padding */
+    border: none;
+    border-radius: 4px;
+    font-size: 13px; /* CHANGED: Slightly larger text */
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    min-width: fit-content;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Copy Query button - white background on blue header */
+.modal-actions .copy-btn {
+    background-color: white !important;
+    color: var(--azure-primary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-actions .copy-btn:hover {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    color: var(--azure-primary-dark) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Explain button - outlined style on blue header */
+.modal-actions .explain-btn {
+    background-color: transparent !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+
+.modal-actions .explain-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border-color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Close button - white on blue header */
+.close-btn {
+    position: absolute !important;
+    top: 12px !important; /* CHANGED: Better positioning */
+    right: 16px !important;
+    z-index: 10 !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+    color: white !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--azure-error) !important;
+    transform: rotate(90deg) scale(1.1) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ========================================
+   THEME SUPPORT FOR BLUE HEADERS
+   ======================================== */
+
+/* Attacker theme - red header instead of blue */
+body.theme-attacker .modal-header {
+    background: linear-gradient(135deg, var(--azure-primary), var(--azure-primary-dark)) !important;
+}
+
+body.theme-attacker .modal-title {
+    color: white !important;
+}
+
+body.theme-attacker .modal-actions .copy-btn {
+    background-color: white !important;
+    color: var(--azure-primary) !important;
+}
+
+body.theme-attacker .modal-actions .explain-btn {
+    background-color: transparent !important;
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+body.theme-attacker .close-btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+body.theme-attacker .close-btn:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--azure-error) !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN FOR WIDER MODALS
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .modal-content {
+        max-width: 95%;
+        margin: 2% auto;
+    }
+    
+    .modal-title {
+        font-size: 15px !important;
+    }
+    
+    .modal-actions .copy-btn,
+    .modal-actions .explain-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 98%;
+        margin: 1% auto;
+    }
+    
+    .modal-header {
+        padding: 12px 50px 12px 16px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+    
+    .modal-title {
+        font-size: 14px !important;
+        width: 100% !important;
+        white-space: normal !important; /* Allow wrapping on mobile */
+        line-height: 1.3 !important;
+    }
+    
+    .modal-actions {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+    }
+    
+    .close-btn {
+        top: 8px !important;
+        right: 12px !important;
+    }
+}
+
+/* ========================================
+   MODAL CONTENT HEADERS FIX ONLY
+   Makes headers inside modals blue (like "Query Explanation")
+   Touches ONLY headers, leaves everything else alone
+   ======================================== */
+
+/* Headers inside modal body - make them blue */
+.modal-body h1,
+.modal-body h2,
+.modal-body h3 {
+    color: var(--azure-primary) !important;
+    font-weight: 600 !important;
+    margin-bottom: 1em !important;
+}
+
+/* Specific fix for explanation headers */
+.modal-body .explanation h3,
+.modal-body .explanation h4 {
+    color: var(--azure-primary) !important;
+}
+
+/* Query explanation headers specifically */
+.modal-content h1,
+.modal-content h2,
+.modal-content h3 {
+    color: var(--azure-primary) !important;
+}
+
+/* Detection Logic Explanation header */
+.modal-body > h1:first-child,
+.modal-body > h2:first-child,
+.modal-body > h3:first-child {
+    color: var(--azure-primary) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    margin-bottom: 20px !important;
+}
+
+/* Theme support for headers */
+body.theme-attacker .modal-body h1,
+body.theme-attacker .modal-body h2,
+body.theme-attacker .modal-body h3,
+body.theme-attacker .modal-content h1,
+body.theme-attacker .modal-content h2,
+body.theme-attacker .modal-content h3 {
+    color: var(--azure-primary) !important;
+}
+
+/* ========================================
+   THEME CONTRAST FIXES
+   Fix: 1) Attacker theme table headers visibility
+        2) Defender theme close button visibility
+   ======================================== */
+
+/* ========================================
+   FIX 1: ATTACKER THEME TABLE HEADERS
+   Make headers visible with proper contrast
+   ======================================== */
+
+/* Attacker theme table headers - FORCE visibility */
+body.theme-attacker table th {
+    background: #2d2d2d !important; /* Dark but visible background */
+    color: #f0f0f0 !important; /* Light text for contrast */
+    border-bottom: 1px solid #444444 !important;
+    font-weight: 600 !important;
+}
+
+/* Ensure attacker theme table cells are also visible */
+body.theme-attacker table td {
+    color: var(--azure-text) !important;
+    border-color: #444444 !important;
+}
+
+/* Attacker theme table background */
+body.theme-attacker table {
+    background: var(--azure-surface) !important;
+    border: 1px solid #444444 !important;
+}
+
+/* Attacker theme table hover effect */
+body.theme-attacker table tr:hover {
+    background-color: #404040 !important;
+}
+
+/* ========================================
+   FIX 2: DEFENDER THEME CLOSE BUTTON
+   Make close button properly visible
+   ======================================== */
+
+/* Default close button for Defender theme */
+.close-btn {
+    position: absolute !important;
+    top: 12px !important;
+    right: 16px !important;
+    z-index: 20 !important; /* Higher z-index */
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(0, 120, 212, 0.3) !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+    color: var(--azure-text) !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    font-weight: normal !important;
+}
+
+.close-btn:hover {
+    background: var(--azure-error) !important;
+    color: white !important;
+    border-color: var(--azure-error) !important;
+    transform: rotate(90deg) scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Enhanced visibility for Defender theme close button */
+body:not(.theme-attacker) .close-btn {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #666666 !important;
+    border: 2px solid rgba(0, 120, 212, 0.2) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+body:not(.theme-attacker) .close-btn:hover {
+    background: var(--azure-error) !important;
+    color: white !important;
+    border-color: var(--azure-error) !important;
+}
+
+/* ========================================
+   FIX 3: ATTACKER THEME CLOSE BUTTON
+   Keep working attacker theme close button
+   ======================================== */
+
+/* Attacker theme close button - maintain current working style */
+body.theme-attacker .close-btn {
+    background: rgba(45, 45, 45, 0.9) !important;
+    color: #f0f0f0 !important;
+    border: 1px solid #666666 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.theme-attacker .close-btn:hover {
+    background: var(--azure-error) !important;
+    color: white !important;
+    border-color: var(--azure-error) !important;
+}
+
+/* ========================================
+   FIX 4: TABLE HEADER TEXT ENHANCEMENT
+   Ensure all text is readable in both themes
+   ======================================== */
+
+/* Force text visibility in headers for both themes */
+table th {
+    text-shadow: none !important;
+    font-size: 13px !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Defender theme - ensure dark text on light background */
+body:not(.theme-attacker) table th {
+    background: #f8f9fa !important;
+    color: #323130 !important;
+    border-bottom: 1px solid #edebe9 !important;
+}
+
+/* Attacker theme - ensure light text on dark background */
+body.theme-attacker table th {
+    background: #2d2d2d !important;
+    color: #f0f0f0 !important;
+    border-bottom: 1px solid #555555 !important;
+}
+
+/* ========================================
+   FIX 5: MODAL LAYERING
+   Ensure close button appears above all content
+   ======================================== */
+
+/* Ensure modal header doesn't cover close button */
+.modal-header {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Ensure close button is always on top */
+.modal-content .close-btn {
+    z-index: 25 !important;
+    position: absolute !important;
+}
+
+/* ========================================
+   FIX 6: RESPONSIVE FIXES
+   Maintain fixes on mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+    body.theme-attacker table th {
+        background: #2d2d2d !important;
+        color: #f0f0f0 !important;
+        font-size: 12px !important;
+    }
+    
+    .close-btn {
+        top: 8px !important;
+        right: 12px !important;
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 18px !important;
+    }
+}
+
+/* ========================================
+   SAMPLE LOGS MODAL - ATTACKER THEME TEXT FIX
+   Fix invisible table data in Sample Logs modal
+   ONLY touches Sample Logs modal table text color
+   ======================================== */
+
+/* ========================================
+   ATTACKER THEME SAMPLE LOGS TABLE FIX
+   Make table data visible with proper contrast
+   ======================================== */
+
+/* Sample Logs modal table data - FORCE visibility in attacker theme */
+body.theme-attacker .modal-content .log-table td {
+    color: #f0f0f0 !important; /* Light text for dark background */
+    background-color: transparent !important;
+}
+
+/* Sample Logs modal table headers - ensure visibility */
+body.theme-attacker .modal-content .log-table th {
+    color: #f0f0f0 !important; /* Light text for dark background */
+    background-color: #2d2d2d !important; /* Dark but visible background */
+    border-bottom: 1px solid #555555 !important;
+}
+
+/* Sample Logs modal table rows - alternating background for better readability */
+body.theme-attacker .modal-content .log-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.theme-attacker .modal-content .log-table tr:nth-child(odd) {
+    background-color: transparent !important;
+}
+
+/* Sample Logs modal table hover effect */
+body.theme-attacker .modal-content .log-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Specific fix for highlighted cells (like "optional" in IMDSV1 column) */
+body.theme-attacker .modal-content .log-table .highlight-cell {
+    background-color: rgba(212, 0, 0, 0.2) !important; /* Red highlight with transparency */
+    color: #ffffff !important; /* White text for maximum contrast */
+    font-weight: 600 !important;
+}
+
+/* Table wrapper in Sample Logs modal - ensure proper background */
+body.theme-attacker .modal-content .table-wrapper {
+    background-color: #1a1a1a !important;
+    border: 1px solid #444444 !important;
+}
+
+/* Ensure all text inside Sample Logs modal tables is visible */
+body.theme-attacker .modal-content .log-table * {
+    color: #f0f0f0 !important;
+}
+
+/* Don't affect other modal tables - only log-table class */
+body.theme-attacker .modal-content table:not(.log-table) td {
+    color: var(--azure-text) !important;
+}
