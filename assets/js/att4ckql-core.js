@@ -626,3 +626,533 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('ATT4CKQL Core: Initialization complete');
     }, 100);
 });
+
+/* ========================================
+   CYBERPUNK THEME FIXES v1.1
+   REPLACE THE PREVIOUS CYBERPUNK JS PATCH WITH THIS UPDATED VERSION
+   
+   FIXES:
+   - Theme switching stuck issue (proper cycling)
+   - Floating KQL effects not working
+   - Better integration with existing theme system
+   - Enhanced initialization
+   ======================================== */
+
+// =====================================
+// CYBERPUNK THEME INTEGRATION - FIXED
+// =====================================
+
+// Global cyberpunk state tracking
+let cyberpunkActive = false;
+let floatingKQLInterval = null;
+let cyberpunkInitialized = false;
+
+// =====================================
+// FIX 1: PROPER THEME SWITCHING
+// =====================================
+
+// Enhanced theme management that properly handles all 3 themes
+function enhancedSetTheme(theme) {
+    console.log(`Setting theme to: ${theme}`);
+    
+    // Clear all theme classes first
+    document.body.classList.remove('theme-attacker', 'theme-cyberpunk');
+    
+    // Stop floating effects for all theme changes
+    stopFloatingKQL();
+    cyberpunkActive = false;
+    
+    // Apply the selected theme
+    if (theme === 'attacker') {
+        document.body.classList.add('theme-attacker');
+        sessionStorage.setItem('att4ckql-theme', 'attacker');
+    } else if (theme === 'cyberpunk') {
+        document.body.classList.add('theme-cyberpunk');
+        sessionStorage.setItem('att4ckql-theme', 'cyberpunk');
+        cyberpunkActive = true;
+        // Start floating effects after a short delay
+        setTimeout(() => {
+            if (cyberpunkActive) {
+                startFloatingKQL();
+            }
+        }, 1000);
+    } else {
+        // Default to defender
+        sessionStorage.setItem('att4ckql-theme', 'defender');
+    }
+    
+    // Update theme toggle icon
+    updateCyberpunkThemeToggle(theme);
+    
+    console.log(`Theme successfully set to: ${theme}, cyberpunkActive: ${cyberpunkActive}`);
+}
+
+// Override the global setTheme function
+if (typeof window.setTheme === 'function') {
+    const originalSetTheme = window.setTheme;
+    window.setTheme = function(theme) {
+        enhancedSetTheme(theme);
+    };
+} else {
+    window.setTheme = enhancedSetTheme;
+}
+
+// Helper function to determine current theme
+function getCurrentTheme() {
+    if (document.body.classList.contains('theme-cyberpunk')) {
+        return 'cyberpunk';
+    } else if (document.body.classList.contains('theme-attacker')) {
+        return 'attacker';
+    } else {
+        return 'defender';
+    }
+}
+
+// =====================================
+// FIX 2: PROPER THEME CYCLING
+// =====================================
+
+// Enhanced theme cycling that properly cycles through all 3 themes
+function cycleThemes() {
+    const currentTheme = getCurrentTheme();
+    let nextTheme;
+    
+    console.log(`Current theme: ${currentTheme}`);
+    
+    if (currentTheme === 'defender') {
+        nextTheme = 'attacker';
+    } else if (currentTheme === 'attacker') {
+        nextTheme = 'cyberpunk';
+    } else if (currentTheme === 'cyberpunk') {
+        nextTheme = 'defender';
+    } else {
+        // Fallback
+        nextTheme = 'defender';
+    }
+    
+    console.log(`Cycling to: ${nextTheme}`);
+    enhancedSetTheme(nextTheme);
+}
+
+// Update theme toggle icon for 3 themes
+function updateCyberpunkThemeToggle(theme) {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        const icons = {
+            'defender': '🛡️',
+            'attacker': '⚔️',
+            'cyberpunk': '🌈'
+        };
+        themeToggle.textContent = icons[theme] || '🌙';
+        themeToggle.title = `Current: ${theme.charAt(0).toUpperCase() + theme.slice(1)} - Click to cycle themes`;
+    }
+}
+
+// Enhanced theme toggle setup
+function setupCyberpunkThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        // Remove existing event listeners by cloning
+        const newThemeToggle = themeToggle.cloneNode(true);
+        themeToggle.parentNode.replaceChild(newThemeToggle, themeToggle);
+        
+        // Add new 3-theme cycling event listener
+        newThemeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            cycleThemes();
+        });
+        
+        console.log('Cyberpunk theme toggle enhanced');
+    }
+}
+
+/* ========================================
+   WORKING DRIFT ANIMATION FIX v1.4
+   REPLACE THE createFloatingKQL FUNCTION IN YOUR CYBERPUNK JS PATCH
+   
+   FIXES:
+   - Elements actually MOVE instead of being sticky notes
+   - Proper animation sequencing  
+   - Guaranteed visibility during drift
+   ======================================== */
+
+// Create floating KQL that ACTUALLY DRIFTS with proper animation
+function createFloatingKQL() {
+    if (!cyberpunkActive || !document.body.classList.contains('theme-cyberpunk')) {
+        return;
+    }
+    
+    const kqlSnippets = [
+        'AWSCloudTrail | where TimeGenerated > ago(1h)',
+        'SecurityEvent | where EventID == 4625', 
+        'SigninLogs | where ResultType != 0',
+        'DeviceProcessEvents | project TimeGenerated, DeviceName',
+        'OfficeActivity | where Operation == "FileDownloaded"',
+        'AzureActivity | where OperationName contains "delete"',
+        'SecurityAlert | where AlertSeverity == "High"',
+        'let timeframe = 24h; union SecurityEvent',
+        'summarize count() by bin(TimeGenerated, 1h)',
+        'where isnotempty(SourceIP)',
+        'extend AccountDomain = split(Account, "\\\\")',
+        'order by TimeGenerated desc | take 100',
+        'join kind=inner on Computer',
+        'render timechart',
+        'parse EventData with * "ProcessName=" ProcessName'
+    ];
+    
+    const element = document.createElement('div');
+    element.className = 'floating-kql';
+    
+    // Random snippet
+    const snippet = kqlSnippets[Math.floor(Math.random() * kqlSnippets.length)];
+    element.textContent = snippet;
+    
+    // Random color class for variety
+    const colors = ['', 'neon-pink', 'neon-yellow', 'neon-green'];
+    const colorClass = colors[Math.floor(Math.random() * colors.length)];
+    if (colorClass) {
+        element.classList.add(colorClass);
+    }
+    
+    // Get viewport dimensions
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    // Choose random direction for drift
+    const direction = Math.floor(Math.random() * 4);
+    let startX, startY, endX, endY;
+    
+    switch(direction) {
+        case 0: // Left to Right drift
+            startX = -400;
+            startY = Math.random() * (windowHeight - 100) + 50;
+            endX = windowWidth + 100;
+            endY = startY + (Math.random() * 100 - 50);
+            break;
+        case 1: // Right to Left drift  
+            startX = windowWidth + 100;
+            startY = Math.random() * (windowHeight - 100) + 50;
+            endX = -400;
+            endY = startY + (Math.random() * 100 - 50);
+            break;
+        case 2: // Top to Bottom drift
+            startX = Math.random() * (windowWidth - 300) + 150;
+            startY = -50;
+            endX = startX + (Math.random() * 200 - 100);
+            endY = windowHeight + 50;
+            break;
+        case 3: // Bottom to Top drift
+            startX = Math.random() * (windowWidth - 300) + 150;
+            startY = windowHeight + 50;
+            endX = startX + (Math.random() * 200 - 100);
+            endY = -50;
+            break;
+    }
+    
+    // CRITICAL: Set initial position and styling
+    element.style.position = 'fixed';
+    element.style.left = startX + 'px';
+    element.style.top = startY + 'px';
+    element.style.zIndex = '9999';
+    element.style.pointerEvents = 'none';
+    element.style.opacity = '0'; // Start invisible
+    
+    // Add to body FIRST
+    document.body.appendChild(element);
+    
+    console.log(`Creating drifting KQL: ${snippet.substring(0, 30)}... from (${startX}, ${startY}) to (${endX}, ${endY})`);
+    
+    // STEP 1: Fade in (make visible)
+    setTimeout(() => {
+        if (element.parentNode && cyberpunkActive) {
+            element.style.transition = 'opacity 2s ease-in';
+            element.style.opacity = '0.8'; // Make visible and translucent
+            
+            console.log('KQL element faded in and visible');
+            
+            // STEP 2: Start movement after fade in completes
+            setTimeout(() => {
+                if (element.parentNode && cyberpunkActive) {
+                    console.log(`Starting movement from (${startX}, ${startY}) to (${endX}, ${endY})`);
+                    
+                    // Set movement transition and move to end position
+                    element.style.transition = 'left 25s linear, top 25s linear';
+                    element.style.left = endX + 'px';
+                    element.style.top = endY + 'px';
+                    
+                    console.log('Movement transition applied');
+                    
+                    // STEP 3: Start fading out after 2/3 of journey
+                    setTimeout(() => {
+                        if (element.parentNode) {
+                            element.style.transition = 'left 25s linear, top 25s linear, opacity 6s ease-out';
+                            element.style.opacity = '0';
+                            console.log('KQL element starting fade out');
+                        }
+                    }, 17000); // Start fade out after 17 seconds
+                }
+            }, 2500); // Start movement after fade in completes
+        }
+    }, 300);
+    
+    // STEP 4: Remove element after complete journey
+    setTimeout(() => {
+        if (element.parentNode) {
+            try {
+                element.parentNode.removeChild(element);
+                console.log('KQL element removed after journey complete');
+            } catch (e) {
+                console.log('Element already removed');
+            }
+        }
+    }, 30000); // Remove after 30 seconds total
+}
+
+/* ========================================
+   ALSO UPDATE THE CSS - SIMPLIFIED VERSION
+   Replace the .floating-kql CSS with this:
+   ======================================== */
+// Start floating KQL with proper intervals
+function startFloatingKQL() {
+    if (floatingKQLInterval || !cyberpunkActive) {
+        return;
+    }
+    
+    console.log('Starting properly drifting cyberpunk KQL effects');
+    
+    // Create initial elements with staggered timing
+    setTimeout(() => createFloatingKQL(), 2000);
+    setTimeout(() => createFloatingKQL(), 6000);
+    setTimeout(() => createFloatingKQL(), 12000);
+    
+    // Set up regular interval for continuous drift
+    floatingKQLInterval = setInterval(() => {
+        if (cyberpunkActive && document.body.classList.contains('theme-cyberpunk')) {
+            // Create new drifting element
+            if (Math.random() < 0.6) {
+                createFloatingKQL();
+            }
+        } else {
+            // Stop if theme changed
+            stopFloatingKQL();
+        }
+    }, 8000); // Every 8 seconds
+}
+
+// Enhanced stop function
+function stopFloatingKQL() {
+    if (floatingKQLInterval) {
+        clearInterval(floatingKQLInterval);
+        floatingKQLInterval = null;
+        console.log('Stopped drifting KQL effects');
+    }
+    
+    // Remove all existing floating elements
+    const existingElements = document.querySelectorAll('.floating-kql');
+    existingElements.forEach(el => {
+        try {
+            if (el.parentNode) {
+                // Fade out existing elements
+                el.style.transition = 'opacity 1s ease-out';
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                    }
+                }, 1000);
+            }
+        } catch (e) {
+            console.log('Error removing floating element:', e);
+        }
+    });
+}
+
+/* ========================================
+   INSTALLATION:
+   
+   REPLACE these three functions in your cyberpunk JS patch:
+   1. createFloatingKQL()
+   2. startFloatingKQL() 
+   3. stopFloatingKQL()
+   
+   ALSO UPDATE THE CSS (see next artifact)
+   
+   RESULT: 
+   ✅ KQL queries actually DRIFT across screen
+   ✅ Translucent appearance (opacity: 0.7)
+   ✅ Smooth movement from edge to edge
+   ✅ Fade in at start, fade out at end
+   ✅ No more stuck/static queries!
+   ======================================== */
+
+// =====================================
+// FIX 4: ENHANCED SHOWMAIN FUNCTION
+// =====================================
+
+// Enhanced showMain function for theme chooser
+function enhancedShowMain(theme) {
+    console.log(`ShowMain called with theme: ${theme}`);
+    
+    enhancedSetTheme(theme);
+    
+    const themeChooser = document.getElementById('theme-chooser');
+    const mainContent = document.getElementById('main-content');
+    
+    if (themeChooser) {
+        themeChooser.style.display = 'none';
+    }
+    if (mainContent) {
+        mainContent.style.display = 'block';
+        mainContent.style.opacity = '1';
+        mainContent.classList.add('visible');
+    }
+    
+    console.log(`Main content shown with theme: ${theme}`);
+}
+
+// Override global showMain
+window.showMain = enhancedShowMain;
+
+// =====================================
+// CYBERPUNK EVENT HANDLERS
+// =====================================
+
+// Handle page visibility changes
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        stopFloatingKQL();
+    } else if (cyberpunkActive) {
+        setTimeout(() => {
+            if (cyberpunkActive) {
+                startFloatingKQL();
+            }
+        }, 1000);
+    }
+});
+
+// Handle window resize
+window.addEventListener('resize', function() {
+    if (cyberpunkActive) {
+        // Restart floating effects with new dimensions
+        stopFloatingKQL();
+        setTimeout(() => {
+            if (cyberpunkActive) {
+                startFloatingKQL();
+            }
+        }, 500);
+    }
+});
+
+// =====================================
+// CYBERPUNK INITIALIZATION
+// =====================================
+
+function initializeCyberpunkIntegration() {
+    if (cyberpunkInitialized) {
+        return;
+    }
+    
+    console.log('ATT4CKQL Cyberpunk Integration: Initializing...');
+    
+    // Check for saved cyberpunk theme
+    const savedTheme = sessionStorage.getItem('att4ckql-theme');
+    console.log(`Saved theme: ${savedTheme}`);
+    
+    if (savedTheme === 'cyberpunk') {
+        enhancedSetTheme('cyberpunk');
+        console.log('Applied saved cyberpunk theme');
+    } else if (savedTheme === 'attacker') {
+        enhancedSetTheme('attacker');
+        console.log('Applied saved attacker theme');
+    } else {
+        enhancedSetTheme('defender');
+        console.log('Applied default defender theme');
+    }
+    
+    // Setup enhanced theme toggle
+    setupCyberpunkThemeToggle();
+    
+    // Add cyberpunk button event listener
+    setTimeout(() => {
+        const cyberpunkButton = document.querySelector('.cyberpunk-button');
+        if (cyberpunkButton) {
+            cyberpunkButton.addEventListener('click', function() {
+                console.log('Cyberpunk button clicked');
+                enhancedShowMain('cyberpunk');
+            });
+            console.log('Cyberpunk button event listener added');
+        }
+    }, 100);
+    
+    cyberpunkInitialized = true;
+    console.log('ATT4CKQL Cyberpunk Integration: Complete');
+}
+
+// =====================================
+// FONT LOADING
+// =====================================
+
+function loadCyberpunkFonts() {
+    if (!document.querySelector('link[href*="Orbitron"]')) {
+        const fontLink = document.createElement('link');
+        fontLink.href = 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap';
+        fontLink.rel = 'stylesheet';
+        document.head.appendChild(fontLink);
+        console.log('Cyberpunk fonts loaded');
+    }
+}
+
+// =====================================
+// INITIALIZATION SEQUENCE
+// =====================================
+
+// Primary initialization
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing cyberpunk integration...');
+    
+    // Load fonts if cyberpunk theme is saved
+    const savedTheme = sessionStorage.getItem('att4ckql-theme');
+    if (savedTheme === 'cyberpunk') {
+        loadCyberpunkFonts();
+    }
+    
+    // Initialize with delay to ensure other scripts load first
+    setTimeout(initializeCyberpunkIntegration, 300);
+});
+
+// Backup initialization in case DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    // DOM is still loading
+    document.addEventListener('DOMContentLoaded', initializeCyberpunkIntegration);
+} else {
+    // DOM already loaded
+    setTimeout(initializeCyberpunkIntegration, 100);
+}
+
+// =====================================
+// GLOBAL EXPOSURE
+// =====================================
+
+// Make cyberpunk functions available globally for debugging
+window.cyberpunkTheme = {
+    setTheme: enhancedSetTheme,
+    getCurrentTheme: getCurrentTheme,
+    cycleThemes: cycleThemes,
+    startFloatingKQL: startFloatingKQL,
+    stopFloatingKQL: stopFloatingKQL,
+    loadFonts: loadCyberpunkFonts,
+    active: () => cyberpunkActive,
+    initialized: () => cyberpunkInitialized
+};
+
+console.log('ATT4CKQL Cyberpunk Integration Fixes v1.1 Loaded Successfully');
+
+/* ========================================
+   END CYBERPUNK FIXES v1.1
+   
+   These fixes address:
+   ✅ Theme switching stuck issue (proper cycling logic)
+   ✅ Floating KQL effects not working (enhanced creation)
+   ✅ Better initialization sequence
+   ✅ Enhanced debugging and state tracking
+   ======================================== */

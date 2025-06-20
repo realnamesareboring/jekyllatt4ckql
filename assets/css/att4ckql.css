@@ -2360,3 +2360,652 @@ body.theme-attacker .modal-content .log-table * {
 body.theme-attacker .modal-content table:not(.log-table) td {
     color: var(--azure-text) !important;
 }
+
+/* ========================================
+   CYBERPUNK THEME INTEGRATION PATCH v1.4 - COMPLETE WITH SUBTLE FLOATING KQL
+   ADD THIS TO THE END OF YOUR EXISTING att4ckql.css FILE
+   
+   This patch includes ALL fixes:
+   ✅ Theme chooser layout (3 buttons)
+   ✅ Text readability improvements  
+   ✅ WORKING drift animations with SUBTLE styling
+   ✅ Enhanced cyberpunk styling
+   
+   INSTALLATION: Find this comment in your CSS file and replace 
+   everything from here to the end with this updated version.
+   ======================================== */
+
+/* ========================================
+   CYBERPUNK THEME VARIABLES - UPDATED
+   ======================================== */
+
+   body.theme-cyberpunk,
+   .theme-cyberpunk {
+       /* Cyberpunk-specific neon colors */
+       --neon-blue: #00ffff;
+       --neon-pink: #ff00ff;
+       --neon-yellow: #ffff00;
+       --neon-green: #00ff00;
+       --dark-purple: #1e0933;
+       --bg-color: #0a0a12;
+       --text-color: #e0f2ff;
+       
+       /* FIXED: Better contrast colors for readability */
+       --cyberpunk-text-primary: #ffffff;
+       --cyberpunk-text-secondary: #b3d9ff;
+       --cyberpunk-text-muted: #8fb3d9;
+       --cyberpunk-bg-primary: #0f0f1a;
+       --cyberpunk-bg-secondary: #1a1a2e;
+       
+       /* Override existing Azure variables for cyberpunk compatibility */
+       --azure-primary: #00ffff;
+       --azure-primary-dark: #ff00ff;
+       --azure-secondary: #ffff00;
+       --azure-bg: #0a0a12;
+       --azure-surface: #1a1a2e;
+       --azure-border: #00ffff;
+       --azure-border-light: rgba(0, 255, 255, 0.3);
+       --azure-text: #ffffff;
+       --azure-text-secondary: #b3d9ff;
+       --azure-text-light: #8fb3d9;
+       --azure-hover: rgba(0, 255, 255, 0.1);
+       --azure-selected: rgba(0, 255, 255, 0.2);
+       --azure-error: #ff00ff;
+       --azure-warning: #ffff00;
+       --azure-success: #00ff00;
+       --azure-info: #00ffff;
+       
+       /* Override legacy variables for compatibility */
+       --primary-color: #00ffff;
+       --primary-gradient-start: #00ffff;
+       --primary-gradient-end: #ff00ff;
+       --highlight-color: rgba(0, 255, 255, 0.2);
+       --highlight-color-mid: rgba(0, 255, 255, 0.4);
+       --tag-yes-bg: rgba(0, 255, 0, 0.2);
+       --tag-yes-color: #00ff00;
+       --tag-no-bg: rgba(255, 0, 255, 0.2);
+       --tag-no-color: #ff00ff;
+       --table-header-bg: rgba(0, 255, 255, 0.1);
+       --table-hover-bg: rgba(0, 255, 255, 0.05);
+       --github-bg: #1a0d2e;
+       --github-hover-bg: #2d1b3d;
+       
+       /* Apply theme colors to body */
+       background-color: var(--bg-color) !important;
+       color: var(--cyberpunk-text-primary) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK BODY & BASE STYLING
+      ======================================== */
+   
+   /* Cyberpunk body enhancements */
+   body.theme-cyberpunk {
+       font-family: 'Share Tech Mono', monospace !important;
+       background-image: 
+           radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+           radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.03) 0%, transparent 50%),
+           radial-gradient(circle at 40% 80%, rgba(255, 255, 0, 0.03) 0%, transparent 50%) !important;
+       overflow-x: hidden; /* Prevent horizontal scroll from floating elements */
+       /* Enable hardware acceleration for smooth animations */
+       transform: translateZ(0);
+       backface-visibility: hidden;
+       perspective: 1000px;
+   }
+   
+   /* Remove pseudo-elements for cyberpunk to prevent overlay conflicts */
+   body.theme-cyberpunk::before,
+   body.theme-cyberpunk::after {
+       display: none !important;
+   }
+   
+   /* ========================================
+      THEME CHOOSER LAYOUT FIXES
+      ======================================== */
+   
+   /* Updated theme chooser content for better 3-button layout */
+   .theme-chooser-content {
+       max-width: 800px !important; /* Wider to accommodate 3 buttons */
+       width: 95% !important;
+   }
+   
+   /* Updated theme buttons layout */
+   .theme-buttons {
+       display: flex !important;
+       justify-content: center !important;
+       align-items: center !important;
+       gap: 20px !important;
+       flex-wrap: wrap !important;
+       margin-top: 40px !important;
+   }
+   
+   /* Enhanced theme button sizing for 3 buttons */
+   .theme-button {
+       flex: 1 1 200px !important; /* Flexible sizing */
+       max-width: 220px !important;
+       min-width: 180px !important;
+       padding: 15px 20px !important;
+       font-size: 1.1em !important;
+       text-align: center !important;
+   }
+   
+   /* Cyberpunk button styling with better visibility */
+   .cyberpunk-button {
+       background: linear-gradient(45deg, #0a0a12, #1e0933) !important;
+       color: #00ffff !important;
+       border: 2px solid #00ffff !important;
+       font-family: 'Share Tech Mono', monospace !important;
+       text-transform: uppercase !important;
+       letter-spacing: 1px !important;
+       box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+       border-radius: 8px !important;
+   }
+   
+   .cyberpunk-button:hover {
+       background: linear-gradient(45deg, #1e0933, #0a0a12) !important;
+       color: #ff00ff !important;
+       border-color: #ff00ff !important;
+       box-shadow: 0 0 30px rgba(255, 0, 255, 0.5) !important;
+       transform: translateY(-2px) scale(1.02) !important;
+   }
+   
+   /* Mobile responsive for theme chooser */
+   @media (max-width: 768px) {
+       .theme-buttons {
+           flex-direction: column !important;
+           gap: 15px !important;
+       }
+       
+       .theme-button {
+           flex: none !important;
+           width: 100% !important;
+           max-width: none !important;
+           min-width: auto !important;
+       }
+   }
+   
+   /* ========================================
+      CYBERPUNK TYPOGRAPHY ENHANCEMENTS
+      ======================================== */
+   
+   /* Cyberpunk H1 styling */
+   .theme-cyberpunk h1 {
+       font-family: 'Orbitron', monospace !important;
+       font-weight: 900 !important;
+       background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-yellow)) !important;
+       -webkit-background-clip: text !important;
+       background-clip: text !important;
+       color: transparent !important;
+       text-shadow: 0 0 20px rgba(0, 255, 255, 0.5) !important;
+       letter-spacing: 3px !important;
+   }
+   
+   /* Cyberpunk H2/H3 styling */
+   .theme-cyberpunk h2,
+   .theme-cyberpunk h3 {
+       color: var(--neon-yellow) !important;
+       text-shadow: 0 0 5px rgba(255, 255, 0, 0.5) !important;
+       font-family: 'Orbitron', monospace !important;
+   }
+   
+   /* Cyberpunk subtitle enhancement */
+   .theme-cyberpunk .subtitle {
+       color: var(--neon-pink) !important;
+       font-family: 'Share Tech Mono', monospace !important;
+       text-shadow: 0 0 10px rgba(255, 0, 255, 0.7) !important;
+       letter-spacing: 1px !important;
+       font-size: 0.9em !important;
+   }
+   
+   /* Cyberpunk strong text */
+   .theme-cyberpunk strong {
+       color: var(--neon-blue) !important;
+       text-shadow: 0 0 3px rgba(0, 255, 255, 0.5) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK HEADER ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk header {
+       background: linear-gradient(135deg, 
+           rgba(0, 255, 255, 0.2) 0%, 
+           rgba(255, 0, 255, 0.2) 50%,
+           rgba(255, 255, 0, 0.2) 100%) !important;
+       border: 1px solid var(--neon-blue) !important;
+       box-shadow: 0 0 30px rgba(0, 255, 255, 0.3) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK SECTION ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .section {
+       background: linear-gradient(135deg, 
+           rgba(14, 14, 22, 0.9) 0%, 
+           rgba(30, 9, 51, 0.8) 100%) !important;
+       border: 1px solid var(--neon-blue) !important;
+       box-shadow: 0 0 20px rgba(0, 255, 255, 0.2) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK TABLE ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk table {
+       background: rgba(10, 10, 18, 0.9) !important;
+       border: 1px solid var(--neon-blue) !important;
+       box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+   }
+   
+   .theme-cyberpunk table th {
+       background: linear-gradient(135deg, 
+           rgba(0, 255, 255, 0.2) 0%, 
+           rgba(255, 0, 255, 0.2) 100%) !important;
+       color: var(--neon-blue) !important;
+       text-shadow: 0 0 10px var(--neon-blue) !important;
+       font-family: 'Orbitron', monospace !important;
+       text-transform: uppercase !important;
+       letter-spacing: 1px !important;
+       border-bottom: 2px solid var(--neon-blue) !important;
+   }
+   
+   .theme-cyberpunk table td,
+   .theme-cyberpunk .log-table td,
+   .theme-cyberpunk .log-table th {
+       color: var(--cyberpunk-text-primary) !important;
+       background: var(--cyberpunk-bg-secondary) !important;
+       text-shadow: none !important; /* Remove text shadow for clarity */
+       border-bottom: 1px solid rgba(0, 255, 255, 0.3) !important;
+       transition: all 0.3s ease !important;
+   }
+   
+   /* Enhanced table row contrast for readability */
+   .theme-cyberpunk table tr:nth-child(even) td {
+       background: var(--cyberpunk-bg-primary) !important;
+       color: var(--cyberpunk-text-primary) !important;
+   }
+   
+   .theme-cyberpunk table tr:nth-child(odd) td {
+       background: var(--cyberpunk-bg-secondary) !important;
+       color: var(--cyberpunk-text-primary) !important;
+   }
+   
+   .theme-cyberpunk table tr:hover {
+       background: rgba(0, 255, 255, 0.15) !important;
+   }
+   
+   .theme-cyberpunk table tr:hover td {
+       background: rgba(0, 255, 255, 0.15) !important;
+       color: #ffffff !important;
+       text-shadow: 0 0 3px rgba(255, 255, 255, 0.5) !important;
+       box-shadow: 0 0 15px rgba(0, 255, 255, 0.2) !important;
+   }
+   
+   /* Specific fixes for log data readability */
+   .theme-cyberpunk .log-table .log-data,
+   .theme-cyberpunk .query-results td,
+   .theme-cyberpunk .sample-logs td {
+       color: #ffffff !important;
+       background: #1a1a2e !important;
+       border: 1px solid rgba(0, 255, 255, 0.3) !important;
+   }
+   
+   /* Optional/private IP styling - better contrast */
+   .theme-cyberpunk td:contains("optional"),
+   .theme-cyberpunk .optional-field {
+       color: var(--neon-pink) !important;
+       background: rgba(255, 0, 255, 0.1) !important;
+       font-weight: bold !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK BUTTON ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .view-logs-btn,
+   .theme-cyberpunk .view-query-btn,
+   .theme-cyberpunk .sample-btn {
+       background: transparent !important;
+       color: var(--neon-pink) !important;
+       border: 1px solid var(--neon-pink) !important;
+       font-family: 'Share Tech Mono', monospace !important;
+       text-transform: uppercase !important;
+       letter-spacing: 1px !important;
+       transition: all 0.3s ease !important;
+   }
+   
+   .theme-cyberpunk .view-logs-btn:hover,
+   .theme-cyberpunk .view-query-btn:hover,
+   .theme-cyberpunk .sample-btn:hover {
+       color: var(--neon-blue) !important;
+       border-color: var(--neon-blue) !important;
+       box-shadow: 0 0 15px rgba(0, 255, 255, 0.5) !important;
+       text-shadow: 0 0 5px var(--neon-blue) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK TAG ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .tag-yes {
+       background: rgba(0, 255, 0, 0.2) !important;
+       color: var(--neon-green) !important;
+       border: 1px solid var(--neon-green) !important;
+       box-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
+   }
+   
+   .theme-cyberpunk .tag-no {
+       background: rgba(255, 0, 255, 0.2) !important;
+       color: var(--neon-pink) !important;
+       border: 1px solid var(--neon-pink) !important;
+       box-shadow: 0 0 5px rgba(255, 0, 255, 0.5) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK LINK ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .source-link {
+       color: var(--neon-blue) !important;
+       text-decoration: none !important;
+       text-shadow: 0 0 5px rgba(0, 255, 255, 0.5) !important;
+       transition: all 0.3s ease !important;
+   }
+   
+   .theme-cyberpunk .source-link:hover {
+       color: var(--neon-pink) !important;
+       text-shadow: 0 0 10px rgba(255, 0, 255, 0.8) !important;
+   }
+   
+   .theme-cyberpunk .github-link {
+       background: linear-gradient(45deg, var(--dark-purple), rgba(0, 255, 255, 0.1)) !important;
+       border: 1px solid var(--neon-blue) !important;
+       color: var(--neon-blue) !important;
+       box-shadow: 0 0 10px rgba(0, 255, 255, 0.3) !important;
+   }
+   
+   .theme-cyberpunk .github-link:hover {
+       background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), var(--dark-purple)) !important;
+       color: var(--neon-pink) !important;
+       border-color: var(--neon-pink) !important;
+       box-shadow: 0 0 15px rgba(255, 0, 255, 0.5) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK MODAL ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .modal-content {
+       background: linear-gradient(135deg, 
+           rgba(10, 10, 18, 0.95) 0%, 
+           rgba(30, 9, 51, 0.95) 100%) !important;
+       border: 2px solid var(--neon-blue) !important;
+       box-shadow: 0 0 50px rgba(0, 255, 255, 0.5) !important;
+       color: var(--cyberpunk-text-primary) !important;
+   }
+   
+   .theme-cyberpunk .modal-header {
+       background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink)) !important;
+   }
+   
+   .theme-cyberpunk .modal-title {
+       color: white !important;
+       font-family: 'Orbitron', monospace !important;
+       text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+   }
+   
+   .theme-cyberpunk .modal-body,
+   .theme-cyberpunk .modal-content,
+   .theme-cyberpunk .log-container,
+   .theme-cyberpunk .query-container {
+       color: var(--cyberpunk-text-primary) !important;
+   }
+   
+   .theme-cyberpunk .close-btn {
+       color: var(--neon-pink) !important;
+       font-size: 24px !important;
+       text-shadow: 0 0 10px var(--neon-pink) !important;
+       background: rgba(255, 0, 255, 0.2) !important;
+       border: 1px solid var(--neon-pink) !important;
+   }
+   
+   .theme-cyberpunk .close-btn:hover {
+       color: var(--neon-yellow) !important;
+       text-shadow: 0 0 15px var(--neon-yellow) !important;
+       background: rgba(255, 255, 0, 0.2) !important;
+       border-color: var(--neon-yellow) !important;
+       transform: scale(1.1) !important;
+   }
+   
+   /* Cyberpunk modal action buttons */
+   .theme-cyberpunk .modal-actions .copy-btn {
+       background-color: rgba(255, 255, 255, 0.9) !important;
+       color: var(--neon-blue) !important;
+       border: 1px solid rgba(0, 255, 255, 0.3) !important;
+       font-family: 'Share Tech Mono', monospace !important;
+   }
+   
+   .theme-cyberpunk .modal-actions .copy-btn:hover {
+       background-color: rgba(0, 255, 255, 0.2) !important;
+       color: white !important;
+       border-color: var(--neon-blue) !important;
+       box-shadow: 0 0 10px rgba(0, 255, 255, 0.5) !important;
+   }
+   
+   .theme-cyberpunk .modal-actions .explain-btn {
+       background-color: transparent !important;
+       color: white !important;
+       border: 1px solid rgba(255, 255, 255, 0.7) !important;
+       font-family: 'Share Tech Mono', monospace !important;
+   }
+   
+   .theme-cyberpunk .modal-actions .explain-btn:hover {
+       background-color: rgba(255, 0, 255, 0.2) !important;
+       color: var(--neon-pink) !important;
+       border-color: var(--neon-pink) !important;
+       box-shadow: 0 0 10px rgba(255, 0, 255, 0.5) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK QUERY/SHELL ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .query-container {
+       background-color: #0d1117 !important;
+       border: 1px solid var(--neon-blue) !important;
+       box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+   }
+   
+   .theme-cyberpunk .shell-header {
+       background: linear-gradient(135deg, #1a0d2e 0%, #2d1b3d 100%) !important;
+       border-bottom: 1px solid var(--neon-blue) !important;
+   }
+   
+   .theme-cyberpunk .shell-title {
+       color: var(--neon-green) !important;
+       font-family: 'Share Tech Mono', monospace !important;
+       text-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
+   }
+   
+   .theme-cyberpunk .kql-query,
+   .theme-cyberpunk .kql-query code {
+       color: var(--neon-green) !important;
+       text-shadow: 0 0 3px rgba(0, 255, 0, 0.3) !important;
+       font-family: 'Share Tech Mono', monospace !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK THEME TOGGLE ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk .theme-toggle {
+       background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)) !important;
+       border: 2px solid var(--neon-yellow) !important;
+       box-shadow: 0 0 20px rgba(0, 255, 255, 0.5) !important;
+       color: white !important;
+   }
+   
+   .theme-cyberpunk .theme-toggle:hover {
+       transform: rotate(180deg) scale(1.1) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK FOOTER ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk footer {
+       color: rgba(224, 242, 255, 0.7) !important;
+       text-shadow: 0 0 5px rgba(0, 255, 255, 0.3) !important;
+       border-top: 1px solid rgba(0, 255, 255, 0.3) !important;
+   }
+   
+   /* ========================================
+      SUBTLE FLOATING KQL ELEMENTS v1.4 - CLEAN LIGHT PURPLE
+      ======================================== */
+   
+   /* SUBTLE FLOATING KQL - CLEAN LIGHT PURPLE STYLING */
+   .floating-kql {
+       /* POSITIONING */
+       position: fixed !important;
+       display: block !important;
+       visibility: visible !important;
+       
+       /* STYLING */
+       font-family: 'Share Tech Mono', monospace !important;
+       font-size: 12px !important;
+       font-weight: normal !important; /* Less bold */
+       
+       /* SUBTLE LIGHT PURPLE COLOR */
+       color: #b19cd9 !important; /* Readable but subtle light purple */
+       background: rgba(0, 0, 0, 0.3) !important; /* Very subtle background */
+       border: none !important; /* NO BORDERS */
+       
+       /* SUBTLE GLOW EFFECT */
+       text-shadow: 
+           0 0 3px #b19cd9,
+           0 0 6px #b19cd9 !important; /* Gentle glow */
+       box-shadow: none !important; /* NO BOX SHADOW */
+       
+       /* SIZING */
+       padding: 4px 8px !important; /* Smaller padding */
+       border-radius: 4px !important; /* Smaller border radius */
+       max-width: 350px !important;
+       
+       /* TEXT HANDLING */
+       white-space: nowrap !important;
+       overflow: hidden !important;
+       text-overflow: ellipsis !important;
+       
+       /* LAYERING */
+       z-index: 9999 !important;
+       pointer-events: none !important;
+       
+       /* ALLOW SMOOTH TRANSITIONS */
+       will-change: left, top, opacity !important;
+       transform: translateZ(0) !important;
+   }
+   
+   /* REMOVE ALL COLOR VARIANTS - SINGLE PURPLE COLOR FOR ALL */
+   .floating-kql.neon-pink,
+   .floating-kql.neon-yellow,
+   .floating-kql.neon-green {
+       /* Override all variants with same subtle purple */
+       color: #b19cd9 !important;
+       border: none !important;
+       text-shadow: 
+           0 0 3px #b19cd9,
+           0 0 6px #b19cd9 !important;
+       box-shadow: none !important;
+       background: rgba(0, 0, 0, 0.3) !important;
+   }
+   
+   /* ENSURE CYBERPUNK THEME COMPATIBILITY */
+   .theme-cyberpunk .floating-kql {
+       display: block !important;
+       visibility: visible !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK CONTENT ENHANCEMENTS
+      ======================================== */
+   
+   .theme-cyberpunk ol li {
+       margin-bottom: 8px;
+   }
+   
+   .theme-cyberpunk ul li {
+       margin-bottom: 5px;
+   }
+   
+   .theme-cyberpunk .query-count {
+       color: var(--neon-green) !important;
+       font-weight: bold !important;
+       text-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
+   }
+   
+   /* ========================================
+      CYBERPUNK RESPONSIVE ENHANCEMENTS
+      ======================================== */
+   
+   @media (max-width: 768px) {
+       .floating-kql {
+           font-size: 10px !important;
+           max-width: 250px !important;
+           padding: 3px 6px !important;
+       }
+       
+       .theme-cyberpunk .modal-title {
+           font-family: 'Share Tech Mono', monospace !important;
+           text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
+       }
+   }
+   
+   @media (max-width: 480px) {
+       .floating-kql {
+           font-size: 9px !important;
+           max-width: 200px !important;
+           padding: 2px 4px !important;
+       }
+       
+       .theme-chooser-content {
+           padding: 30px 15px !important;
+       }
+       
+       .theme-cyberpunk .shell-title {
+           font-size: 10px !important;
+       }
+   }
+   
+   /* ========================================
+      CYBERPUNK PRINT STYLES
+      ======================================== */
+   
+   @media print {
+       .floating-kql {
+           display: none !important;
+       }
+       
+       .theme-cyberpunk * {
+           background: white !important;
+           color: black !important;
+           text-shadow: none !important;
+           box-shadow: none !important;
+       }
+   }
+   
+   /* ========================================
+      END CYBERPUNK INTEGRATION PATCH v1.4 - WITH SUBTLE FLOATING KQL
+      
+      INSTALLATION COMPLETE! This includes:
+      ✅ Theme chooser layout (3 buttons fit properly)
+      ✅ Text readability (white text on dark backgrounds)
+      ✅ WORKING drift animations with SUBTLE styling
+      ✅ Clean light purple floating queries (no borders)
+      ✅ Enhanced cyberpunk styling throughout
+      ✅ All existing functionality preserved
+      
+      NEXT STEP: Also update your JavaScript with the v1.4 createFloatingKQL() function
+      
+      Your cyberpunk theme is now fully functional with elegant floating animations! 🌈⚡
+      ======================================== */
