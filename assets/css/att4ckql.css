@@ -341,33 +341,136 @@ header p {
 }
 
 /* ========================================
-   THEME TOGGLE BUTTON
+   VIEWPORT POSITION FIX
+   REPLACE THE THEME TOGGLE SECTION IN YOUR v1.4 CYBERPUNK CSS PATCH
+   
+   FIXES:
+   - Forces button to be positioned relative to viewport, not content container
+   - Ensures button stays outside content area on all themes
    ======================================== */
+
+/* ========================================
+   THEME TOGGLE BUTTON - FORCE VIEWPORT POSITIONING
+   ======================================== */
+
+/* FORCE BUTTON TO BE POSITIONED RELATIVE TO VIEWPORT, NOT CONTAINERS */
 .theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--azure-primary);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 1000;
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+    border: none !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    z-index: 999999 !important; /* VERY high z-index */
+    
+    /* CRITICAL: FORCE VIEWPORT POSITIONING */
+    margin: 0 !important;
+    transform: none !important;
+    left: auto !important; /* Ensure left doesn't interfere */
+    bottom: auto !important; /* Ensure bottom doesn't interfere */
 }
 
-.theme-toggle:hover {
-    transform: rotate(180deg);
-    background: var(--azure-primary-dark);
+/* DEFENDER THEME BUTTON */
+body:not(.theme-attacker):not(.theme-cyberpunk) .theme-toggle {
+    background-color: #0078d4 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
+body:not(.theme-attacker):not(.theme-cyberpunk) .theme-toggle:hover {
+    background-color: #005a9e !important;
+    transform: scale(1.1) !important;
+}
+
+/* ATTACKER THEME BUTTON */
+body.theme-attacker .theme-toggle {
+    background-color: #d40000 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.theme-attacker .theme-toggle:hover {
+    background-color: #a30000 !important;
+    transform: scale(1.1) !important;
+}
+
+/* CYBERPUNK THEME BUTTON - FORCE SAME POSITIONING AS OTHERS */
+body.theme-cyberpunk .theme-toggle {
+    background: linear-gradient(45deg, #00ffff, #ff00ff) !important;
+    border: 2px solid #ffff00 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5) !important;
+    color: white !important;
+    
+    /* CRITICAL: SAME POSITIONING AS OTHER THEMES */
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    margin: 0 !important;
+    transform: none !important;
+    left: auto !important;
+    bottom: auto !important;
+}
+
+body.theme-cyberpunk .theme-toggle:hover {
+    transform: rotate(180deg) scale(1.1) !important;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7) !important;
+}
+
+/* PREVENT CYBERPUNK CONTAINERS FROM AFFECTING BUTTON POSITIONING */
+body.theme-cyberpunk .main-content,
+body.theme-cyberpunk .section,
+body.theme-cyberpunk .container {
+    /* Ensure these don't create new positioning contexts */
+    position: relative !important; /* Not absolute or fixed */
+    transform: none !important; /* No transforms that create stacking contexts */
+}
+
+/* ENSURE BUTTON IS ALWAYS ATTACHED TO BODY/VIEWPORT */
+body.theme-cyberpunk {
+    /* Remove any transforms that might affect positioning context */
+    transform: none !important;
+    perspective: none !important;
+}
+
+/* MOBILE RESPONSIVE - SAME FOR ALL THEMES */
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 15px !important;
+        right: 15px !important;
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 18px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-toggle {
+        top: 10px !important;
+        right: 10px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+}
+
+/* ========================================
+   INSTALLATION:
+   
+   REPLACE the entire theme toggle section in your v1.4 CSS patch
+   with this version.
+   
+   RESULT: 
+   ✅ Button positioned relative to browser viewport, not content
+   ✅ Same position across all themes
+   ✅ Button appears outside content containers
+   ======================================== */
 /* ========================================
    TABLE STYLING - FIXED
    ======================================== */
@@ -2860,152 +2963,416 @@ body.theme-attacker .modal-content table:not(.log-table) td {
        border-top: 1px solid rgba(0, 255, 255, 0.3) !important;
    }
    
-   /* ========================================
-      SUBTLE FLOATING KQL ELEMENTS v1.4 - CLEAN LIGHT PURPLE
-      ======================================== */
+/* ========================================
+   INVISIBLE FLOATING CONTAINERS FIX
+   REPLACE THE FLOATING KQL SECTION IN YOUR v1.4 CYBERPUNK CSS PATCH
    
-   /* SUBTLE FLOATING KQL - CLEAN LIGHT PURPLE STYLING */
-   .floating-kql {
-       /* POSITIONING */
-       position: fixed !important;
-       display: block !important;
-       visibility: visible !important;
-       
-       /* STYLING */
-       font-family: 'Share Tech Mono', monospace !important;
-       font-size: 12px !important;
-       font-weight: normal !important; /* Less bold */
-       
-       /* SUBTLE LIGHT PURPLE COLOR */
-       color: #b19cd9 !important; /* Readable but subtle light purple */
-       background: rgba(0, 0, 0, 0.3) !important; /* Very subtle background */
-       border: none !important; /* NO BORDERS */
-       
-       /* SUBTLE GLOW EFFECT */
-       text-shadow: 
-           0 0 3px #b19cd9,
-           0 0 6px #b19cd9 !important; /* Gentle glow */
-       box-shadow: none !important; /* NO BOX SHADOW */
-       
-       /* SIZING */
-       padding: 4px 8px !important; /* Smaller padding */
-       border-radius: 4px !important; /* Smaller border radius */
-       max-width: 350px !important;
-       
-       /* TEXT HANDLING */
-       white-space: nowrap !important;
-       overflow: hidden !important;
-       text-overflow: ellipsis !important;
-       
-       /* LAYERING */
-       z-index: 9999 !important;
-       pointer-events: none !important;
-       
-       /* ALLOW SMOOTH TRANSITIONS */
-       will-change: left, top, opacity !important;
-       transform: translateZ(0) !important;
-   }
+   CHANGES:
+   - Removes all visible containers/backgrounds
+   - Shows only floating text with glow
+   - Clean, invisible containers
+   ======================================== */
+
+/* ========================================
+   INVISIBLE FLOATING KQL - TEXT ONLY, NO CONTAINERS
+   ======================================== */
+
+/* INVISIBLE FLOATING KQL - PURE TEXT ONLY */
+.floating-kql {
+    /* POSITIONING */
+    position: fixed !important;
+    display: block !important;
+    visibility: visible !important;
+    
+    /* STYLING */
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 12px !important;
+    font-weight: normal !important;
+    
+    /* SUBTLE LIGHT PURPLE COLOR */
+    color: #b19cd9 !important; /* Readable but subtle light purple */
+    
+    /* INVISIBLE CONTAINER */
+    background: transparent !important; /* NO BACKGROUND */
+    border: none !important; /* NO BORDERS */
+    box-shadow: none !important; /* NO BOX SHADOW */
+    padding: 0 !important; /* NO PADDING */
+    border-radius: 0 !important; /* NO BORDER RADIUS */
+    
+    /* ENHANCED TEXT GLOW - MORE VISIBLE WITHOUT CONTAINER */
+    text-shadow: 
+        0 0 4px #b19cd9,
+        0 0 8px #b19cd9,
+        0 0 12px #b19cd9 !important; /* Enhanced glow for visibility */
+    
+    /* SIZING */
+    max-width: 350px !important;
+    
+    /* TEXT HANDLING */
+    white-space: nowrap !important;
+    overflow: visible !important; /* Allow text to be fully visible */
+    text-overflow: clip !important; /* Don't cut off text */
+    
+    /* LAYERING */
+    z-index: 9999 !important;
+    pointer-events: none !important;
+    
+    /* ALLOW SMOOTH TRANSITIONS */
+    will-change: left, top, opacity !important;
+    transform: translateZ(0) !important;
+}
+
+/* REMOVE ALL COLOR VARIANTS - SINGLE PURPLE COLOR FOR ALL */
+.floating-kql.neon-pink,
+.floating-kql.neon-yellow,
+.floating-kql.neon-green {
+    /* Override all variants with same invisible container + purple text */
+    color: #b19cd9 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    
+    /* Enhanced glow for all variants */
+    text-shadow: 
+        0 0 4px #b19cd9,
+        0 0 8px #b19cd9,
+        0 0 12px #b19cd9 !important;
+}
+
+/* ENSURE CYBERPUNK THEME COMPATIBILITY */
+.theme-cyberpunk .floating-kql {
+    display: block !important;
+    visibility: visible !important;
+    background: transparent !important;
+}
+
+/* RESPONSIVE - KEEP INVISIBLE ON ALL SIZES */
+@media (max-width: 768px) {
+    .floating-kql {
+        font-size: 10px !important;
+        max-width: 250px !important;
+        
+        /* Keep enhanced glow on mobile */
+        text-shadow: 
+            0 0 3px #b19cd9,
+            0 0 6px #b19cd9,
+            0 0 9px #b19cd9 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-kql {
+        font-size: 9px !important;
+        max-width: 200px !important;
+        
+        /* Slightly reduced glow for very small screens */
+        text-shadow: 
+            0 0 2px #b19cd9,
+            0 0 4px #b19cd9,
+            0 0 6px #b19cd9 !important;
+    }
+}
+
+/* ========================================
+   GLITCH BANNER EFFECT
+   ADD THIS TO YOUR v1.4 CYBERPUNK CSS PATCH
    
-   /* REMOVE ALL COLOR VARIANTS - SINGLE PURPLE COLOR FOR ALL */
-   .floating-kql.neon-pink,
-   .floating-kql.neon-yellow,
-   .floating-kql.neon-green {
-       /* Override all variants with same subtle purple */
-       color: #b19cd9 !important;
-       border: none !important;
-       text-shadow: 
-           0 0 3px #b19cd9,
-           0 0 6px #b19cd9 !important;
-       box-shadow: none !important;
-       background: rgba(0, 0, 0, 0.3) !important;
-   }
+   CREATES:
+   - Glitch effect banner for cyberpunk theme
+   - Normal banner styling for other themes
+   - Animated cyberpunk header effects
+   ======================================== */
+
+/* ========================================
+   BANNER/HEADER GLITCH EFFECTS - CYBERPUNK THEME
+   ======================================== */
+
+/* BASE HEADER STYLING - ALL THEMES */
+header h1,
+.page-title,
+.banner-title {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+    transition: all 0.3s ease;
+}
+
+/* NORMAL BANNER - DEFENDER THEME */
+body:not(.theme-attacker):not(.theme-cyberpunk) header h1,
+body:not(.theme-attacker):not(.theme-cyberpunk) .page-title,
+body:not(.theme-attacker):not(.theme-cyberpunk) .banner-title {
+    color: #0078d4;
+    text-shadow: none;
+}
+
+/* NORMAL BANNER - ATTACKER THEME */
+body.theme-attacker header h1,
+body.theme-attacker .page-title,
+body.theme-attacker .banner-title {
+    color: #d40000;
+    text-shadow: none;
+}
+
+/* GLITCH BANNER - CYBERPUNK THEME */
+body.theme-cyberpunk header h1,
+body.theme-cyberpunk .page-title,
+body.theme-cyberpunk .banner-title {
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 900 !important;
+    color: #00ffff !important;
+    position: relative !important;
+    display: inline-block !important;
+    
+    /* Base glow effect */
+    text-shadow: 
+        0 0 5px #00ffff,
+        0 0 10px #00ffff,
+        0 0 15px #00ffff,
+        0 0 20px #00ffff !important;
+    
+    /* Glitch animation */
+    animation: glitch-text 3s infinite !important;
+}
+
+/* GLITCH EFFECT PSEUDO-ELEMENTS */
+body.theme-cyberpunk header h1::before,
+body.theme-cyberpunk .page-title::before,
+body.theme-cyberpunk .banner-title::before {
+    content: attr(data-text) !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    color: #ff00ff !important;
+    z-index: -1 !important;
+    animation: glitch-pink 2.5s infinite !important;
+}
+
+body.theme-cyberpunk header h1::after,
+body.theme-cyberpunk .page-title::after,
+body.theme-cyberpunk .banner-title::after {
+    content: attr(data-text) !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    color: #ffff00 !important;
+    z-index: -2 !important;
+    animation: glitch-yellow 2s infinite !important;
+}
+
+/* GLITCH ANIMATIONS */
+@keyframes glitch-text {
+    0%, 90%, 100% {
+        transform: translate(0) !important;
+        filter: hue-rotate(0deg) !important;
+    }
+    10% {
+        transform: translate(-2px, 1px) !important;
+        filter: hue-rotate(90deg) !important;
+    }
+    20% {
+        transform: translate(2px, -1px) !important;
+        filter: hue-rotate(180deg) !important;
+    }
+    30% {
+        transform: translate(-1px, 2px) !important;
+        filter: hue-rotate(270deg) !important;
+    }
+    40% {
+        transform: translate(1px, -2px) !important;
+        filter: hue-rotate(360deg) !important;
+    }
+    50% {
+        transform: translate(-2px, -1px) !important;
+        filter: hue-rotate(45deg) !important;
+    }
+    60% {
+        transform: translate(2px, 1px) !important;
+        filter: hue-rotate(135deg) !important;
+    }
+    70% {
+        transform: translate(-1px, -2px) !important;
+        filter: hue-rotate(225deg) !important;
+    }
+    80% {
+        transform: translate(1px, 2px) !important;
+        filter: hue-rotate(315deg) !important;
+    }
+}
+
+@keyframes glitch-pink {
+    0%, 90%, 100% {
+        transform: translate(0) !important;
+        opacity: 0.8 !important;
+    }
+    15% {
+        transform: translate(-3px, 1px) !important;
+        opacity: 0.9 !important;
+    }
+    25% {
+        transform: translate(3px, -2px) !important;
+        opacity: 0.7 !important;
+    }
+    35% {
+        transform: translate(-2px, 3px) !important;
+        opacity: 0.8 !important;
+    }
+    45% {
+        transform: translate(2px, -3px) !important;
+        opacity: 0.6 !important;
+    }
+    55% {
+        transform: translate(-3px, -1px) !important;
+        opacity: 0.9 !important;
+    }
+    65% {
+        transform: translate(3px, 2px) !important;
+        opacity: 0.7 !important;
+    }
+    75% {
+        transform: translate(-1px, -3px) !important;
+        opacity: 0.8 !important;
+    }
+    85% {
+        transform: translate(1px, 3px) !important;
+        opacity: 0.6 !important;
+    }
+}
+
+@keyframes glitch-yellow {
+    0%, 90%, 100% {
+        transform: translate(0) !important;
+        opacity: 0.6 !important;
+    }
+    12% {
+        transform: translate(2px, -1px) !important;
+        opacity: 0.7 !important;
+    }
+    22% {
+        transform: translate(-2px, 2px) !important;
+        opacity: 0.5 !important;
+    }
+    32% {
+        transform: translate(1px, -3px) !important;
+        opacity: 0.6 !important;
+    }
+    42% {
+        transform: translate(-1px, 3px) !important;
+        opacity: 0.4 !important;
+    }
+    52% {
+        transform: translate(2px, 1px) !important;
+        opacity: 0.7 !important;
+    }
+    62% {
+        transform: translate(-3px, -1px) !important;
+        opacity: 0.5 !important;
+    }
+    72% {
+        transform: translate(3px, 2px) !important;
+        opacity: 0.6 !important;
+    }
+    82% {
+        transform: translate(-1px, -2px) !important;
+        opacity: 0.4 !important;
+    }
+}
+
+/* ADDITIONAL CYBERPUNK HEADER EFFECTS */
+body.theme-cyberpunk header {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* SCAN LINE EFFECT */
+body.theme-cyberpunk header::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, #00ffff, transparent) !important;
+    animation: scan-line 4s infinite !important;
+    z-index: 10 !important;
+}
+
+@keyframes scan-line {
+    0% {
+        left: -100% !important;
+    }
+    100% {
+        left: 100% !important;
+    }
+}
+
+/* STATIC NOISE OVERLAY */
+body.theme-cyberpunk header::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjQiIHNlZWQ9IjIiIHJlc3VsdD0ibm9pc2UiLz48ZmVDb2xvck1hdHJpeCBpbj0ibm9pc2UiIHR5cGU9InNhdHVyYXRlIiB2YWx1ZXM9IjAiLz48L2ZpbHRlcj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==') !important;
+    opacity: 0.1 !important;
+    animation: static-noise 0.1s infinite !important;
+    pointer-events: none !important;
+    z-index: 5 !important;
+}
+
+@keyframes static-noise {
+    0% {
+        transform: translate(0, 0) !important;
+    }
+    25% {
+        transform: translate(-1px, 1px) !important;
+    }
+    50% {
+        transform: translate(1px, -1px) !important;
+    }
+    75% {
+        transform: translate(-1px, -1px) !important;
+    }
+    100% {
+        transform: translate(1px, 1px) !important;
+    }
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    body.theme-cyberpunk header h1,
+    body.theme-cyberpunk .page-title,
+    body.theme-cyberpunk .banner-title {
+        font-size: 2em !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body.theme-cyberpunk header h1,
+    body.theme-cyberpunk .page-title,
+    body.theme-cyberpunk .banner-title {
+        font-size: 1.5em !important;
+    }
+}
+
+/* ========================================
+   INSTALLATION:
    
-   /* ENSURE CYBERPUNK THEME COMPATIBILITY */
-   .theme-cyberpunk .floating-kql {
-       display: block !important;
-       visibility: visible !important;
-   }
+   1. ADD this CSS to your v1.4 cyberpunk CSS patch
+   2. UPDATE your HTML to include data-text attribute:
+      <h1 data-text="Your Title Here">Your Title Here</h1>
    
-   /* ========================================
-      CYBERPUNK CONTENT ENHANCEMENTS
-      ======================================== */
-   
-   .theme-cyberpunk ol li {
-       margin-bottom: 8px;
-   }
-   
-   .theme-cyberpunk ul li {
-       margin-bottom: 5px;
-   }
-   
-   .theme-cyberpunk .query-count {
-       color: var(--neon-green) !important;
-       font-weight: bold !important;
-       text-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
-   }
-   
-   /* ========================================
-      CYBERPUNK RESPONSIVE ENHANCEMENTS
-      ======================================== */
-   
-   @media (max-width: 768px) {
-       .floating-kql {
-           font-size: 10px !important;
-           max-width: 250px !important;
-           padding: 3px 6px !important;
-       }
-       
-       .theme-cyberpunk .modal-title {
-           font-family: 'Share Tech Mono', monospace !important;
-           text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
-       }
-   }
-   
-   @media (max-width: 480px) {
-       .floating-kql {
-           font-size: 9px !important;
-           max-width: 200px !important;
-           padding: 2px 4px !important;
-       }
-       
-       .theme-chooser-content {
-           padding: 30px 15px !important;
-       }
-       
-       .theme-cyberpunk .shell-title {
-           font-size: 10px !important;
-       }
-   }
-   
-   /* ========================================
-      CYBERPUNK PRINT STYLES
-      ======================================== */
-   
-   @media print {
-       .floating-kql {
-           display: none !important;
-       }
-       
-       .theme-cyberpunk * {
-           background: white !important;
-           color: black !important;
-           text-shadow: none !important;
-           box-shadow: none !important;
-       }
-   }
-   
-   /* ========================================
-      END CYBERPUNK INTEGRATION PATCH v1.4 - WITH SUBTLE FLOATING KQL
-      
-      INSTALLATION COMPLETE! This includes:
-      ✅ Theme chooser layout (3 buttons fit properly)
-      ✅ Text readability (white text on dark backgrounds)
-      ✅ WORKING drift animations with SUBTLE styling
-      ✅ Clean light purple floating queries (no borders)
-      ✅ Enhanced cyberpunk styling throughout
-      ✅ All existing functionality preserved
-      
-      NEXT STEP: Also update your JavaScript with the v1.4 createFloatingKQL() function
-      
-      Your cyberpunk theme is now fully functional with elegant floating animations! 🌈⚡
-      ======================================== */
+   RESULT: 
+   ✅ Animated glitch effect on cyberpunk theme headers
+   ✅ Normal styling on defender/attacker themes
+   ✅ Scan lines and static noise effects
+   ✅ Color-shifted text duplicates for glitch effect
+   ======================================== */
