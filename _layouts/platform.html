@@ -6,15 +6,29 @@
     <title>{{ page.title }} - {{ site.title }}</title>
     <!-- CONSOLIDATED CSS -->
     <link rel="stylesheet" href="{{ '/assets/css/att4ckql.css' | relative_url }}">
+    
+    <!-- Cyberpunk Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <script>window.siteBaseUrl = "{{ site.baseurl }}";</script>
 </head>
 <body>
+    <!-- Navigation Link -->
     <a href="{{ '/' | relative_url }}" class="nav-link">← Back to Home</a>
     
+    <!-- ⚡ FIXED GLITCH BANNER ⚡ -->
+    <header>
+        <h1 class="glitch">{{ page.title }}</h1>
+        <p class="subtitle">Enhanced KQL Queries for Microsoft Sentinel based on MITRE ATT&CK Techniques</p>
+    </header>
+    
+    <!-- Main Content -->
     <main>
         {{ content }}
     </main>
-
+    
     <!-- CORE FUNCTIONALITY: Theme + Modal + Query Count Management -->
     <script src="{{ '/assets/js/att4ckql-core.js' | relative_url }}"></script>
     

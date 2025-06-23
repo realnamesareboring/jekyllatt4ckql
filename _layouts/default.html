@@ -1,70 +1,59 @@
-<!-- ========================================
-     CYBERPUNK THEME INTEGRATION PATCH v1.0
-     UPDATE YOUR EXISTING default.html TEMPLATE
-     
-     Only update the theme chooser section - keep everything else the same
-     ======================================== -->
-
-     <!DOCTYPE html>
-     <html>
-     <head>
-         <title>{{ site.title }}</title>
-         <!-- CONSOLIDATED CSS (your existing file + cyberpunk patch) -->
-         <link rel="stylesheet" href="{{ '/assets/css/att4ckql.css' | relative_url }}">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         
-         <!-- Cyberpunk Fonts (ADD THIS - for enhanced cyberpunk experience) -->
-         <link rel="preconnect" href="https://fonts.googleapis.com">
-         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-     </head>
-     <body>
-         {% if page.show_theme_chooser %}
-         <div class="theme-chooser-overlay" id="theme-chooser">
-             <div class="theme-chooser-content">
-                 <h2>Which side do you belong?</h2>
-                 <p>Choose your perspective in the cyber realm</p>
-                 <!-- UPDATED THEME BUTTONS SECTION - Add cyberpunk button -->
-                 <div class="theme-buttons">
-                    <button class="theme-button defender-button" onclick="showMain('defender')">
-                        🛡️ Defender
-                        <br><small>Azure Security</small>
-                    </button>
-                    <button class="theme-button attacker-button" onclick="showMain('attacker')">
-                        ⚔️ Attacker
-                        <br><small>Red Team</small>
-                    </button>
-                    <button class="theme-button cyberpunk-button" onclick="showMain('cyberpunk')">
-                        🌈 Cyberpunk
-                        <br><small>Neon Matrix</small>
-                    </button>
-                </div>
-             </div>
-         </div>
-         {% endif %}
-         
-         <!-- Keep your existing main content section unchanged -->
-         <div class="main-content" id="main-content" {% if page.show_theme_chooser %}style="opacity: 0;"{% endif %}>
-             {{ content }}
-         </div>
-     
-         <!-- CORE FUNCTIONALITY: Enhanced with Cyberpunk (your existing file + cyberpunk patch) -->
-         <script src="{{ '/assets/js/att4ckql-core.js' | relative_url }}"></script>
-         
-         <!-- Enhanced Theme Toggle Button (now cycles through all 3 themes) -->
-         <button class="theme-toggle" id="theme-toggle" title="Cycle through themes">🛡️</button>
-     </body>
-     </html>
-     
-     <!-- ========================================
-          INSTALLATION NOTES:
-          
-          CHANGES MADE TO YOUR EXISTING TEMPLATE:
-          1. Added cyberpunk fonts link in <head>
-          2. Added cyberpunk button to theme chooser
-          3. Updated button layout to accommodate 3 themes
-          4. Enhanced comments to reflect 3-theme system
-          
-          EVERYTHING ELSE STAYS THE SAME!
-          Your existing layout, scripts, and styling are preserved.
-          ======================================== -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ site.title }}</title>
+    <!-- CONSOLIDATED CSS -->
+    <link rel="stylesheet" href="{{ '/assets/css/att4ckql.css' | relative_url }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Cyberpunk Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% if page.show_theme_chooser %}
+    <div class="theme-chooser-overlay" id="theme-chooser">
+        <div class="theme-chooser-content">
+            <h2>Which side do you belong?</h2>
+            <p>Choose your perspective in the cyber realm</p>
+            <div class="theme-buttons">
+               <button class="theme-button defender-button" onclick="showMain('defender')">
+                   🛡️ Defender
+                   <br><small>Azure Security</small>
+               </button>
+               <button class="theme-button attacker-button" onclick="showMain('attacker')">
+                   ⚔️ Attacker
+                   <br><small>Red Team</small>
+               </button>
+               <button class="theme-button cyberpunk-button" onclick="showMain('cyberpunk')">
+                   🌈 Cyberpunk
+                   <br><small>Neon Matrix</small>
+               </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- MAIN CONTENT WITH GLITCH BANNER -->
+    <div class="main-content" id="main-content" {% if page.show_theme_chooser %}style="opacity: 0;"{% endif %}>
+        
+        <!-- ⚡ FIXED GLITCH BANNER ⚡ -->
+        {% if page.header %}
+        <header>
+            <h1 class="glitch">{{ page.header.title }}</h1>
+            <p class="subtitle">{{ page.header.subtitle }}</p>
+        </header>
+        {% endif %}
+        
+        <!-- Your existing content -->
+        {{ content }}
+    </div>
+    
+    <!-- CORE FUNCTIONALITY -->
+    <script src="{{ '/assets/js/att4ckql-core.js' | relative_url }}"></script>
+    
+    <!-- Enhanced Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" title="Cycle through themes">🛡️</button>
+</body>
+</html>

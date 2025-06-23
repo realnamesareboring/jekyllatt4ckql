@@ -3076,303 +3076,84 @@ body.theme-attacker .modal-content table:not(.log-table) td {
 }
 
 /* ========================================
-   GLITCH BANNER EFFECT
-   ADD THIS TO YOUR v1.4 CYBERPUNK CSS PATCH
-   
-   CREATES:
-   - Glitch effect banner for cyberpunk theme
-   - Normal banner styling for other themes
-   - Animated cyberpunk header effects
+   EXACT BACKUP CSS GLITCH EFFECT
+   Add this to your att4ckql.css
    ======================================== */
 
-/* ========================================
-   BANNER/HEADER GLITCH EFFECTS - CYBERPUNK THEME
-   ======================================== */
-
-/* BASE HEADER STYLING - ALL THEMES */
-header h1,
-.page-title,
-.banner-title {
-    font-size: 2.5em;
-    font-weight: 700;
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
-    transition: all 0.3s ease;
+/* CYBERPUNK H1 BASE STYLING */
+.theme-cyberpunk h1 {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-yellow));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 2;
 }
 
-/* NORMAL BANNER - DEFENDER THEME */
-body:not(.theme-attacker):not(.theme-cyberpunk) header h1,
-body:not(.theme-attacker):not(.theme-cyberpunk) .page-title,
-body:not(.theme-attacker):not(.theme-cyberpunk) .banner-title {
-    color: #0078d4;
-    text-shadow: none;
+/* THE GLITCH EFFECT - REQUIRES .glitch CLASS */
+.theme-cyberpunk .glitch {
+    animation: glitch 2s infinite;
 }
 
-/* NORMAL BANNER - ATTACKER THEME */
-body.theme-attacker header h1,
-body.theme-attacker .page-title,
-body.theme-attacker .banner-title {
-    color: #d40000;
-    text-shadow: none;
-}
-
-/* GLITCH BANNER - CYBERPUNK THEME */
-body.theme-cyberpunk header h1,
-body.theme-cyberpunk .page-title,
-body.theme-cyberpunk .banner-title {
-    font-family: 'Orbitron', monospace !important;
-    font-weight: 900 !important;
-    color: #00ffff !important;
-    position: relative !important;
-    display: inline-block !important;
-    
-    /* Base glow effect */
-    text-shadow: 
-        0 0 5px #00ffff,
-        0 0 10px #00ffff,
-        0 0 15px #00ffff,
-        0 0 20px #00ffff !important;
-    
-    /* Glitch animation */
-    animation: glitch-text 3s infinite !important;
-}
-
-/* GLITCH EFFECT PSEUDO-ELEMENTS */
-body.theme-cyberpunk header h1::before,
-body.theme-cyberpunk .page-title::before,
-body.theme-cyberpunk .banner-title::before {
-    content: attr(data-text) !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    color: #ff00ff !important;
-    z-index: -1 !important;
-    animation: glitch-pink 2.5s infinite !important;
-}
-
-body.theme-cyberpunk header h1::after,
-body.theme-cyberpunk .page-title::after,
-body.theme-cyberpunk .banner-title::after {
-    content: attr(data-text) !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    color: #ffff00 !important;
-    z-index: -2 !important;
-    animation: glitch-yellow 2s infinite !important;
-}
-
-/* GLITCH ANIMATIONS */
-@keyframes glitch-text {
-    0%, 90%, 100% {
-        transform: translate(0) !important;
-        filter: hue-rotate(0deg) !important;
+@keyframes glitch {
+    0% { 
+        text-shadow: 0 0 5px var(--neon-blue);
+        transform: translateX(0);
     }
-    10% {
-        transform: translate(-2px, 1px) !important;
-        filter: hue-rotate(90deg) !important;
+    5% { 
+        text-shadow: -3px 0 5px var(--neon-pink), 3px 0 5px var(--neon-blue);
+        transform: translateX(-2px);
     }
-    20% {
-        transform: translate(2px, -1px) !important;
-        filter: hue-rotate(180deg) !important;
+    10% { 
+        text-shadow: 3px 0 5px var(--neon-yellow), -3px 0 5px var(--neon-pink);
+        transform: translateX(2px);
     }
-    30% {
-        transform: translate(-1px, 2px) !important;
-        filter: hue-rotate(270deg) !important;
+    15% { 
+        text-shadow: 0 0 5px var(--neon-green);
+        transform: translateX(0);
     }
-    40% {
-        transform: translate(1px, -2px) !important;
-        filter: hue-rotate(360deg) !important;
+    20% { 
+        text-shadow: -2px 0 5px var(--neon-blue), 2px 0 5px var(--neon-yellow);
+        transform: translateX(1px);
     }
-    50% {
-        transform: translate(-2px, -1px) !important;
-        filter: hue-rotate(45deg) !important;
+    25% { 
+        text-shadow: 0 0 5px var(--neon-pink);
+        transform: translateX(0);
     }
-    60% {
-        transform: translate(2px, 1px) !important;
-        filter: hue-rotate(135deg) !important;
+    30% { 
+        text-shadow: 2px 0 5px var(--neon-green), -2px 0 5px var(--neon-blue);
+        transform: translateX(-1px);
     }
-    70% {
-        transform: translate(-1px, -2px) !important;
-        filter: hue-rotate(225deg) !important;
+    35% { 
+        text-shadow: 0 0 5px var(--neon-yellow);
+        transform: translateX(0);
     }
-    80% {
-        transform: translate(1px, 2px) !important;
-        filter: hue-rotate(315deg) !important;
+    85% { 
+        text-shadow: 0 0 5px var(--neon-blue);
+        transform: translateX(0);
+    }
+    90% { 
+        text-shadow: -1px 0 5px var(--neon-pink), 1px 0 5px var(--neon-blue);
+        transform: translateX(-1px);
+    }
+    95% { 
+        text-shadow: 1px 0 5px var(--neon-yellow), -1px 0 5px var(--neon-green);
+        transform: translateX(1px);
+    }
+    100% { 
+        text-shadow: 0 0 5px var(--neon-blue);
+        transform: translateX(0);
     }
 }
 
-@keyframes glitch-pink {
-    0%, 90%, 100% {
-        transform: translate(0) !important;
-        opacity: 0.8 !important;
-    }
-    15% {
-        transform: translate(-3px, 1px) !important;
-        opacity: 0.9 !important;
-    }
-    25% {
-        transform: translate(3px, -2px) !important;
-        opacity: 0.7 !important;
-    }
-    35% {
-        transform: translate(-2px, 3px) !important;
-        opacity: 0.8 !important;
-    }
-    45% {
-        transform: translate(2px, -3px) !important;
-        opacity: 0.6 !important;
-    }
-    55% {
-        transform: translate(-3px, -1px) !important;
-        opacity: 0.9 !important;
-    }
-    65% {
-        transform: translate(3px, 2px) !important;
-        opacity: 0.7 !important;
-    }
-    75% {
-        transform: translate(-1px, -3px) !important;
-        opacity: 0.8 !important;
-    }
-    85% {
-        transform: translate(1px, 3px) !important;
-        opacity: 0.6 !important;
-    }
+/* ENSURE CYBERPUNK VARIABLES EXIST */
+.theme-cyberpunk {
+    --neon-blue: #00ffff;
+    --neon-pink: #ff00ff;
+    --neon-yellow: #ffff00;
+    --neon-green: #00ff00;
 }
-
-@keyframes glitch-yellow {
-    0%, 90%, 100% {
-        transform: translate(0) !important;
-        opacity: 0.6 !important;
-    }
-    12% {
-        transform: translate(2px, -1px) !important;
-        opacity: 0.7 !important;
-    }
-    22% {
-        transform: translate(-2px, 2px) !important;
-        opacity: 0.5 !important;
-    }
-    32% {
-        transform: translate(1px, -3px) !important;
-        opacity: 0.6 !important;
-    }
-    42% {
-        transform: translate(-1px, 3px) !important;
-        opacity: 0.4 !important;
-    }
-    52% {
-        transform: translate(2px, 1px) !important;
-        opacity: 0.7 !important;
-    }
-    62% {
-        transform: translate(-3px, -1px) !important;
-        opacity: 0.5 !important;
-    }
-    72% {
-        transform: translate(3px, 2px) !important;
-        opacity: 0.6 !important;
-    }
-    82% {
-        transform: translate(-1px, -2px) !important;
-        opacity: 0.4 !important;
-    }
-}
-
-/* ADDITIONAL CYBERPUNK HEADER EFFECTS */
-body.theme-cyberpunk header {
-    position: relative !important;
-    overflow: hidden !important;
-}
-
-/* SCAN LINE EFFECT */
-body.theme-cyberpunk header::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: -100% !important;
-    width: 100% !important;
-    height: 2px !important;
-    background: linear-gradient(90deg, transparent, #00ffff, transparent) !important;
-    animation: scan-line 4s infinite !important;
-    z-index: 10 !important;
-}
-
-@keyframes scan-line {
-    0% {
-        left: -100% !important;
-    }
-    100% {
-        left: 100% !important;
-    }
-}
-
-/* STATIC NOISE OVERLAY */
-body.theme-cyberpunk header::after {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjQiIHNlZWQ9IjIiIHJlc3VsdD0ibm9pc2UiLz48ZmVDb2xvck1hdHJpeCBpbj0ibm9pc2UiIHR5cGU9InNhdHVyYXRlIiB2YWx1ZXM9IjAiLz48L2ZpbHRlcj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==') !important;
-    opacity: 0.1 !important;
-    animation: static-noise 0.1s infinite !important;
-    pointer-events: none !important;
-    z-index: 5 !important;
-}
-
-@keyframes static-noise {
-    0% {
-        transform: translate(0, 0) !important;
-    }
-    25% {
-        transform: translate(-1px, 1px) !important;
-    }
-    50% {
-        transform: translate(1px, -1px) !important;
-    }
-    75% {
-        transform: translate(-1px, -1px) !important;
-    }
-    100% {
-        transform: translate(1px, 1px) !important;
-    }
-}
-
-/* MOBILE RESPONSIVE */
-@media (max-width: 768px) {
-    body.theme-cyberpunk header h1,
-    body.theme-cyberpunk .page-title,
-    body.theme-cyberpunk .banner-title {
-        font-size: 2em !important;
-    }
-}
-
-@media (max-width: 480px) {
-    body.theme-cyberpunk header h1,
-    body.theme-cyberpunk .page-title,
-    body.theme-cyberpunk .banner-title {
-        font-size: 1.5em !important;
-    }
-}
-
-/* ========================================
-   INSTALLATION:
-   
-   1. ADD this CSS to your v1.4 cyberpunk CSS patch
-   2. UPDATE your HTML to include data-text attribute:
-      <h1 data-text="Your Title Here">Your Title Here</h1>
-   
-   RESULT: 
-   ✅ Animated glitch effect on cyberpunk theme headers
-   ✅ Normal styling on defender/attacker themes
-   ✅ Scan lines and static noise effects
-   ✅ Color-shifted text duplicates for glitch effect
-   ======================================== */
