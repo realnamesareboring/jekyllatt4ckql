@@ -1327,16 +1327,16 @@ console.log('• glitchDebug.forceActivate() - Force activate cyberpunk + glitch
 // END OF GLITCH PATCH
 // ========================================
 /* ========================================
-   FINAL GLITCH JS UPDATE - UPDATE YOUR applyGlitchEffects FUNCTION
-   Find this function in att4ckql-core.js and replace it
+   ULTIMATE CYBERPUNK JAVASCRIPT INTEGRATION
+   REPLACE YOUR applyGlitchEffects FUNCTION IN att4ckql-core.js
    ======================================== */
 
 /**
- * Apply glitch effects when cyberpunk theme is active
- * UPDATED VERSION with data-text attribute support
+ * Ultimate cyberpunk glitch effects with RGB separation + typing animation
+ * UPDATED VERSION - Complete integration
  */
 function applyGlitchEffects() {
-    console.log('🌈 Applying glitch effects to banner...');
+    console.log('🌈 Applying ultimate cyberpunk effects (RGB glitch + typing)...');
     
     // Only apply if cyberpunk theme is active
     if (!document.body.classList.contains('theme-cyberpunk')) {
@@ -1347,13 +1347,14 @@ function applyGlitchEffects() {
     const title = document.querySelector('h1');
     const subtitle = document.querySelector('.subtitle');
     
+    // ===== TITLE RGB GLITCH EFFECT =====
     if (title) {
         // Add data-text attribute for pseudo-elements
         title.setAttribute('data-text', title.textContent);
         
-        // Add glitch class immediately
+        // Add glitch class for RGB separation effect
         title.classList.add('glitch');
-        console.log('✅ Glitch class added to title banner');
+        console.log('✅ RGB glitch effect added to title');
         
         // Clear any existing interval to prevent duplicates
         if (typeof glitchMainInterval !== 'undefined' && glitchMainInterval) {
@@ -1367,7 +1368,7 @@ function applyGlitchEffects() {
                 title.classList.remove('glitch');
                 setTimeout(() => {
                     title.classList.add('glitch');
-                    console.log('🔄 Glitch animation refreshed');
+                    console.log('🔄 RGB glitch animation refreshed');
                 }, 100);
             } else {
                 // Clean up interval if theme changes
@@ -1381,48 +1382,57 @@ function applyGlitchEffects() {
         console.log('❌ No h1 element found for glitch effect');
     }
     
-    // Add occasional glitch effect to subtitle
+    // ===== SUBTITLE TYPING + GLITCH EFFECT =====
     if (subtitle) {
-        // Add data-text attribute for subtitle too
+        // Add data-text attribute for pseudo-elements
         subtitle.setAttribute('data-text', subtitle.textContent);
+        
+        // Add typing effect immediately
+        subtitle.classList.add('terminal-typing');
+        console.log('✅ Typing effect added to subtitle');
         
         // Clear any existing subtitle interval
         if (typeof glitchSubtitleInterval !== 'undefined' && glitchSubtitleInterval) {
             clearInterval(glitchSubtitleInterval);
         }
         
+        // Add occasional glitch effect to subtitle (after typing finishes)
         setTimeout(() => {
             glitchSubtitleInterval = setInterval(() => {
                 if (document.body.classList.contains('theme-cyberpunk')) {
+                    // Add glitch effect briefly
                     subtitle.classList.add('glitch');
                     setTimeout(() => {
                         subtitle.classList.remove('glitch');
                     }, 2000);
-                    console.log('🌟 Subtitle glitch triggered');
+                    console.log('🌟 Subtitle glitch burst triggered');
                 } else {
                     clearInterval(glitchSubtitleInterval);
                     glitchSubtitleInterval = null;
                 }
-            }, 15000); // Glitch subtitle every 15 seconds
-        }, 6000); // Start after 6 seconds
+            }, 18000); // Glitch subtitle every 18 seconds
+        }, 8000); // Start after typing animation completes (4s) + delay (4s)
     }
+    
+    console.log('🚀 Ultimate cyberpunk effects fully activated!');
 }
 
 /* ========================================
-   ALSO UPDATE triggerManualGlitch FUNCTION
+   UPDATED MANUAL GLITCH FUNCTION
    ======================================== */
 
 /**
- * Manual glitch trigger function - UPDATED VERSION
+ * Manual glitch trigger with typing restart
+ * UPDATED VERSION - Includes typing effect restart
  */
 function triggerManualGlitch() {
-    console.log('🎯 Manual glitch burst triggered!');
+    console.log('🎯 Ultimate manual glitch burst triggered!');
     
     const title = document.querySelector('h1');
     const subtitle = document.querySelector('.subtitle');
     const headers = document.querySelectorAll('h2, h3');
     
-    // Apply glitch to multiple elements for dramatic effect
+    // Apply RGB glitch to multiple elements
     [title, subtitle, ...headers].forEach((el, index) => {
         if (el) {
             // Add data-text attribute if missing
@@ -1439,19 +1449,127 @@ function triggerManualGlitch() {
             }, index * 200); // 200ms delay between each element
         }
     });
+    
+    // Restart typing animation on subtitle
+    if (subtitle && document.body.classList.contains('theme-cyberpunk')) {
+        setTimeout(() => {
+            subtitle.classList.remove('terminal-typing');
+            setTimeout(() => {
+                subtitle.classList.add('terminal-typing');
+                console.log('🖥️ Typing animation restarted');
+            }, 100);
+        }, 1000); // Restart after 1 second
+    }
 }
 
 /* ========================================
-   INSTALLATION INSTRUCTIONS:
-   
-   1. Add the CSS above to the END of your att4ckql.css file
-   
-   2. Replace your existing applyGlitchEffects() function 
-      in att4ckql-core.js with the version above
-   
-   3. Replace your existing triggerManualGlitch() function
-      with the version above
-   
-   That's it! The RGB separation glitch will now work 
-   automatically when switching to cyberpunk theme!
+   ENHANCED THEME DEACTIVATION
    ======================================== */
+
+/**
+ * Clean up all cyberpunk effects when switching themes
+ */
+function deactivateAllCyberpunkEffects() {
+    console.log('🛑 Deactivating all cyberpunk effects...');
+    
+    // Clear intervals
+    if (typeof glitchMainInterval !== 'undefined' && glitchMainInterval) {
+        clearInterval(glitchMainInterval);
+        glitchMainInterval = null;
+    }
+    if (typeof glitchSubtitleInterval !== 'undefined' && glitchSubtitleInterval) {
+        clearInterval(glitchSubtitleInterval);
+        glitchSubtitleInterval = null;
+    }
+    
+    // Remove all glitch and typing classes
+    const allElements = document.querySelectorAll('.glitch, .terminal-typing');
+    allElements.forEach(el => {
+        el.classList.remove('glitch', 'terminal-typing');
+    });
+    
+    console.log('✅ All cyberpunk effects cleaned up');
+}
+
+/* ========================================
+   HOOK INTO EXISTING THEME SYSTEM
+   Add this to your theme switching code:
+   
+   When switching TO cyberpunk:
+   setTimeout(() => applyGlitchEffects(), 500);
+   
+   When switching FROM cyberpunk:
+   deactivateAllCyberpunkEffects();
+   ======================================== */
+
+/* ========================================
+   GLOBAL DEBUG INTERFACE - ENHANCED
+   ======================================== */
+
+// Enhanced global debugging
+window.ultimateCyberpunk = {
+    activate: applyGlitchEffects,
+    deactivate: deactivateAllCyberpunkEffects,
+    manualGlitch: triggerManualGlitch,
+    
+    restartTyping: function() {
+        const subtitle = document.querySelector('.subtitle');
+        if (subtitle) {
+            subtitle.classList.remove('terminal-typing');
+            setTimeout(() => subtitle.classList.add('terminal-typing'), 100);
+            console.log('🖥️ Typing animation manually restarted');
+        }
+    },
+    
+    testAll: function() {
+        console.log('🧪 Testing all ultimate cyberpunk effects...');
+        document.body.classList.add('theme-cyberpunk');
+        setTimeout(() => applyGlitchEffects(), 100);
+        console.log('✅ Ultimate cyberpunk test activated');
+    },
+    
+    status: function() {
+        console.log('📊 Ultimate Cyberpunk Status:');
+        console.log('- Cyberpunk theme active:', document.body.classList.contains('theme-cyberpunk'));
+        console.log('- RGB glitch interval:', glitchMainInterval ? 'RUNNING' : 'STOPPED');
+        console.log('- Subtitle interval:', glitchSubtitleInterval ? 'RUNNING' : 'STOPPED');
+        console.log('- Elements with glitch class:', document.querySelectorAll('.glitch').length);
+        console.log('- Elements with typing class:', document.querySelectorAll('.terminal-typing').length);
+        
+        const title = document.querySelector('h1');
+        const subtitle = document.querySelector('.subtitle');
+        if (title) {
+            console.log('- Title has data-text:', title.hasAttribute('data-text'));
+            console.log('- Title has glitch class:', title.classList.contains('glitch'));
+        }
+        if (subtitle) {
+            console.log('- Subtitle has data-text:', subtitle.hasAttribute('data-text'));
+            console.log('- Subtitle has typing class:', subtitle.classList.contains('terminal-typing'));
+        }
+    }
+};
+
+console.log('🎉 Ultimate Cyberpunk System loaded!');
+console.log('💡 Test commands:');
+console.log('  • ultimateCyberpunk.testAll() - Test everything');
+console.log('  • ultimateCyberpunk.status() - Check status');
+console.log('  • ultimateCyberpunk.restartTyping() - Restart typing');
+console.log('  • Ctrl+G - Manual glitch burst');
+
+/* ========================================
+   END ULTIMATE CYBERPUNK JAVASCRIPT
+   ======================================== */
+   /* ========================================
+   ALTERNATIVE: If you want to add it separately
+   ======================================== */
+
+// OR add this as a separate initialization block:
+document.addEventListener('DOMContentLoaded', function() {
+    // Dedicated cyberpunk initialization check
+    setTimeout(() => {
+        if (document.body.classList.contains('theme-cyberpunk')) {
+            console.log('🚀 Cyberpunk initial load detection - applying ultimate effects');
+            applyGlitchEffects();
+        }
+    }, 1500);
+});

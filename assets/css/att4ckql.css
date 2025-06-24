@@ -3158,16 +3158,80 @@ body.theme-attacker .modal-content table:not(.log-table) td {
     --neon-green: #00ff00;
 }
 /* ========================================
-   FINAL WORKING GLITCH FIX - APPEND TO att4ckql.css
-   This is the pseudo-element RGB separation glitch that works!
+   ULTIMATE CYBERPUNK GLITCH + TYPING EFFECT
+   APPEND THIS TO THE END OF /assets/css/att4ckql.css
    ======================================== */
 
-/* Cyberpunk glitch container */
+/* ===== LEFT-ALIGNED CYBERPUNK HEADER LAYOUT ===== */
+.theme-cyberpunk header {
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    background: linear-gradient(135deg, 
+        rgba(0, 255, 255, 0.2) 0%, 
+        rgba(255, 0, 255, 0.2) 50%,
+        rgba(255, 255, 0, 0.2) 100%) !important;
+    border: 1px solid var(--neon-blue) !important;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 30px !important;
+}
+
+/* Left-aligned title */
+.theme-cyberpunk h1 {
+    margin-bottom: 15px !important;
+    align-self: flex-start !important;
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 900 !important;
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-yellow)) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5) !important;
+    letter-spacing: 3px !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+/* Left-aligned subtitle with typing setup */
+.theme-cyberpunk .subtitle {
+    align-self: flex-start !important;
+    max-width: 100% !important;
+    color: var(--neon-pink) !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.7) !important;
+    letter-spacing: 1px !important;
+    font-size: 1.1em !important;
+    margin-top: 5px !important;
+}
+
+/* ===== TERMINAL TYPING EFFECT ===== */
+.theme-cyberpunk .terminal-typing {
+    overflow: hidden !important;
+    border-right: .15em solid var(--neon-blue) !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    letter-spacing: .10em !important;
+    animation: typing 4s steps(50, end), blink-caret .75s step-end infinite !important;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--neon-blue); }
+}
+
+/* ===== RGB SEPARATION GLITCH EFFECT ===== */
 .theme-cyberpunk .glitch {
     position: relative !important;
 }
 
-/* Glitch pseudo-elements for RGB separation effect */
+/* Glitch pseudo-elements for RGB separation */
 .theme-cyberpunk .glitch::before,
 .theme-cyberpunk .glitch::after {
     content: attr(data-text) !important;
@@ -3198,7 +3262,7 @@ body.theme-attacker .modal-content table:not(.log-table) td {
     z-index: -2 !important;
 }
 
-/* Pink layer animation */
+/* Pink layer RGB separation animation */
 @keyframes glitch-before {
     0%, 15%, 25%, 35%, 85%, 100% { 
         transform: translateX(0);
@@ -3230,7 +3294,7 @@ body.theme-attacker .modal-content table:not(.log-table) td {
     }
 }
 
-/* Cyan layer animation */
+/* Cyan layer RGB separation animation */
 @keyframes glitch-after {
     0%, 15%, 25%, 35%, 85%, 100% { 
         transform: translateX(0);
@@ -3262,15 +3326,32 @@ body.theme-attacker .modal-content table:not(.log-table) td {
     }
 }
 
-/* Optional: Apply to subtitle too */
+/* ===== SUBTITLE GLITCH EFFECT (DIFFERENT COLORS) ===== */
 .theme-cyberpunk .subtitle.glitch::before {
-    color: #ffff00 !important;
+    color: #ffff00 !important; /* Yellow ghost for subtitle */
 }
 
 .theme-cyberpunk .subtitle.glitch::after {
-    color: #00ff00 !important;
+    color: #00ff00 !important; /* Green ghost for subtitle */
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .theme-cyberpunk header {
+        padding: 20px !important;
+    }
+    
+    .theme-cyberpunk h1 {
+        font-size: 2em !important;
+        letter-spacing: 2px !important;
+    }
+    
+    .theme-cyberpunk .subtitle {
+        font-size: 1em !important;
+        letter-spacing: 0.5px !important;
+    }
 }
 
 /* ========================================
-   END FINAL GLITCH CSS FIX
+   END ULTIMATE CYBERPUNK CSS
    ======================================== */
