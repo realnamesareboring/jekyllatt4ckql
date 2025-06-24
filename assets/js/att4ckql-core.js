@@ -1326,3 +1326,132 @@ console.log('• glitchDebug.forceActivate() - Force activate cyberpunk + glitch
 // ========================================
 // END OF GLITCH PATCH
 // ========================================
+/* ========================================
+   FINAL GLITCH JS UPDATE - UPDATE YOUR applyGlitchEffects FUNCTION
+   Find this function in att4ckql-core.js and replace it
+   ======================================== */
+
+/**
+ * Apply glitch effects when cyberpunk theme is active
+ * UPDATED VERSION with data-text attribute support
+ */
+function applyGlitchEffects() {
+    console.log('🌈 Applying glitch effects to banner...');
+    
+    // Only apply if cyberpunk theme is active
+    if (!document.body.classList.contains('theme-cyberpunk')) {
+        console.log('❌ Not cyberpunk theme, skipping glitch effects');
+        return;
+    }
+    
+    const title = document.querySelector('h1');
+    const subtitle = document.querySelector('.subtitle');
+    
+    if (title) {
+        // Add data-text attribute for pseudo-elements
+        title.setAttribute('data-text', title.textContent);
+        
+        // Add glitch class immediately
+        title.classList.add('glitch');
+        console.log('✅ Glitch class added to title banner');
+        
+        // Clear any existing interval to prevent duplicates
+        if (typeof glitchMainInterval !== 'undefined' && glitchMainInterval) {
+            clearInterval(glitchMainInterval);
+        }
+        
+        // Restart glitch animation periodically to keep it dynamic
+        glitchMainInterval = setInterval(() => {
+            if (document.body.classList.contains('theme-cyberpunk')) {
+                // Brief pause to reset animation
+                title.classList.remove('glitch');
+                setTimeout(() => {
+                    title.classList.add('glitch');
+                    console.log('🔄 Glitch animation refreshed');
+                }, 100);
+            } else {
+                // Clean up interval if theme changes
+                clearInterval(glitchMainInterval);
+                glitchMainInterval = null;
+                console.log('🛑 Glitch interval cleared (theme changed)');
+            }
+        }, 8000); // Restart glitch every 8 seconds
+        
+    } else {
+        console.log('❌ No h1 element found for glitch effect');
+    }
+    
+    // Add occasional glitch effect to subtitle
+    if (subtitle) {
+        // Add data-text attribute for subtitle too
+        subtitle.setAttribute('data-text', subtitle.textContent);
+        
+        // Clear any existing subtitle interval
+        if (typeof glitchSubtitleInterval !== 'undefined' && glitchSubtitleInterval) {
+            clearInterval(glitchSubtitleInterval);
+        }
+        
+        setTimeout(() => {
+            glitchSubtitleInterval = setInterval(() => {
+                if (document.body.classList.contains('theme-cyberpunk')) {
+                    subtitle.classList.add('glitch');
+                    setTimeout(() => {
+                        subtitle.classList.remove('glitch');
+                    }, 2000);
+                    console.log('🌟 Subtitle glitch triggered');
+                } else {
+                    clearInterval(glitchSubtitleInterval);
+                    glitchSubtitleInterval = null;
+                }
+            }, 15000); // Glitch subtitle every 15 seconds
+        }, 6000); // Start after 6 seconds
+    }
+}
+
+/* ========================================
+   ALSO UPDATE triggerManualGlitch FUNCTION
+   ======================================== */
+
+/**
+ * Manual glitch trigger function - UPDATED VERSION
+ */
+function triggerManualGlitch() {
+    console.log('🎯 Manual glitch burst triggered!');
+    
+    const title = document.querySelector('h1');
+    const subtitle = document.querySelector('.subtitle');
+    const headers = document.querySelectorAll('h2, h3');
+    
+    // Apply glitch to multiple elements for dramatic effect
+    [title, subtitle, ...headers].forEach((el, index) => {
+        if (el) {
+            // Add data-text attribute if missing
+            if (!el.hasAttribute('data-text')) {
+                el.setAttribute('data-text', el.textContent);
+            }
+            
+            // Stagger the glitch effects for a cascading look
+            setTimeout(() => {
+                el.classList.add('glitch');
+                setTimeout(() => {
+                    el.classList.remove('glitch');
+                }, 2000);
+            }, index * 200); // 200ms delay between each element
+        }
+    });
+}
+
+/* ========================================
+   INSTALLATION INSTRUCTIONS:
+   
+   1. Add the CSS above to the END of your att4ckql.css file
+   
+   2. Replace your existing applyGlitchEffects() function 
+      in att4ckql-core.js with the version above
+   
+   3. Replace your existing triggerManualGlitch() function
+      with the version above
+   
+   That's it! The RGB separation glitch will now work 
+   automatically when switching to cyberpunk theme!
+   ======================================== */
