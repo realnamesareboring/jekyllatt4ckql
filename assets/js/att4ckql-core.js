@@ -1156,3 +1156,173 @@ console.log('ATT4CKQL Cyberpunk Integration Fixes v1.1 Loaded Successfully');
    ✅ Better initialization sequence
    ✅ Enhanced debugging and state tracking
    ======================================== */
+   // ========================================
+// GLITCH EFFECT PATCH v1.0
+// ADD THIS TO THE END OF YOUR att4ckql-core.js FILE
+// ========================================
+
+/**
+ * Apply glitch effects when cyberpunk theme is active
+ */
+function applyGlitchEffects() {
+    console.log('Applying glitch effects...');
+    
+    // Only apply if cyberpunk theme is active
+    if (!document.body.classList.contains('theme-cyberpunk')) {
+        console.log('Not cyberpunk theme, skipping glitch effects');
+        return;
+    }
+    
+    const title = document.querySelector('h1');
+    const subtitle = document.querySelector('.subtitle');
+    
+    if (title) {
+        // Add glitch class immediately
+        title.classList.add('glitch');
+        console.log('✅ Glitch class added to title');
+        
+        // Restart glitch animation periodically to keep it fresh
+        const glitchInterval = setInterval(() => {
+            if (document.body.classList.contains('theme-cyberpunk')) {
+                title.classList.remove('glitch');
+                setTimeout(() => {
+                    title.classList.add('glitch');
+                    console.log('🔄 Glitch animation restarted');
+                }, 100);
+            } else {
+                // Clean up interval if theme changes
+                clearInterval(glitchInterval);
+            }
+        }, 8000); // Restart every 8 seconds
+    } else {
+        console.log('❌ No h1 element found for glitch effect');
+    }
+    
+    if (subtitle) {
+        // Add occasional glitch to subtitle
+        setTimeout(() => {
+            const subtitleInterval = setInterval(() => {
+                if (document.body.classList.contains('theme-cyberpunk')) {
+                    subtitle.classList.add('glitch');
+                    setTimeout(() => subtitle.classList.remove('glitch'), 2000);
+                    console.log('🌟 Subtitle glitch triggered');
+                } else {
+                    clearInterval(subtitleInterval);
+                }
+            }, 12000); // Glitch every 12 seconds
+        }, 4000);
+    }
+}
+
+/**
+ * Manual glitch trigger function
+ */
+function triggerManualGlitch() {
+    console.log('🎯 Manual glitch triggered');
+    
+    const title = document.querySelector('h1');
+    const subtitle = document.querySelector('.subtitle');
+    const links = document.querySelectorAll('.source-link');
+    
+    [title, subtitle, ...links].forEach(el => {
+        if (el) {
+            el.classList.add('glitch');
+            setTimeout(() => el.classList.remove('glitch'), 2000);
+        }
+    });
+}
+
+/**
+ * Enhanced theme switching with glitch integration
+ */
+function switchToCyberpunkTheme() {
+    console.log('🌈 Switching to cyberpunk theme with glitch effects');
+    
+    // Apply cyberpunk theme class
+    document.body.classList.remove('theme-attacker');
+    document.body.classList.add('theme-cyberpunk');
+    
+    // Wait a moment for CSS to load, then apply glitch effects
+    setTimeout(() => {
+        applyGlitchEffects();
+    }, 500);
+}
+
+// ========================================
+// INTEGRATION WITH EXISTING CODE
+// ========================================
+
+// Add glitch keyboard shortcut
+document.addEventListener('keydown', function(event) {
+    // Manual glitch trigger (Ctrl+G)
+    if (event.code === 'KeyG' && event.ctrlKey) {
+        event.preventDefault();
+        triggerManualGlitch();
+    }
+});
+
+// Auto-apply glitch effects when page loads with cyberpunk theme
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if cyberpunk theme is already active on page load
+    setTimeout(() => {
+        if (document.body.classList.contains('theme-cyberpunk')) {
+            console.log('🔍 Cyberpunk theme detected on page load');
+            applyGlitchEffects();
+        }
+    }, 1000);
+});
+
+// ========================================
+// HOOK INTO YOUR EXISTING THEME SYSTEM
+// ========================================
+
+// If you have existing theme functions, modify them like this:
+// FIND your existing cyberpunk theme activation code and ADD this line:
+
+/*
+// Example of how to modify your existing theme switching:
+if (theme === 'cyberpunk') {
+    document.body.classList.add('theme-cyberpunk');
+    
+    // ADD THIS LINE to your existing cyberpunk theme code:
+    setTimeout(() => applyGlitchEffects(), 500);
+}
+*/
+
+// ========================================
+// DEBUGGING AND TESTING
+// ========================================
+
+// Make functions available globally for testing
+window.glitchDebug = {
+    apply: applyGlitchEffects,
+    trigger: triggerManualGlitch,
+    test: function() {
+        console.log('🧪 Testing glitch system...');
+        const h1 = document.querySelector('h1');
+        if (h1) {
+            h1.classList.add('glitch');
+            console.log('✅ Glitch class added for testing');
+            setTimeout(() => {
+                h1.classList.remove('glitch');
+                console.log('✅ Glitch class removed after test');
+            }, 3000);
+        } else {
+            console.log('❌ No h1 element found for testing');
+        }
+    },
+    forceActivate: function() {
+        document.body.classList.add('theme-cyberpunk');
+        setTimeout(() => applyGlitchEffects(), 100);
+        console.log('🚀 Forced cyberpunk theme and glitch activation');
+    }
+};
+
+console.log('🎉 Glitch system loaded! Test with:');
+console.log('• Press Ctrl+G for manual glitch');
+console.log('• glitchDebug.test() - Test glitch effect');
+console.log('• glitchDebug.forceActivate() - Force activate cyberpunk + glitch');
+
+// ========================================
+// END OF GLITCH PATCH
+// ========================================
